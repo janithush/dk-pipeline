@@ -196,6 +196,24 @@ img { display: block; }
   .ghost { color: rgba(156,111,65,.14); }
 }
 
+/* ---- story safe areas (9:16) ------------------------------------------ */
+/* Platform header/username top ~250px; reply bars & stickers bottom ~250px.
+   Apply .story-safe-zone to a container to keep copy within the readable
+   band when rendered at 1080×1920. */
+.story-safe-zone {
+  padding-top: var(--story-safe-top);
+  padding-bottom: var(--story-safe-bottom);
+  box-sizing: border-box;
+}
+.story-safe-top {
+  padding-top: var(--story-safe-top);
+  box-sizing: border-box;
+}
+.story-safe-bottom {
+  padding-bottom: var(--story-safe-bottom);
+  box-sizing: border-box;
+}
+
 /* ---- entrance motion ------------------------------------------------------------ */
 @keyframes dk-rise {
   from { opacity: 0; transform: translateY(30px); }

@@ -360,11 +360,15 @@ Before writing code, discuss with me:
 - Layout: photo placement, copy block position, brand bar position, safe areas.
 - Copy placement and actual headline/eyebrow/body text for each post.
 - Brand logo: which mark (SVG preferred). Check whether assets/logos/logo.svg exists; if it does not, cleanly fall back to assets/logos/logo.png. Logo sizing is centralized in shared/brand.css — never discuss per-post logo sizing.
+- Format/ratio: Ask me **"What format/ratio are we creating today for this post/batch?"**
+  - `Portrait (4:5 - 1080×1350)` [Default Feed]
+  - `Story (9:16 - 1080×1920)` [Vertical Story]
+  - `Square (1:1 - 1080×1080)` [Classic Feed]
 Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
 For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css:
-- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width="1080", data-height="1350".
+- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350).
 - Imports: ../shared/token.css, ../shared/shared.css, ./<slug>.css only.
 - Logo: <img src="../../assets/logos/logo.svg" class="dk-brand-logo rise"> — if assets/logos/logo.svg is missing, cleanly fall back to assets/logos/logo.png. Sizing is handled exclusively by shared/brand.css (.dk-brand-logo / .brand-logo: height within 36px–48px, object-fit: contain) so high-resolution PNGs render without visual artifacting or layout shifting. No per-post logo CSS.
 - Copy roles: scoped classes (e.g., .dk-<slug>-eyebrow, .dk-<slug>-headline) in <slug>.css overriding shared type roles.

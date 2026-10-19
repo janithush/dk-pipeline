@@ -7,8 +7,25 @@
 
 :root {
   /* ---- canvas ---------------------------------------------------------- */
+  /* Default (Feed 4:5): 1080 × 1350. Override per-composition via inline
+     data-width / data-height on the root element, e.g. story (1080×1920) or
+     square (1080×1080). See safe-area helpers in shared.css for 9:16. */
   --canvas-w: 1080px;
   --canvas-h: 1350px;
+
+  /* ---- canvas ratio presets (safe to reference from compositions) ------- */
+  --canvas-w-portrait: 1080px;
+  --canvas-h-portrait: 1350px;
+  --canvas-w-square: 1080px;
+  --canvas-h-square: 1080px;
+  --canvas-w-story: 1080px;
+  --canvas-h-story: 1920px;
+
+  /* ---- story safe areas (9:16) ------------------------------------------ */
+  /* Platform header/username occupies the top ~250px; reply bars & stickers
+     occupy the bottom ~250px. Keep copy within these guards. */
+  --story-safe-top: 250px;
+  --story-safe-bottom: 250px;
 
   /* ---- neutrals · walls, stone, bone ------------------------------------ */
   --bone-25:   #FDFAF4;
