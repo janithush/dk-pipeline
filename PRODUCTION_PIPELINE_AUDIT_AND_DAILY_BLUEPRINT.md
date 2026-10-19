@@ -364,6 +364,11 @@ Before writing code, discuss with me:
   - `Portrait (4:5 - 1080×1350)` [Default Feed]
   - `Story (9:16 - 1080×1920)` [Vertical Story]
   - `Square (1:1 - 1080×1080)` [Classic Feed]
+- Luxury composition constraints (Direct Kitchens $50K+ showroom strategy):
+  - Full-Bleed Material Primacy: 85–90% of canvas dedicated to raw architectural photography (stone veining, fluted timber, integrated joinery, ambient lighting). No heavy UI containers, floating cards, or opaque backgrounds obscuring craft details.
+  - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
+  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. Subtle showroom invitations only ("Visit our showroom" / "Book a private design consultation"). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
+  - Additional high-end editorial details: non-destructive dual-axis scrim gradients (preserve central material detail); micro-tracking for uppercase labels (wide `--track-eyebrow` for breathy labels, tight `--track-tight` for headlines); negative space as a design element — anchor copy to one corner, leave 60–70% of canvas as uninterrupted photography.
 Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
@@ -371,18 +376,23 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css
 - Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350).
 - Imports: ../shared/token.css, ../shared/shared.css, ./<slug>.css only.
 - Logo: <img src="../../assets/logos/logo.svg" class="dk-brand-logo rise"> — if assets/logos/logo.svg is missing, cleanly fall back to assets/logos/logo.png. Sizing is handled exclusively by shared/brand.css (.dk-brand-logo / .brand-logo: height within 36px–48px, object-fit: contain) so high-resolution PNGs render without visual artifacting or layout shifting. No per-post logo CSS.
+- Hairline budget enforcement: count `.rule-v` / `.rule-h` / `.plus` / `.diamond` elements — total must be ≤ 2 per composition. Flag any excess before rendering.
 - Copy roles: scoped classes (e.g., .dk-<slug>-eyebrow, .dk-<slug>-headline) in <slug>.css overriding shared type roles.
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json (ordered list).
 - Do not touch index.html except to add/remove a data-composition-src line for today's date.
 
-## STEP 5 — LINT GATE (mandatory before rendering)
+## STEP 5 — PRE-FLIGHT GATE (mandatory before rendering)
 1. Run: npx hyperframes lint
 2. Parse every error: [file:line:col] rule_id: message.
 3. Autonomously fix syntax/layout errors in code (missing data-composition-id, broken asset paths, missing @font-face, etc.).
 4. Re-run npx hyperframes lint until the report shows: 0 error(s), 0 warning(s).
-5. Show me the clean lint report. Do not proceed to render until the gate is green.
-   Optional: run npx hyperframes validate to catch missing assets / headless font-load issues.
+5. Run the comprehensive gate: npx hyperframes check
+   - This runs lint + runtime + layout + motion + WCAG contrast in one browser session.
+   - Verify: Lint 0 errors/0 warnings, Runtime 0 errors/0 warnings, Layout 0 issues, Motion 0 errors/0 warnings, Contrast passes WCAG AA.
+   - Report is saved to .hyperframes/artifacts/checks/<uuid>.json
+6. (Deprecated) Do not use `npx hyperframes validate` — it is deprecated in favor of `check`.
+7. Show me the clean lint and check reports. Do not proceed to render until both gates are green.
 
 ## STEP 6 — FINAL RENDER (confirmation required)
 1. Show me the list of compositions ready to render and the planned output paths under renders/YYYY-MM-DD/.

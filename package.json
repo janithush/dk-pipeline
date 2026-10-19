@@ -5,7 +5,7 @@
   "scripts": {
     "lint": "hyperframes lint",
     "lint:verbose": "hyperframes lint --lint-verbose",
-    "validate": "hyperframes validate",
+    "check": "hyperframes check",
     "render:daily": "node scripts/render-batch.js",
     "render:post": "hyperframes render --composition",
     "snapshot": "hyperframes snapshot",
