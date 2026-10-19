@@ -7,6 +7,7 @@
     "lint:verbose": "hyperframes lint --lint-verbose",
     "check": "hyperframes check",
     "preflight": "npm run lint && npm run check",
+    "optimize:assets": "node scripts/downscale-assets.js",
     "render:daily": "node scripts/render-batch.js",
     "render:post": "hyperframes render --composition",
     "snapshot": "hyperframes snapshot",

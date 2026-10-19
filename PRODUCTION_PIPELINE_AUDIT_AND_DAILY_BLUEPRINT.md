@@ -333,15 +333,25 @@ Copy and paste this entire block into OpenCode at the start of each production d
 You are acting as my Creative Technologist / Frontend Architect for today's daily production run.
 
 ## CONTEXT (read-only references — do not modify)
-- Assets live under assets/: raw photos in assets/raw/, client references in assets/reference posts, brand marks in assets/logos/, fonts in assets/fonts/.
+- Assets live under assets/: raw photos in assets/raw/ (use the web-optimized working copies in assets/raw/optimized/ for ALL composition work — regenerate them any time with `npm run optimize:assets`), client references in assets/reference posts, brand marks in assets/logos/, fonts in assets/fonts/.
 - Brand system lives in shared/ (token.css, shared.css, brand.css, fonts.css) — edit only if a new brand token/font is genuinely required.
 - Compositions for today go in compositions/YYYY-MM-DD/; exports go in renders/YYYY-MM-DD/.
 - index.html is a lightweight router/manifest only — never add creative markup to it.
 
-## STEP 1 — INGEST INPUTS
-1. List the contents of assets/raw/, assets/reference posts, assets/logos/, assets/fonts/.
-2. Ask me to confirm which raw photo(s) and which reference post(s) to use for today's first batch of posts.
-3. Do not render or write any composition until I confirm the inputs.
+## STEP 1 — INGEST INPUTS (INSPECT-FIRST — MANDATORY)
+1. FIRST, before reading, planning, or writing ANY copy: run `npm run optimize:assets`.
+   - This scans `assets/raw/` and produces web-optimized copies in `assets/raw/optimized/` (max dimension 2048px, JPEG quality 85%, target under 2MB) using the local `ffmpeg` binary. Files already under the limits are symlinked/copied through unchanged. Raw originals are NEVER modified.
+   - This eliminates the 20MB ingestion limit — all downstream steps MUST reference `assets/raw/optimized/`, never the raw originals.
+2. List the contents of `assets/raw/optimized/`, `assets/reference posts`, `assets/logos/`, `assets/fonts/`.
+3. **HARD RULE: NEVER generate copy, themes, or layouts blindly from filenames.** A filename (`1.jpg`, `2.jpg`) is not evidence of content. Every design decision must be grounded in an actual pixel inspection performed by you — no guessing, no assumptions, no inferring from file size or aspect ratio.
+4. You MUST explicitly inspect EACH image in `assets/raw/optimized/` using your own vision capabilities before proceeding. For every photo, extract and log:
+   - **Room/space type** (e.g., Kitchen, Laundry, Walk-in Pantry, Bar)
+   - **Hero materials** (e.g., Calacatta marble, fluted oak, brass hardware)
+   - **Specific appliances/fittings** (e.g., stacked ASKO appliances, gooseneck tap)
+   - **Color accents and lighting conditions** (e.g., warm under-cabinet glow, cool north light, matte black vs. brushed brass)
+   - Log this as a per-image table in your response. This table is the single source of truth for all downstream copy and layout.
+5. Ask me to confirm which optimized photo(s) and which reference post(s) to use for today's first batch of posts, presenting your inspection table as the basis for that choice.
+6. Do not render or write any composition until I confirm the inputs.
 
 ## STEP 2 — TYPOGRAPHY PIPELINE (font detection -> local .woff2)
 1. Look at the reference post I point to. Identify the typography style/category (e.g., geometric sans, humanist sans, serif, display) and the mood it conveys.
@@ -355,7 +365,7 @@ You are acting as my Creative Technologist / Frontend Architect for today's dail
    Do not require manual CSS edits from me — the font is wired automatically once I confirm the drop.
 5. Constraint: no external CDN font references anywhere — headless rendering must load fonts locally only.
 
-## STEP 3 — DESIGN DISCUSSION (interactive)
+## STEP 3 — DESIGN DISCUSSION (interactive) + GROUNDING VERIFICATION
 Before writing code, discuss with me:
 - Visual elements from the reference: photo treatment, masking, background/scrim, keylines, ornaments.
 - Layout: photo placement, copy block position, brand bar position, safe areas.
@@ -375,6 +385,18 @@ Before writing code, discuss with me:
   - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
   - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. Subtle showroom invitations only ("Visit our showroom" / "Book a private design consultation"). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
   - Additional high-end editorial details: non-destructive dual-axis scrim gradients (preserve central material detail); micro-tracking for uppercase labels (wide `--track-eyebrow` for breathy labels, tight `--track-tight` for headlines); negative space as a design element — anchor copy to one corner, leave 60–70% of canvas as uninterrupted photography.
+- **Grounding Verification (MANDATORY, before ANY HTML/CSS is written):** Build a Design Mapping table for each post that explicitly cites the verified visual elements logged in Step 1. Every claim in the copy must trace back to something you actually SAW:
+
+  | Copy / design element | Verified source (Step 1 inspection log) | Photo |
+  | --- | --- | --- |
+  | Headline: "Calacatta, floor to ceiling" | Hero material: Calacatta marble waterfall island + full-height splashback | 4.jpg |
+  | Callout: "Hand-milled fluted oak" | Material: fluted oak pantry joinery, vertical grain | 4.jpg |
+  | Eyebrow: "LAUNDRY" | Room type: Laundry (stacked ASKO, gooseneck tap) | 7.jpg |
+  | Scrim tint: warm amber | Lighting: warm under-cabinet glow, 2700K feel | 4.jpg |
+
+  - No headline, callout, eyebrow, or theme may reference a material, appliance, room, or fitting that is NOT in the Step 1 inspection log for the photo being used.
+  - If the copy needs a detail you have not verified, GO BACK and re-inspect the image — do not invent it.
+  - Show this table to me and get my sign-off alongside the design discussion. **No HTML/CSS composition may be written until this grounding table is confirmed.**
 Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
@@ -415,6 +437,8 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css
 6. Do not move anything to archive/ until I confirm the exports are approved.
 
 ## EXIT CRITERIA FOR TODAY
+- `npm run optimize:assets` was run first; every photo used came from `assets/raw/optimized/` (raw originals untouched)
+- Every post has a Step 1 vision inspection log and a confirmed Step 3 grounding table
 - lint: 0 errors / 0 warnings
 - All confirmed posts rendered as static PNG under renders/YYYY-MM-DD/
 - Clean render manifest shown to me
