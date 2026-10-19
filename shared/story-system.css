@@ -65,14 +65,15 @@ body {
 }
 
 /* DYNAMIC SCRIM VARIANTS (COLOR-ADAPTIVE) */
-/* Edge resets are explicit: the router also loads legacy shared.css whose
+/* Airy architectural scrims — translucent vignettes, NO blackouts. Max alpha
+   stays ≤0.70 so the photography keeps its editorial luminance and detail;
+   text legibility is carried by the cinematic text-shadow layer below.
+   Edge resets are explicit: the router also loads legacy shared.css whose
    `.scrim { inset: 0 }` would otherwise pin `top: 0` on BOTH spans, which
    CSS then honours over `bottom` (over-constrained) and flips the bottom
    scrim to the top of the frame. */
 .scrim {
   position: absolute;
-  top: auto;
-  bottom: auto;
   left: 0;
   right: 0;
   pointer-events: none;
@@ -80,33 +81,49 @@ body {
 }
 
 .scrim--top {
-  top: 0;
-  bottom: auto;
-  height: 380px;
+  top: 0 !important;
+  bottom: auto !important;
+  height: 320px !important;
 }
 
 .scrim--bottom {
-  top: auto;
-  bottom: 0;
-  height: 680px;
+  bottom: 0 !important;
+  top: auto !important;
+  height: 520px !important;
 }
 
-/* Scrim Theme: Charcoal Cool (Marble, White, Utilities)
-   Top ramp holds ≥0.92 alpha through the 140px brand-bar anchor so the 13px
-   wordmark clears WCAG AA over bright ceilings, then falls off by 380px. */
+/* Scrim Theme: Charcoal Cool — Soft Neutral Vignette */
 .scrim--charcoal .scrim--top {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.92) 50%, rgba(0, 0, 0, 0.55) 75%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0) 100%) !important;
 }
 .scrim--charcoal .scrim--bottom {
-  background: linear-gradient(0deg, rgba(10, 10, 12, 0.97) 0%, rgba(10, 10, 12, 0.96) 40%, rgba(10, 10, 12, 0.70) 60%, rgba(10, 10, 12, 0.25) 85%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(0deg, rgba(12, 12, 14, 0.65) 0%, rgba(12, 12, 14, 0.35) 50%, rgba(0, 0, 0, 0) 100%) !important;
 }
 
-/* Scrim Theme: Warm Amber (Spotted Gum, Warm Joinery, Amber Lighting) */
+/* Scrim Theme: Warm Amber — Soft Amber-Toned Vignette */
 .scrim--warm .scrim--top {
-  background: linear-gradient(180deg, rgba(15, 10, 5, 0.96) 0%, rgba(15, 10, 5, 0.93) 50%, rgba(15, 10, 5, 0.58) 75%, rgba(15, 10, 5, 0) 100%);
+  background: linear-gradient(180deg, rgba(20, 14, 8, 0.45) 0%, rgba(20, 14, 8, 0.18) 50%, rgba(0, 0, 0, 0) 100%) !important;
 }
 .scrim--warm .scrim--bottom {
-  background: linear-gradient(0deg, rgba(20, 14, 8, 0.97) 0%, rgba(20, 14, 8, 0.96) 40%, rgba(20, 14, 8, 0.72) 60%, rgba(20, 14, 8, 0.26) 85%, rgba(0, 0, 0, 0) 100%);
+  background: linear-gradient(0deg, rgba(24, 16, 10, 0.70) 0%, rgba(24, 16, 10, 0.40) 50%, rgba(0, 0, 0, 0) 100%) !important;
+}
+
+/* CINEMATIC TEXT SHADOWS — multi-layered typography depth.
+   Guarantees legibility over bright stone without heavy black scrims. */
+.t-eyebrow {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7), 0 2px 16px rgba(0, 0, 0, 0.5) !important;
+}
+
+.t-display {
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.65), 0 4px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+.cta {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8), 0 2px 16px rgba(0, 0, 0, 0.6) !important;
+}
+
+.bar-top .brand {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7) !important;
 }
 
 /* DYNAMIC COPY & CTA BLOCKS (STRICT 220PX BOTTOM SAFE ZONE — NEVER CLIPPED) */

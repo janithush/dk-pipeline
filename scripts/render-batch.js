@@ -66,9 +66,15 @@ for (const post of manifest.posts) {
 
   try {
     execSync(cmd, { cwd: ROOT, stdio: 'inherit' });
-    const frame = path.join(outputPath, 'frame-00000.png');
-    const size = fs.existsSync(frame) ? fs.statSync(frame).size : 0;
-    console.log(`✓ [${post.slug}] rendered → ${post.output}/frame-00000.png (${size} bytes)`);
+    // Renderer writes frame_000001.png (single static frame); report the
+    // newest frame actually on disk rather than a hardcoded name.
+    const frames = fs.readdirSync(outputPath)
+      .filter(f => /^frame[-_]\d+\.png$/i.test(f))
+      .map(f => ({ f, t: fs.statSync(path.join(outputPath, f)).mtimeMs }))
+      .sort((a, b) => b.t - a.t);
+    const frame = frames[0] ? frames[0].f : null;
+    const size = frame ? fs.statSync(path.join(outputPath, frame)).size : 0;
+    console.log(`✓ [${post.slug}] rendered → ${post.output}/${frame || 'frame*.png'} (${size} bytes)`);
     passed++;
   } catch (err) {
     console.error(`✗ [${post.slug}] render failed`);
