@@ -28,6 +28,19 @@ if (!fs.existsSync(manifestPath)) {
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 fs.mkdirSync(renderDir, { recursive: true });
 
+// ── BATCH-LEVEL PRE-FLIGHT GATE ─────────────────────────────────────────
+// Run lint + check before rendering any composition. Abort immediately
+// if the gate is not green (exit code !== 0).
+console.log(`◆ Running pre-flight gate for batch: ${batchDate}`);
+try {
+  execSync('npm run preflight', { cwd: ROOT, stdio: 'inherit' });
+  console.log('   Pre-flight gate: GREEN (0 errors, 0 warnings)\n');
+} catch (err) {
+  console.error('✗ Pre-flight gate FAILED — aborting render batch.');
+  console.error('   Fix lint/check errors before rendering.');
+  process.exit(1);
+}
+
 let passed = 0;
 let failed = 0;
 

@@ -1,0 +1,55 @@
+/* DK · Story 05 — Calacatta marble book matched · full-bleed hero · bottom-right copy · 0 hairlines */
+.photo--full img {
+  object-position: 50% 50%;
+  transform: scale(1);
+}
+
+.frame {
+  width: 1080px;
+  height: 1920px;
+}
+
+.bar-top {
+  position: absolute;
+  top: 260px;
+  left: 60px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--bone-25);
+}
+
+.copy {
+  position: absolute;
+  z-index: 20;
+  color: var(--bone-25);
+  max-width: 620px;
+}
+
+.copy--bottom-right {
+  right: 60px;
+  bottom: 280px;
+  text-align: right;
+}
+
+.dk-story-05-eyebrow {
+  color: var(--bone-100);
+  justify-content: flex-end;
+}
+
+.dk-story-05-headline {
+  font-size: 64px;
+  line-height: 1.04;
+  color: var(--bone-25);
+  text-align: right;
+}
+
+.dk-story-05-cta {
+  font-size: 17px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bone-100);
+  text-align: right;
+  margin-top: 10px;
+}

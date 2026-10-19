@@ -2,15 +2,17 @@
    DIRECT KITCHENS · brand.css — brand marks (scoped, single place)
    Logo sizing is centralized here so high-resolution PNGs render without
    visual artifacting or layout shifting.
-   Standard height band: 36px–48px; object-fit: contain.
+   Permanent clamping: max-height 44px, cannot expand or obstruct
+   central photography details. Anchored to top safe boundary.
    ========================================================================== */
 
 /* Brand logo — applied via <img class="dk-brand-logo"> (or legacy .brand-logo).
    Fallback contract handled in compositions: logo.svg preferred, logo.png fallback. */
 .dk-brand-logo,
 .brand-logo {
-  height: 36px;
+  max-height: 44px !important;
   width: auto;
-  object-fit: contain;
+  max-width: 100%;
   display: block;
+  object-fit: contain;
 }

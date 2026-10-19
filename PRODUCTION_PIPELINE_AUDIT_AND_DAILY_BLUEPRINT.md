@@ -227,8 +227,9 @@ dk-now/
 **Per-post composition (contract):**
 - Root element: `data-composition-id="dk-post-01"` (stable, unique), `data-duration="0.033"`, `data-no-timeline`, `data-width="1080"`, `data-height="1350"`.
 - Imports only: `../shared/token.css`, `../shared/shared.css`, `./post-01.css`.
-- Logo: `<img src="../../assets/logos/logo.svg" class="dk-brand-logo rise">` — sizing handled by `shared/brand.css` `.dk-brand-logo`; no per-post logo CSS.
+- Logo: `<img src="../../assets/logos/logo.svg" class="dk-brand-logo rise">` — sizing handled by `shared/brand.css` `.dk-brand-logo` (max-height: 44px !important, width: auto, object-fit: contain); no per-post logo CSS. Logo anchored to top safe boundary.
 - Copy: scoped classes (`.dk-p1-eyebrow`, `.dk-p1-headline`) defined in `post-01.css`, overriding shared type roles only where needed.
+- **Hairline budget: strictly 0.** `.rule-v`, `.rule-h`, `.plus`, `.diamond` elements must not appear in any composition.
 
 **Daily batch flow:**
 1. Morning: new `compositions/YYYY-MM-DD/` folder created; `batch-manifest.json` lists ordered posts.
@@ -364,6 +365,11 @@ Before writing code, discuss with me:
   - `Portrait (4:5 - 1080×1350)` [Default Feed]
   - `Story (9:16 - 1080×1920)` [Vertical Story]
   - `Square (1:1 - 1080×1080)` [Classic Feed]
+- **Dynamic Router Sync (mandatory):** Immediately after the ratio is confirmed, set the root canvas attributes of `index.html` to match the exact dimensions:
+  - Portrait (4:5): `data-width="1080" data-height="1350"`
+  - Story (9:16): `data-width="1080" data-height="1920"`
+  - Square (1:1): `data-width="1080" data-height="1080"`
+  - Add `class="hyperframes-root"` to the root `<div>`. Compositions generated for that batch must strictly inherit these exact root dimensions so router canvas overflow is resolved deterministically at the source. Do not use `data-layout-allow-overflow` as a workaround.
 - Luxury composition constraints (Direct Kitchens $50K+ showroom strategy):
   - Full-Bleed Material Primacy: 85–90% of canvas dedicated to raw architectural photography (stone veining, fluted timber, integrated joinery, ambient lighting). No heavy UI containers, floating cards, or opaque backgrounds obscuring craft details.
   - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
@@ -373,10 +379,10 @@ Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
 For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css:
-- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350).
+- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350). **Composition root dimensions must exactly match the index.html root canvas for the current batch ratio.**
 - Imports: ../shared/token.css, ../shared/shared.css, ./<slug>.css only.
-- Logo: <img src="../../assets/logos/logo.svg" class="dk-brand-logo rise"> — if assets/logos/logo.svg is missing, cleanly fall back to assets/logos/logo.png. Sizing is handled exclusively by shared/brand.css (.dk-brand-logo / .brand-logo: height within 36px–48px, object-fit: contain) so high-resolution PNGs render without visual artifacting or layout shifting. No per-post logo CSS.
-- Hairline budget enforcement: count `.rule-v` / `.rule-h` / `.plus` / `.diamond` elements — total must be ≤ 2 per composition. Flag any excess before rendering.
+- Logo: <img src="../../assets/logos/logo.svg" class="dk-brand-logo rise"> — if assets/logos/logo.svg is missing, cleanly fall back to assets/logos/logo.png. Sizing is handled exclusively by shared/brand.css (.dk-brand-logo / .brand-logo: max-height 44px !important, width: auto, max-width: 100%, object-fit: contain) so high-resolution PNGs render without visual artifacting or layout shifting. **Logo is anchored to the top safe boundary and cannot expand or obstruct central photography details. No per-post logo CSS.**
+- **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, and `.diamond` elements must not appear in any composition. Total hairline budget = 0. Remove all stray hairline/callout elements until an exact coordinate-targeting system is introduced.
 - Copy roles: scoped classes (e.g., .dk-<slug>-eyebrow, .dk-<slug>-headline) in <slug>.css overriding shared type roles.
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json (ordered list).
@@ -393,6 +399,10 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css
    - Report is saved to .hyperframes/artifacts/checks/<uuid>.json
 6. (Deprecated) Do not use `npx hyperframes validate` — it is deprecated in favor of `check`.
 7. Show me the clean lint and check reports. Do not proceed to render until both gates are green.
+
+## STEP 5.5 — BATCH PRE-FLIGHT ENFORCEMENT (mandatory, automated)
+- `scripts/render-batch.js` executes `npm run preflight` (lint + check) prior to rendering any composition.
+- If the preflight exit code !== 0, the batch aborts immediately with a clear error report. No composition renders until the gate is green.
 
 ## STEP 6 — FINAL RENDER (confirmation required)
 1. Show me the list of compositions ready to render and the planned output paths under renders/YYYY-MM-DD/.

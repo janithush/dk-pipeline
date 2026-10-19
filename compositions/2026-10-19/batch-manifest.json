@@ -1,7 +1,14 @@
 {
   "batch": "2026-10-19",
   "posts": [
-    { "slug": "dk-01-timber-touch", "html": "compositions/2026-10-19/dk-01-timber-touch.html", "output": "renders/2026-10-19/dk-01-timber-touch" },
-    { "slug": "dk-02-slow-mornings", "html": "compositions/2026-10-19/dk-02-slow-mornings.html", "output": "renders/2026-10-19/dk-02-slow-mornings" }
+    { "slug": "story-01", "html": "compositions/2026-10-19/story-01.html", "output": "renders/2026-10-19/story-01" },
+    { "slug": "story-02", "html": "compositions/2026-10-19/story-02.html", "output": "renders/2026-10-19/story-02" },
+    { "slug": "story-03", "html": "compositions/2026-10-19/story-03.html", "output": "renders/2026-10-19/story-03" },
+    { "slug": "story-04", "html": "compositions/2026-10-19/story-04.html", "output": "renders/2026-10-19/story-04" },
+    { "slug": "story-05", "html": "compositions/2026-10-19/story-05.html", "output": "renders/2026-10-19/story-05" },
+    { "slug": "story-06", "html": "compositions/2026-10-19/story-06.html", "output": "renders/2026-10-19/story-06" },
+    { "slug": "story-07", "html": "compositions/2026-10-19/story-07.html", "output": "renders/2026-10-19/story-07" },
+    { "slug": "story-08", "html": "compositions/2026-10-19/story-08.html", "output": "renders/2026-10-19/story-08" },
+    { "slug": "story-09", "html": "compositions/2026-10-19/story-09.html", "output": "renders/2026-10-19/story-09" }
   ]
 }

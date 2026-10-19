@@ -6,6 +6,7 @@
     "lint": "hyperframes lint",
     "lint:verbose": "hyperframes lint --lint-verbose",
     "check": "hyperframes check",
+    "preflight": "npm run lint && npm run check",
     "render:daily": "node scripts/render-batch.js",
     "render:post": "hyperframes render --composition",
     "snapshot": "hyperframes snapshot",

@@ -1,0 +1,51 @@
+/* DK · Story 09 — stone veining natural · full-bleed hero · bottom-left copy · 0 hairlines + brand diamond */
+.photo--full img {
+  object-position: 50% 50%;
+  transform: scale(1);
+}
+
+.frame {
+  width: 1080px;
+  height: 1920px;
+}
+
+.bar-top {
+  position: absolute;
+  top: 260px;
+  left: 60px;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--bone-25);
+}
+
+.copy {
+  position: absolute;
+  z-index: 20;
+  color: var(--bone-25);
+  max-width: 620px;
+}
+
+.copy--bottom-left {
+  left: 60px;
+  bottom: 280px;
+}
+
+.dk-story-09-eyebrow {
+  color: var(--stone-300);
+}
+
+.dk-story-09-headline {
+  font-size: 64px;
+  line-height: 1.04;
+  color: var(--bone-25);
+}
+
+.dk-story-09-cta {
+  font-size: 17px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--bone-100);
+  margin-top: 10px;
+}
