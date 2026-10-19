@@ -160,11 +160,11 @@ dk-now/
 │       ├── Archivo-Variable.woff2
 │       └── ...
 ├── shared/
+│   ├── story-system.css            # ⚙ MASTER STORY ENGINE — single immutable layout engine (see §F)
 │   ├── token.css                   # brand design tokens (single source of truth)
 │   ├── fonts.css                   # @font-face → assets/fonts/*.woff2 (see §C.2)
 │   ├── brand.css                   # .dk-brand-logo + brand marks (scoped, single place)
-│   ├── shared.css                  # primitives (.photo, .scrim, .chip, .brand, .rule, .plus, .diamond, .ghost, .rise)
-│   └── posts/                      # per-post scoped CSS overrides (optional, next to html)
+│   └── shared.css                  # LEGACY primitives — not imported by story compositions
 ├── renders/                        # OUTPUTS
 │   ├── YYYY-MM-DD/                 # daily static exports (PNG)
 │   └── archive/                    # signed-off historical exports
@@ -226,14 +226,15 @@ dk-now/
 
 **Per-post composition (contract):**
 - Root element: `data-composition-id="dk-post-01"` (stable, unique), `data-duration="0.033"`, `data-no-timeline`, `data-width="1080"`, `data-height="1350"`.
-- Imports only: `../shared/token.css`, `../shared/shared.css`, `./post-01.css`.
-- Logo: `<img src="../../assets/logos/logo.svg" class="dk-brand-logo rise">` — sizing handled by `shared/brand.css` `.dk-brand-logo` (max-height: 44px !important, width: auto, object-fit: contain); no per-post logo CSS. Logo anchored to top safe boundary.
-- Copy: scoped classes (`.dk-p1-eyebrow`, `.dk-p1-headline`) defined in `post-01.css`, overriding shared type roles only where needed.
-- **Hairline budget: strictly 0.** `.rule-v`, `.rule-h`, `.plus`, `.diamond` elements must not appear in any composition.
+- **Imports ONLY `../../shared/story-system.css`.** Token, brand, font and layout rules all resolve from that single engine file.
+- **FORBIDDEN: per-post CSS.** No `compositions/YYYY-MM-DD/<slug>.css` may be created. Layout, scrim and type behaviour come exclusively from the engine's variants (see §F).
+- Logo: `<img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">` — sizing handled by the engine's brand bar (40px clamp, circular mask); no per-post logo CSS. Logo anchored inside the top safe zone.
+- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (+ `.serif-accent`), `.cta`, inside a `.copy` block.
+- **Hairline budget: strictly 0.** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, `.tick` elements must not appear in any composition. (Full engine contract: §F.)
 
 **Daily batch flow:**
 1. Morning: new `compositions/YYYY-MM-DD/` folder created; `batch-manifest.json` lists ordered posts.
-2. Build each post: HTML + scoped CSS.
+2. Build each post: HTML only — all CSS comes from `shared/story-system.css`.
 3. Lint the whole project → must be 0 errors before any render.
 4. Render batch: one static PNG per post into `renders/YYYY-MM-DD/`.
 5. Operator confirms outputs → batch moves to `archive/` (or stays in working dir for same-day revision).
@@ -400,12 +401,13 @@ Before writing code, discuss with me:
 Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
-For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html + <slug>.css:
+For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-post .css files are FORBIDDEN — see §F):
 - Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350). **Composition root dimensions must exactly match the index.html root canvas for the current batch ratio.**
-- Imports: ../shared/token.css, ../shared/shared.css, ./<slug>.css only.
-- Logo: <img src="../../assets/logos/logo.svg" class="dk-brand-logo rise"> — if assets/logos/logo.svg is missing, cleanly fall back to assets/logos/logo.png. Sizing is handled exclusively by shared/brand.css (.dk-brand-logo / .brand-logo: max-height 44px !important, width: auto, max-width: 100%, object-fit: contain) so high-resolution PNGs render without visual artifacting or layout shifting. **Logo is anchored to the top safe boundary and cannot expand or obstruct central photography details. No per-post logo CSS.**
-- **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, and `.diamond` elements must not appear in any composition. Total hairline budget = 0. Remove all stray hairline/callout elements until an exact coordinate-targeting system is introduced.
-- Copy roles: scoped classes (e.g., .dk-<slug>-eyebrow, .dk-<slug>-headline) in <slug>.css overriding shared type roles.
+- Imports: ../../shared/story-system.css ONLY (it @imports token.css + brand.css internally). Do NOT link shared.css, token.css, or any per-post stylesheet.
+- Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps it to a 40×40px circle anchored at top 140px / left 80px. **No per-post logo CSS.**
+- **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
+- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of the three variants (`copy--bottom-left`, `copy--bottom-right`, `copy--centered`). The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
+- Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json (ordered list).
 - Do not touch index.html except to add/remove a data-composition-src line for today's date.
@@ -487,3 +489,152 @@ npm run lint   # confirms npm script wiring works
 ```
 
 After these three steps, the workspace has a green lint gate, a font intake contract matching the mission spec, a clean index.html router, and a scripted daily render loop — ready for 10–15 static posts/day.
+
+---
+
+## F. THE MASTER STORY ENGINE (SINGLE IMMUTABLE LAYOUT SYSTEM — established 2026-10-20)
+
+Ad-hoc per-post CSS generation is **terminated**. All story compositions are now driven by one deterministic layout engine.
+
+### F.1 The single source of layout truth
+
+| File | Role | Mutable? |
+|------|------|----------|
+| `shared/story-system.css` | **The Master Story Engine.** Owns reset, canvas, brand bar, scrims, copy/CTA positioning, and editorial typography for every story composition. | **IMMUTABLE** — edit only in a dedicated design-sprint session, never during a daily production run. |
+| `shared/token.css` | Design tokens (colors, type scale, `--sans`/`--serif`, `--track-eyebrow`). `@import`ed by the engine. | Design-sprint only. |
+| `shared/brand.css` | Base `.dk-brand-logo` / `.brand-logo` clamp. `@import`ed by the engine. | Design-sprint only. |
+| `shared/shared.css` | **LEGACY.** No longer imported by story compositions. Retained only for archived non-story posts. | Frozen. |
+| `compositions/YYYY-MM-DD/story-XX.html` | Markup + image source + variant selection only. **No `<style>` block, no inline styles, no local `.css` file.** | Overwritten daily. |
+
+**FORBIDDEN — hard rule:** creating `compositions/YYYY-MM-DD/<slug>.css` (or any per-post stylesheet). Every composition links **exactly one** stylesheet:
+
+```html
+<link rel="stylesheet" href="../../shared/story-system.css">
+```
+
+The engine `@import`s `token.css` and `brand.css` internally, so a story HTML never links those directly either. Violations are a pre-flight failure.
+
+### F.2 Brand safety — logo clamp (LOCKED)
+
+```css
+.bar-top { top: 140px; left: 80px; display: flex; align-items: center; gap: 14px; z-index: 10; }
+.bar-top .dk-brand-logo,
+.bar-top img { width: 40px; height: 40px; max-width: 40px; max-height: 40px;
+               border-radius: 50%; object-fit: contain; flex-shrink: 0; }
+.bar-top .brand { font: 500 13px/1 var(--sans); letter-spacing: .28em;
+                  text-transform: uppercase; color: #fff; opacity: .9; }
+```
+
+- **40×40px circular clamp**, anchored at `top: 140px / left: 80px` — inside the 9:16 top safe zone, never obstructing central photography.
+- Uniform header on every post (exact markup, no variants):
+  ```html
+  <header class="bar-top">
+    <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+    <p class="brand">Direct Kitchens</p>
+  </header>
+  ```
+
+### F.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
+
+```css
+.copy { position: absolute; bottom: 220px; z-index: 10;
+        display: flex; flex-direction: column; gap: 12px; }
+```
+
+- Every `.copy` block is pinned **220px** from the bottom edge — above the platform reply-bar/sticker band. Copy and CTA are **never clipped**.
+- Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`, `copy--centered` → `left: 80px; right: 80px`.
+
+### F.4 Controlled editorial dynamism — layout variants
+
+Determinism at the system level, variety at the selection level. Each post picks **one** copy variant; the engine renders it identically every time.
+
+| Variant | Class | Behaviour | Use when |
+|---|---|---|---|
+| **A — Bottom-Left** | `.copy--bottom-left` | Left-aligned, standard editorial anchor | Default; hero left of frame |
+| **B — Bottom-Right** | `.copy--bottom-right` | Right-aligned counter-balance | Visual mass sits left of frame |
+| **C — Centered** | `.copy--centered` | Symmetrical, architectural | Single strong central feature |
+
+### F.5 Controlled editorial dynamism — scrim themes (color-adaptive)
+
+Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` 380px, `.scrim--bottom` 680px) and differ only in undertone, so contrast behaviour is predictable.
+
+| Theme | Class | Undertone | Apply to |
+|---|---|---|---|
+| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black (`rgba(10,10,12,·)`) | Marble, white stone, cool utilities, laundries, greige |
+| **Warm Amber** | `scrim--warm` | Warm brown-black (`rgba(20,14,8,·)`) | Spotted gum, warm joinery, amber lighting, timber floors |
+
+**Calibrated alpha ramps (locked, WCAG-AA-verified).** The top ramp holds ≥0.92 alpha through the 140px brand-bar anchor so the 13px wordmark clears AA over bright ceilings; the bottom ramp holds ≥0.96 through the 40% mark so the copy block (pinned at `bottom: 220px`) clears AA over pure-white stone. Values are piecewise-linear across the stated stops:
+
+| Ramp | Stops (position % → alpha) |
+|---|---|
+| `.scrim--charcoal .scrim--top` | `0%→0.95, 50%→0.92, 75%→0.55, 100%→0` |
+| `.scrim--charcoal .scrim--bottom` | `0%→0.97, 40%→0.96, 60%→0.70, 85%→0.25, 100%→0` |
+| `.scrim--warm .scrim--top` | `0%→0.96, 50%→0.93, 75%→0.58, 100%→0` |
+| `.scrim--warm .scrim--bottom` | `0%→0.97, 40%→0.96, 60%→0.72, 85%→0.26, 100%→0` |
+
+**Edge-reset invariant.** The router also loads legacy `shared/shared.css`, whose `.scrim { inset: 0 }` pins `top: 0` on both scrim spans — CSS then honours `top` over `bottom` (over-constrained) and flips the bottom scrim to the top of the frame. `story-system.css` therefore resets `top: auto; bottom: auto` on `.scrim` and sets one explicit edge per variant. Do not remove these resets.
+
+**Verification.** `hyperframes check`'s contrast sampler only measures text inside the router canvas, which contains story-01 alone (posts 02–09 stack below it). Run `powershell -File scripts/verify-contrast.ps1` to composite every text band of all 9 stories against the engine's scrim ramps and confirm worst-case-pixel WCAG AA. Both gates must be green before any commit.
+
+### F.6 Editorial typography roles (engine-owned)
+
+| Role | Class | Spec |
+|---|---|---|
+| Eyebrow | `.t-eyebrow` | 13px / 600 / `--track-eyebrow` / uppercase / `--bone` at 90% |
+| Headline | `.t-display` | 52px / 700 / 1.08 / `-0.02em` / white |
+| Serif accent | `.serif-accent` (inside `.t-display`) | Cormorant Garamond italic 400 |
+| CTA | `.cta` | 12px / 600 / `.22em` / uppercase / `--brass` |
+
+### F.7 Dual CTA intent (brand copy policy)
+
+Zero prices, zero discounts. Exactly two invitations, cycled by the batch manifest:
+
+| CTA | Intent | Placement |
+|---|---|---|
+| **"Visit our showroom"** | Low-commitment foot-traffic invitation | Default closing line |
+| **"Book a private design consultation"** | High-touch, appointment-only, $50K+ showroom strategy | Alternate posts / hero pieces |
+
+### F.8 Composition contract (current, supersedes §C.3)
+
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direct Kitchens — story-NN</title>
+  <link rel="stylesheet" href="../../shared/story-system.css">
+</head>
+<body>
+  <main id="root" data-composition-id="dk-story-NN" data-duration="0.033" data-no-timeline
+        data-width="1080" data-height="1920">
+    <article class="frame" aria-label="...">
+      <figure class="photo photo--full scrim--{charcoal|warm}">
+        <img src="../../assets/raw/optimized/N.jpg" alt="...grounded alt text...">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--bottom" aria-hidden="true"></span>
+      </figure>
+
+      <header class="bar-top">
+        <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+        <p class="brand">Direct Kitchens</p>
+      </header>
+
+      <section class="copy copy--{bottom-left|bottom-right|centered}">
+        <p class="t-eyebrow">…</p>
+        <h1 class="t-display">…<span class="serif-accent">…</span></h1>
+        <p class="cta">Visit our showroom</p>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
+```
+
+**Invariants (all enforced by `npm run preflight`):**
+1. One stylesheet link — `story-system.css`. No per-post CSS anywhere.
+2. Photos sourced **only** from `assets/raw/optimized/`.
+3. Zero hairline/marker elements (`.tick`, `.rule-h`, `.rule-v`, `.plus`, `.diamond`, `.keyline`).
+4. Header markup byte-identical across all posts.
+5. Root `data-width="1080" data-height="1920"` matches the router canvas exactly.
+6. Copy anchored at 220px; logo clamped at 40px.
