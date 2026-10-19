@@ -1,0 +1,72 @@
+.frame--dk02 {
+  display: block;
+}
+
+.photo--full {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.photo--full img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  transform: scale(0.92);
+  transform-origin: center center;
+}
+
+.bar-top {
+  position: absolute;
+  top: 56px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--on-photo);
+  z-index: 10;
+}
+
+.chip--espresso {
+  position: absolute;
+  top: 620px;
+  right: 180px;
+  z-index: 10;
+}
+
+.copy {
+  position: absolute;
+  bottom: 60px;
+  left: 56px;
+  right: 56px;
+  color: var(--on-photo);
+  z-index: 10;
+}
+
+.copy .t-eyebrow {
+  color: var(--brass-300);
+  margin-bottom: 20px;
+}
+
+.copy .headline {
+  font-size: 88px;
+  line-height: 0.98;
+  color: var(--bone-25);
+  margin-bottom: 24px;
+}
+
+.copy .tagline {
+  color: var(--bone-100);
+  margin-bottom: 28px;
+}
+
+.copy-rule {
+  margin-bottom: 20px;
+  opacity: 0.4;
+}
+
+.materials {
+  color: var(--stone-300);
+}

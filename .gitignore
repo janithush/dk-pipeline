@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+
+# HyperFrames internal state (render outputs, locks, history, video state)
+.hyperframes/
+
+# Render output directory
+renders/
+
+# OS artifacts
+.DS_Store
+Thumbs.db

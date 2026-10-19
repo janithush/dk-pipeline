@@ -1,0 +1,7 @@
+{
+  "batch": "2026-10-19",
+  "posts": [
+    { "slug": "dk-01-timber-touch", "html": "compositions/2026-10-19/dk-01-timber-touch.html", "output": "renders/2026-10-19/dk-01-timber-touch" },
+    { "slug": "dk-02-slow-mornings", "html": "compositions/2026-10-19/dk-02-slow-mornings.html", "output": "renders/2026-10-19/dk-02-slow-mornings" }
+  ]
+}

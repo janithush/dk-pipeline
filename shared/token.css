@@ -1,0 +1,87 @@
+/* ==========================================================================
+   DIRECT KITCHENS · token.css — single source of truth for design tokens
+   Palette sampled from DK RAW 01 (warm oak + white) & RAW 02 (greige U-shape)
+   ========================================================================== */
+
+@import url("./fonts.css");   /* ← self-hosted fonts; replaces the old Google Fonts @import */
+
+:root {
+  /* ---- canvas ---------------------------------------------------------- */
+  --canvas-w: 1080px;
+  --canvas-h: 1350px;
+
+  /* ---- neutrals · walls, stone, bone ------------------------------------ */
+  --bone-25:   #FDFAF4;
+  --bone-50:   #F6F1E7;
+  --bone-100:  #EFE7D8;
+  --bone-200:  #E4DAC8;
+  --stone-300: #D8CDB9;
+
+  /* ---- timber · oak cabinetry, floors, chairs --------------------------- */
+  --oak-200: #EAD2AC;
+  --oak-300: #DDBA8C;
+  --oak-400: #CFA26E;
+  --oak-500: #BC8C58;
+  --oak-600: #9C6F41;
+  --oak-700: #7A5430;
+
+  /* ---- espresso · machines, sinks, ink ---------------------------------- */
+  --espresso-600: #6B5947;
+  --espresso-700: #544537;
+  --espresso-800: #3B3026;
+  --espresso-900: #2A211A;
+
+  /* ---- brass · tapware & accents ---------------------------------------- */
+  --brass-300: #E0C394;
+  --brass-400: #CFA76B;
+  --brass-500: #B4854B;
+
+  /* ---- semantic ---------------------------------------------------------- */
+  --ink:        var(--espresso-900);
+  --ink-soft:   var(--espresso-700);
+  --paper:      var(--bone-50);
+  --accent:     var(--brass-500);
+  --on-photo:   var(--bone-25);
+  --scrim-up:   linear-gradient(to top,
+                  rgba(30,23,17,.86) 0%, rgba(30,23,17,.55) 22%, rgba(30,23,17,0) 58%);
+  --scrim-down: linear-gradient(to bottom, rgba(30,23,17,.6) 0%, rgba(30,23,17,0) 20%);
+
+  /* ---- lines ------------------------------------------------------------- */
+  --hair:       1.5px;
+  --line-ink:   rgba(42,33,26,.6);
+  --line-soft:  rgba(42,33,26,.16);
+  --line-light: rgba(253,250,244,.6);
+
+  /* ---- type -------------------------------------------------------------- */
+  --sans:  "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --serif: "Cormorant Garamond", Georgia, serif;
+
+  --fs-micro:   15px;
+  --fs-small:   18px;
+  --fs-eyebrow: 20px;
+  --fs-lead:    34px;
+  --fs-hero:   104px;
+  --fs-display: 96px;
+
+  --track-eyebrow: .34em;
+  --track-tight:  -.01em;
+  --leading-display: .96;
+
+  /* ---- space ------------------------------------------------------------- */
+  --sp-1: 8px;  --sp-2: 16px; --sp-3: 24px; --sp-4: 32px;
+  --sp-5: 40px; --sp-6: 56px; --sp-7: 72px; --sp-8: 96px;
+  --pad-frame: 48px;   /* photo mat            */
+  --pad-copy:  76px;   /* text safe area       */
+
+  /* ---- radius / elevation / motion ---------------------------------------- */
+  --r-frame: 36px;
+  --r-panel: 24px;
+  --r-chip:  999px;
+
+  --shadow-panel: 0 24px 60px rgba(42,33,26,.20);
+  --shadow-chip:  0 12px 28px rgba(42,33,26,.22);
+
+  --ease-out: cubic-bezier(.19,.66,.22,1);
+  --dur-1: .7s;
+  --dur-2: 1s;
+}

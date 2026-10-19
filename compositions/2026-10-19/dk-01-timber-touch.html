@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DK № 01 — Made to be lived in</title>
+<!-- fonts load locally: token.css → fonts.css → shared/fonts/ -->
+<link rel="stylesheet" href="../../shared/token.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+<link rel="stylesheet" href="dk-01-timber-touch.css">
+</head>
+<body>
+
+<main id="root" data-composition-id="dk-01-timber-touch" data-duration="0.033" data-no-timeline data-width="1080" data-height="1350">
+  <article class="frame" aria-label="Direct Kitchens — post 01, warm timber kitchen">
+
+    <!-- RAW 01 · PDF page 3 → assets/dk-raw-01-exploring.jpg -->
+    <figure class="photo photo--inset photo-hero">
+      <img src="../../assets/raw/dk-raw-01-exploring.jpg"
+           alt="A woman exploring warm oak cabinetry in a white stone-topped kitchen with a brass gooseneck tap">
+      <span class="scrim scrim--top"    aria-hidden="true"></span>
+      <span class="scrim scrim--bottom" aria-hidden="true"></span>
+    </figure>
+
+    <!-- framing lines & marks -->
+    <span class="rule-v edge-line" aria-hidden="true"></span>
+    <span class="plus corner-plus" aria-hidden="true"></span>
+
+    <!-- detail annotations — nudge coords to your crop -->
+    <div class="chip chip--oak rise" style="--d:5"><span class="dot"></span>solid oak fronts</div>
+    <span class="leader leader--oak" aria-hidden="true"></span>
+    <div class="chip chip--brass rise" style="--d:6"><span class="dot"></span>hidden appliance garage</div>
+
+    <header class="bar-top">
+      <p class="brand rise" style="--d:1"><span class="diamond"></span>Direct&nbsp;Kitchens</p>
+      <img src="../../assets/logos/logo.png" alt="Direct Kitchens" class="brand-logo rise">
+    
+    </header>
+
+    <section class="copy">
+      <p class="t-eyebrow rise"><span class="tick"></span>Natural Oak · Engineered Stone</p>
+      <h1 class="t-display headline rise" style="--d:3">
+        Made to be<br><em class="serif-accent">lived in.</em>
+      </h1>
+      
+      <!-- <span class="rule-h rule-h--light copy-rule rise" style="--d:4" aria-hidden="true"></span> -->
+  
+    </section>
+
+  </article>
+</main>
+
+<script>
+  /* scale-to-fit preview */
+  const frame = document.querySelector('.frame');
+  const fit = () => {
+    const s = Math.min(innerWidth / 1080, innerHeight / 1350, 1);
+    frame.style.transform = `scale(${s})`;
+  };
+  addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>

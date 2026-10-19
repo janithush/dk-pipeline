@@ -1,0 +1,29 @@
+/* ==========================================================================
+   DIRECT KITCHENS · fonts.css — self-hosted font faces
+   Font binaries live in assets/fonts/ with these exact names.
+   All url() paths resolve relative to THIS file (shared/fonts.css).
+   Headless-render safe: no CDN, font-display: swap so text never blocks.
+   ========================================================================== */
+
+/* Archivo — variable (wght 100–900 · wdth 62–125), normal style only. */
+@font-face {
+  font-family: "Archivo";
+  src: url("../../assets/fonts/Archivo-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;   /* REQUIRED — without this range, font-stretch in usage no-ops */
+  font-style: normal;
+  font-display: swap;        /* headless-safe: visible text immediately */
+}
+
+/* Cormorant Garamond — italic only. Every serif accent in the system is italic. */
+@font-face {
+  font-family: "Cormorant Garamond";
+  src: url("../../assets/fonts/CormorantGaramond-Italic.woff2") format("woff2");
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;        /* headless-safe: visible text immediately */
+}
+
+/* Intake rule: add a @font-face block here ONLY when the matching .woff2
+   exists in assets/fonts/. Declare weight/stretch ranges matching the file;
+   omit unused styles (e.g. upright/italic variants not present on disk). */

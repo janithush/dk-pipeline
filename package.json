@@ -1,0 +1,21 @@
+{
+  "name": "dk-pipeline",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "lint": "hyperframes lint",
+    "lint:verbose": "hyperframes lint --lint-verbose",
+    "validate": "hyperframes validate",
+    "render:daily": "node scripts/render-batch.js",
+    "render:post": "hyperframes render --composition",
+    "snapshot": "hyperframes snapshot",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "hyperframes": "^0.8.163"
+  }
+}

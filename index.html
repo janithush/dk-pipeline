@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1350" />
+  <title>DK — Daily Composition Router</title>
+  <link rel="stylesheet" href="shared/token.css">
+  <link rel="stylesheet" href="shared/shared.css">
+</head>
+<body>
+  <!-- Lightweight router / manifest.
+       One data-composition-src entry per post in today's batch.
+       All creative markup lives in compositions/YYYY-MM-DD/.
+       This file never accumulates creative HTML. -->
+  <div id="root"
+    data-composition-id="router"
+    data-duration="0.033"
+    data-no-timeline
+    data-width="1080"
+    data-height="1350">
+    <!-- Today's compositions (rewritten each production day) -->
+    <div id="post-01" data-composition-id="dk-01-timber-touch" data-composition-src="compositions/2026-10-19/dk-01-timber-touch.html"></div>
+    <div id="post-02" data-composition-id="dk-02-slow-mornings" data-composition-src="compositions/2026-10-19/dk-02-slow-mornings.html"></div>
+  </div>
+</body>
+</html>

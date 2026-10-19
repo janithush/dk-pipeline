@@ -1,0 +1,214 @@
+/* ==========================================================================
+   DIRECT KITCHENS · shared.css — base layer, primitives & utilities
+   ========================================================================== */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+
+@import url("./brand.css");
+
+body {
+  font-family: var(--sans);
+  color: var(--ink);
+  background:
+    radial-gradient(1100px 700px at 18% -8%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(900px 700px at 110% 110%, rgba(156,111,65,.12), transparent 55%),
+    var(--bone-200);
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+#root { display: contents; }
+
+/* ---- frame canvas --------------------------------------------------------- */
+.frame {
+  position: relative;
+  width:  var(--canvas-w);
+  height: var(--canvas-h);
+  background: var(--paper);
+  overflow: hidden;
+  box-shadow: 0 40px 90px rgba(42,33,26,.25);
+  transform-origin: center;
+}
+
+/* ---- photo containers ------------------------------------------------------ */
+img { display: block; }
+
+.photo {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(155deg, var(--bone-200) 0%, var(--stone-300) 55%, var(--oak-200) 100%);
+}
+.photo > img { width: 100%; height: 100%; object-fit: cover; }
+
+.photo--inset {
+  position: absolute;
+  border-radius: var(--r-frame);
+  box-shadow: var(--shadow-panel);
+}
+
+.photo-wrap { position: relative; }
+.keyline {
+  position: absolute;
+  inset: -14px;
+  border: var(--hair) solid var(--brass-400);
+  border-radius: calc(var(--r-panel) + 14px);
+  opacity: .65;
+  pointer-events: none;
+}
+
+.scrim { position: absolute; inset: 0; pointer-events: none; }
+.scrim--bottom { background: var(--scrim-up); }
+.scrim--top    { background: var(--scrim-down); }
+
+/* ---- type roles ------------------------------------------------------------ */
+.t-eyebrow {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-eyebrow);
+  font-weight: 640;
+  letter-spacing: var(--track-eyebrow);
+  text-transform: uppercase;
+}
+.t-eyebrow .tick { width: 44px; height: 2px; background: currentColor; opacity: .9; flex: none; }
+
+.t-display {
+  font-weight: 740;
+  font-stretch: 88%;               /* Archivo wdth axis */
+  letter-spacing: var(--track-tight);
+  line-height: 1.02;
+}
+.t-display--caps {
+  font-weight: 830;
+  font-stretch: 76%;
+  text-transform: uppercase;
+  letter-spacing: .015em;
+  line-height: var(--leading-display);
+}
+.serif-accent {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-stretch: 100%;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: .9;
+  font-size: 1.08em;
+}
+
+.t-serif {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--fs-lead);
+  line-height: 1.3;
+}
+
+.t-micro {
+  font-size: var(--fs-micro);
+  font-weight: 560;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+
+/* ---- rules, marks & ornaments ---------------------------------------------- */
+.rule-h { height: var(--hair); background: var(--line-soft); }
+.rule-h--light { background: var(--line-light); }
+.rule-v { width: var(--hair); background: var(--line-light); }
+
+.plus {
+  position: absolute;
+  width: 26px; height: 26px;
+  background:
+    linear-gradient(currentColor, currentColor) center / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 2px 100% no-repeat;
+  color: var(--line-light);
+  pointer-events: none;
+}
+.plus--ink { color: rgba(42,33,26,.38); }
+
+.diamond {
+  display: inline-block;
+  width: 11px; height: 11px;
+  background: var(--brass-400);
+  transform: rotate(45deg);
+  flex: none;
+}
+
+/* ---- frosted annotation chip ------------------------------------------------ */
+.chip {
+  position: absolute;
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 13px 22px;
+  border-radius: var(--r-chip);
+  background: rgba(30,23,17,.32);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: var(--hair) solid rgba(253,250,244,.32);
+  color: var(--on-photo);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow-chip);
+  white-space: nowrap;
+}
+.chip .dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--brass-300);
+  box-shadow: 0 0 0 5px rgba(224,195,148,.22);
+  flex: none;
+}
+.leader {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(253,250,244,0), rgba(253,250,244,.85));
+  pointer-events: none;
+}
+
+/* ---- wordmark ---------------------------------------------------------------- */
+.brand {
+  display: inline-flex; align-items: center; gap: 14px;
+  font-size: 21px; font-weight: 700;
+  letter-spacing: .3em; text-transform: uppercase;
+}
+.brand .diamond { width: 10px; height: 10px; }
+.brand-tag {
+  font-size: var(--fs-micro);
+  font-weight: 520;
+  letter-spacing: .42em;
+  text-transform: uppercase;
+  opacity: .62;
+}
+
+/* ---- ghost numeral ------------------------------------------------------------ */
+.ghost {
+  position: absolute;
+  font-weight: 850; font-stretch: 78%;
+  line-height: .8; letter-spacing: .02em;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(156,111,65,.3);
+  user-select: none; pointer-events: none;
+}
+@supports not (-webkit-text-stroke: 2px black) {
+  .ghost { color: rgba(156,111,65,.14); }
+}
+
+/* ---- entrance motion ------------------------------------------------------------ */
+@keyframes dk-rise {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+.rise {
+  animation: dk-rise var(--dur-2) var(--ease-out) both;
+  animation-delay: calc(var(--d, 0) * 130ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .rise { animation: none; }
+}
+.t-display       { font-variation-settings: "wdth" 88; }
+.t-display--caps { font-variation-settings: "wdth" 76; }
+.ghost           { font-variation-settings: "wdth" 78; }
+

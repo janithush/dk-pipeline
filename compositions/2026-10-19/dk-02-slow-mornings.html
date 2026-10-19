@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DK № 02 — Where Slow Mornings Begin</title>
+<link rel="stylesheet" href="../../shared/token.css">
+<link rel="stylesheet" href="../../shared/shared.css">
+<link rel="stylesheet" href="./dk-02-slow-mornings.css">
+</head>
+<body>
+
+<main id="root" data-composition-id="dk-02-slow-mornings" data-duration="0.033" data-no-timeline data-width="1080" data-height="1350">
+  <article class="frame frame--dk02" aria-label="Direct Kitchens — post 02">
+
+    <!-- Full-bleed background photo -->
+    <figure class="photo photo--full">
+      <img src="../../assets/raw/dk-raw-02-u-shape.jpg" alt="U-shaped modern kitchen">
+      <span class="scrim scrim--top" aria-hidden="true"></span>
+      <span class="scrim scrim--bottom" aria-hidden="true"></span>
+    </figure>
+
+    <!-- Top Brand Bar -->
+    <header class="bar-top">
+      <p class="brand rise"><span class="diamond"></span>Direct&nbsp;Kitchens</p>
+      <img src="../../assets/logos/logo.png" alt="Direct Kitchens" class="brand-logo rise">
+      
+    </header>
+
+    <!-- Espresso Chip on Photo -->
+    <div class="chip chip--espresso rise"><span class="dot"></span>espresso nook</div>
+
+    <!-- Bottom Editorial Copy -->
+    <section class="copy">
+      <p class="t-eyebrow rise"><span class="tick"></span>Soft Greige · Full-Height Stone</p>
+      <h1 class="t-display headline rise">
+        Where slow<br><em class="serif-accent">mornings begin.</em>
+      </h1>
+      
+      <span class="rule-h--light copy-rule rise" aria-hidden="true"></span>
+     
+    </section>
+
+  </article>
+</main>
+
+<script>
+  const frame = document.querySelector('.frame');
+  const fit = () => {
+    const s = Math.min(innerWidth / 1080, innerHeight / 1350, 1);
+    frame.style.transform = `scale(${s})`;
+  };
+  window.addEventListener('resize', fit);
+  fit();
+</script>
+</body>
+</html>

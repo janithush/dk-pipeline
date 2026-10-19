@@ -1,0 +1,44 @@
+/* ==========================================================================
+   DK · Composition 01 — “Made to be lived in.”
+   RAW 01 · warm oak + white · human moment
+   Voice of Reference B → full-bleed photo, bottom-left copy, hairline frame
+   ========================================================================== */
+
+.photo-hero { inset: var(--pad-frame); }
+.photo-hero img { object-position: 63% 50%; }  /* keeps the human + brass tap in frame */
+
+/* vertical hairline, echoing the reference's left frame line */
+.edge-line { position: absolute; left: 78px; top: 196px; height: 380px; opacity: .8; }
+.corner-plus { right: 84px; top: 176px; }
+
+/* top bar */
+.bar-top {
+  position: absolute; top: 84px; left: 76px; right: 76px;
+  display: flex; align-items: center; justify-content: space-between;
+  color: var(--on-photo);
+}
+.bar-top .diamond { background: var(--brass-300); }
+.index  { opacity: .85; }
+.index .no { color: var(--brass-300); font-weight: 700; }
+
+/* copy block */
+.copy {
+  position: absolute; left: 76px; right: 76px; bottom: 80px;
+  max-width: 820px;
+  display: flex; flex-direction: column; align-items: flex-start;
+  gap: 26px;
+  color: var(--on-photo);
+}
+.copy .t-eyebrow { color: var(--brass-300); }
+
+.headline { font-size: var(--fs-hero); }
+.headline .serif-accent { color: var(--oak-200); padding-right: .08em; }
+
+.tagline   { font-size: 30px; opacity: .92; }
+.copy-rule { width: 300px; opacity: .85; margin: 2px 0; }
+.materials { opacity: .75; font-size: 17px; letter-spacing: .26em; }
+
+/* annotation chips — tuned for the default crop; nudge to taste */
+.chip--oak   { left: 430px; top: 250px; }
+.leader--oak { left: 456px; top: 298px; height: 80px; }
+.chip--brass { left: 280px; top: 410px; }
