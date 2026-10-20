@@ -13,19 +13,31 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { resolveBatchDate, logResolved } = require('./lib/batch-date');
 
 const ROOT = process.cwd();
-const batchDate = process.argv[2] || new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+// Local calendar day by default; --date flag, positional arg, or DK_BATCH_DATE
+// env override it (see lib/batch-date.js).
+const { date: batchDate, basis } = resolveBatchDate(process.argv.slice(2));
+logResolved({ date: batchDate, basis }, 'Render batch');
 
 const manifestPath = path.join(ROOT, 'compositions', batchDate, 'batch-manifest.json');
 const renderDir = path.join(ROOT, 'renders', batchDate);
 
 if (!fs.existsSync(manifestPath)) {
+  const others = fs.existsSync(path.join(ROOT, 'compositions'))
+    ? fs.readdirSync(path.join(ROOT, 'compositions')).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
+    : [];
   console.error(`✗ batch manifest not found: ${manifestPath}`);
+  if (others.length) console.error(`   (available batch folders: ${others.join(', ')})`);
   process.exit(1);
 }
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+if (manifest.batch !== batchDate) {
+  console.error(`✗ manifest.batch "${manifest.batch}" ≠ resolved batch date "${batchDate}" — refusing to render.`);
+  process.exit(1);
+}
 fs.mkdirSync(renderDir, { recursive: true });
 
 // ── BATCH-LEVEL PRE-FLIGHT GATE ─────────────────────────────────────────

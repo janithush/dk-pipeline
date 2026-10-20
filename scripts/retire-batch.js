@@ -19,7 +19,7 @@
 // shared/, or any composition of the target date.
 //
 // Usage:
-//   node scripts/retire-batch.js                    # target = today (UTC, YYYY-MM-DD)
+//   node scripts/retire-batch.js                    # target = LOCAL today (YYYY-MM-DD)
 //   node scripts/retire-batch.js --date 2026-10-20  # explicit target date to KEEP
 
 const fs = require('fs');
@@ -32,19 +32,12 @@ const INDEX_PATH = path.join(ROOT, 'index.html');
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 // ── TARGET DATE ─────────────────────────────────────────────────────────
-const argv = process.argv.slice(2);
-let target = new Date().toISOString().slice(0, 10); // UTC, mirrors render-batch.js
-const dateFlag = argv.indexOf('--date');
-if (dateFlag !== -1) {
-  const value = argv[dateFlag + 1];
-  if (!value || !DATE_RE.test(value)) {
-    console.error('✗ --date expects a YYYY-MM-DD value (e.g. --date 2026-10-20)');
-    process.exit(1);
-  }
-  target = value;
-}
+// Local calendar day by default (see lib/batch-date.js). The --date flag is
+// an OPTIONAL override for targeting a specific batch — never required.
+const { resolveBatchDate, logResolved } = require('./lib/batch-date');
+const { date: target, basis } = resolveBatchDate(process.argv.slice(2));
 
-console.log(`◆ Batch retirement · target (keep) date: ${target}`);
+logResolved({ date: target, basis }, 'Batch retirement');
 
 // ── 1. RETIRE STALE COMPOSITION FOLDERS ─────────────────────────────────
 // Merge-aware move: never overwrites anything already in the archive.

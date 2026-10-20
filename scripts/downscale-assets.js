@@ -285,6 +285,16 @@ for (const name of sources) {
   }
 }
 
+// P6 (2026-10-21 audit): persist the slug map so later steps (manifest build,
+// runbook review, incident forensics) can resolve safeName -> original name
+// without re-running the optimizer. Written once after the full scan so the
+// file always reflects the COMPLETE mapping for this run.
+if (seenSlugs.size > 0) {
+  const mapPath = path.join(OUT_DIR, 'slug-map.json');
+  fs.writeFileSync(mapPath, JSON.stringify(Object.fromEntries(seenSlugs), null, 2));
+  console.log(`\n◆ slug map persisted: ${path.relative(ROOT, mapPath)} (${seenSlugs.size} entr${seenSlugs.size === 1 ? 'y' : 'ies'})`);
+}
+
 console.log(`\n◆ Complete: ${optimized} downscaled, ${linked} linked/copied, ${unchanged} unchanged, ${failures.length} failed`);
 console.log('  All composition work must now source photos from assets/raw/optimized/.');
 

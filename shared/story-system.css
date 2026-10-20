@@ -205,3 +205,16 @@ body {
   text-transform: uppercase;
   color: var(--brass, #c6a77d);
 }
+
+/* ───────────────────────────────────────────────────────────────────────
+   INK-ON-LIGHT COPY TREATMENT (additive, 2026-10-21)
+   For bright photography surfaces (white stone, beadboard) where the
+   white/bone copy stack cannot clear WCAG AA. Opt-in via .copy--ink on the
+   <section class="copy"> element. Geometry, positioning, and every existing
+   class above remain byte-functional — these rules only recolor + add a
+   light-halo text-shadow so dark ink stays legible over highlights.
+   ─────────────────────────────────────────────────────────────────────── */
+.copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: 0 1px 8px rgba(255,255,255,.6), 0 2px 16px rgba(255,255,255,.45); }
+.copy--ink .t-display { color: var(--ink); text-shadow: 0 2px 12px rgba(255,255,255,.55), 0 4px 24px rgba(255,255,255,.4); }
+.copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: 0 1px 8px rgba(255,255,255,.7); }
+.copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
