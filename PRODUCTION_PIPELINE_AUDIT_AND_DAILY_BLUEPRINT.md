@@ -318,7 +318,7 @@ npx hyperframes snapshot --composition dk-post-01 --at 0.0 --no-end \
 4. Only then `npx hyperframes render ... --strict`.
 5. If render fails, inspect `.hyperframes/` + render diagnostics, fix, re-lint, re-render.
 
-**Static output note:** compositions are static (`data-no-timeline`, single frame), so `--format png-sequence` writes a single-frame directory; pick `frame-00000.png` as the creative, or use `snapshot --at 0.0 --no-end` for a single PNG. Recommend `--resolution portrait-4k` only if client needs 4K; default composition resolution (1080×1350) is the standard marketing post size.
+**Static output note:** compositions are static (`data-no-timeline`, single frame), so `--format png-sequence` writes a single-frame directory; the creative is `frame_000001.png` (underscore, 6-digit), or use `snapshot --at 0.0 --no-end` for a single PNG. Recommend `--resolution portrait-4k` only if the client needs 4K; the default composition resolution is Story 1080×1920 (§F.2).
 
 ---
 
@@ -334,28 +334,33 @@ Copy and paste this entire block into OpenCode at the start of each production d
 You are acting as my Creative Technologist / Frontend Architect for today's daily production run.
 
 ## CONTEXT (read-only references — do not modify)
-- Assets live under assets/: raw photos in assets/raw/ (use the web-optimized working copies in assets/raw/optimized/ for ALL composition work — regenerate them any time with `npm run optimize:assets`), client references in assets/reference posts, brand marks in assets/logos/, fonts in assets/fonts/.
-- Brand system lives in shared/ (token.css, shared.css, brand.css, fonts.css) — edit only if a new brand token/font is genuinely required.
+- Assets live under assets/: raw photos in assets/raw/ (use the web-optimized working copies in assets/raw/optimized/ for ALL composition work — regenerate them any time with `npm run optimize:assets`; the optimizer auto-slugs unsafe filenames and logs the mapping), client references in assets/references/, brand marks in assets/logos/, fonts in assets/fonts/.
+- Brand system lives in shared/ (token.css, shared.css, brand.css, fonts.css) — edit only if a new brand token/font is genuinely required. Engine/token edits (story-system.css, token.css) are DESIGN-SPRINT actions documented in §F/§G — never performed during a daily run.
 - Compositions for today go in compositions/YYYY-MM-DD/; exports go in renders/YYYY-MM-DD/.
 - index.html is a lightweight router/manifest only — never add creative markup to it.
 
+## STEP 0 — RETIRE STALE BATCHES (automated, run FIRST)
+1. Run `npm run retire:batch` (scripts/retire-batch.js). It moves every `compositions/YYYY-MM-DD/` folder that is not today's date to `archive/stale-drafts/YYYY-MM-DD/` (merge-safe: existing archive files are never overwritten) and strips stale `data-composition-src` lines for retired dates from index.html. The root element (class="hyperframes-root" data-width="1080" data-height="1920") is never touched. Renders/ and existing archive content are never touched.
+2. This MUST run before lint — stale batches referencing swapped-out assets are the #1 cause of an un-passable preflight gate (see §F.3).
+
 ## STEP 1 — INGEST INPUTS (INSPECT-FIRST — MANDATORY)
 1. FIRST, before reading, planning, or writing ANY copy: run `npm run optimize:assets`.
-   - This scans `assets/raw/` and produces web-optimized copies in `assets/raw/optimized/` (max dimension 2048px, JPEG quality 85%, target under 2MB) using the local `ffmpeg` binary. Files already under the limits are symlinked/copied through unchanged. Raw originals are NEVER modified.
+   - This scans `assets/raw/` and produces web-optimized copies in `assets/raw/optimized/` (max dimension 2048px, JPEG quality ~85%, target under 2MB) using the local `ffmpeg` binary. Filenames containing spaces or URL-unsafe characters are auto-slugged to `^[A-Za-z0-9._-]+\.(jpg|jpeg|png)$` and the mapping is logged — reference the SLUGGED name in compositions. Files already under the limits are symlinked/copied through unchanged. Raw originals are NEVER modified.
    - This eliminates the 20MB ingestion limit — all downstream steps MUST reference `assets/raw/optimized/`, never the raw originals.
-2. List the contents of `assets/raw/optimized/`, `assets/reference posts`, `assets/logos/`, `assets/fonts/`.
+2. List the contents of `assets/raw/optimized/`, `assets/references/`, `assets/logos/`, `assets/fonts/`.
 3. **HARD RULE: NEVER generate copy, themes, or layouts blindly from filenames.** A filename (`1.jpg`, `2.jpg`) is not evidence of content. Every design decision must be grounded in an actual pixel inspection performed by you — no guessing, no assumptions, no inferring from file size or aspect ratio.
-4. You MUST explicitly inspect EACH image in `assets/raw/optimized/` using your own vision capabilities before proceeding. For every photo, extract and log:
-   - **Room/space type** (e.g., Kitchen, Laundry, Walk-in Pantry, Bar)
-   - **Hero materials** (e.g., Calacatta marble, fluted oak, brass hardware)
-   - **Specific appliances/fittings** (e.g., stacked ASKO appliances, gooseneck tap)
-   - **Color accents and lighting conditions** (e.g., warm under-cabinet glow, cool north light, matte black vs. brushed brass)
+4. You MUST explicitly inspect EACH image in `assets/raw/optimized/` using your own vision capabilities before proceeding. For every photo, extract and log ONLY what you can actually SEE — the field list below is FORMAT guidance, not an inventory of assets; never assume a room, material, or appliance that is not visibly in the frame:
+   - **Room/space type** (describe the space YOU see in ⟨photo N⟩)
+   - **Hero materials** (visible surfaces/finishes only, named exactly as observed)
+   - **Specific appliances/fittings** (only if visibly badged or unmistakable)
+   - **Color accents and lighting conditions** (undertone, light direction, accent colors as seen)
    - Log this as a per-image table in your response. This table is the single source of truth for all downstream copy and layout.
 5. Ask me to confirm which optimized photo(s) and which reference post(s) to use for today's first batch of posts, presenting your inspection table as the basis for that choice.
 6. Do not render or write any composition until I confirm the inputs.
 
 ## STEP 2 — TYPOGRAPHY PIPELINE (font detection -> local .woff2)
 1. Look at the reference post I point to. Identify the typography style/category (e.g., geometric sans, humanist sans, serif, display) and the mood it conveys.
+   FIRST check `assets/fonts/` + `shared/fonts.css`: if an existing WIRED family already matches that category (today: Archivo variable 100–900 → `--sans`; Cormorant Garamond Italic → `--serif`), USE IT, output "no drop required", and skip steps 3–4 (full decision tree: §F.5).
 2. Suggest the closest Google Font for that style and explain why it matches the reference. You MUST explicitly output:
    a. The exact Google Font family name and weights needed.
    b. The exact target filename I should save it as inside assets/fonts/ (e.g., Save as: assets/fonts/PlayfairDisplay-Bold.woff2).
@@ -372,10 +377,10 @@ Before writing code, discuss with me:
 - Layout: photo placement, copy block position, brand bar position, safe areas.
 - Copy placement and actual headline/eyebrow/body text for each post.
 - Brand logo: which mark (SVG preferred). Check whether assets/logos/logo.svg exists; if it does not, cleanly fall back to assets/logos/logo.png. Logo sizing is centralized in shared/brand.css — never discuss per-post logo sizing.
-- Format/ratio: Ask me **"What format/ratio are we creating today for this post/batch?"**
-  - `Portrait (4:5 - 1080×1350)` [Default Feed]
-  - `Story (9:16 - 1080×1920)` [Vertical Story]
-  - `Square (1:1 - 1080×1080)` [Classic Feed]
+- Format/ratio: **DEFAULT = Story (9:16 - 1080×1920).** The engine (`shared/story-system.css`) hard-codes `.frame`/`.photo--full` to 1080×1920, so Story is the ONLY ratio that renders without a design-sprint engine change (§F.2). Only ask me **"What format/ratio are we creating today for this post/batch?"** if I previously requested another ratio; options are:
+  - `Story (9:16 - 1080×1920)` [DEFAULT — engine-supported]
+  - `Portrait (4:5 - 1080×1350)` [requires an approved engine change first]
+  - `Square (1:1 - 1080×1080)` [requires an approved engine change first]
 - **Dynamic Router Sync (mandatory):** Immediately after the ratio is confirmed, set the root canvas attributes of `index.html` to match the exact dimensions:
   - Portrait (4:5): `data-width="1080" data-height="1350"`
   - Story (9:16): `data-width="1080" data-height="1920"`
@@ -390,10 +395,10 @@ Before writing code, discuss with me:
 
   | Copy / design element | Verified source (Step 1 inspection log) | Photo |
   | --- | --- | --- |
-  | Headline: "Calacatta, floor to ceiling" | Hero material: Calacatta marble waterfall island + full-height splashback | 4.jpg |
-  | Callout: "Hand-milled fluted oak" | Material: fluted oak pantry joinery, vertical grain | 4.jpg |
-  | Eyebrow: "LAUNDRY" | Room type: Laundry (stacked ASKO, gooseneck tap) | 7.jpg |
-  | Scrim tint: warm amber | Lighting: warm under-cabinet glow, 2700K feel | 4.jpg |
+  | Headline: "⟨observed feature⟩, ⟨observed relationship⟩" | Verified element: ⟨exact phrase from the Step 1 log for this photo⟩ | ⟨photo N⟩ |
+  | Eyebrow: "⟨OBSERVED ROOM/ZONE⟩" | Room/space type: ⟨as logged for this photo⟩ | ⟨photo N⟩ |
+  | Scrim tint: ⟨charcoal or warm⟩ | Lighting undertone: ⟨as logged⟩ | ⟨photo N⟩ |
+  | CTA: "Visit our showroom" | Brand policy — fixed CTA library (§F.6) | — |
 
   - No headline, callout, eyebrow, or theme may reference a material, appliance, room, or fitting that is NOT in the Step 1 inspection log for the photo being used.
   - If the copy needs a detail you have not verified, GO BACK and re-inspect the image — do not invent it.
@@ -402,14 +407,15 @@ Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
 For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-post .css files are FORBIDDEN — see §F):
-- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width and data-height matching the selected ratio (Portrait 1080×1350 / Story 1080×1920 / Square 1080×1080). Default is Portrait (1080×1350). **Composition root dimensions must exactly match the index.html root canvas for the current batch ratio.**
+- Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width="1080" data-height="1920" (Story 9:16 — the default and only engine-supported ratio; see §F.2). **Composition root dimensions must exactly match the index.html root canvas.**
 - Imports: ../../shared/story-system.css ONLY (it @imports token.css + brand.css internally). Do NOT link shared.css, token.css, or any per-post stylesheet.
 - Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps it to a 40×40px circle anchored at top 140px / left 80px. **No per-post logo CSS.**
+- **Brand contrast rule:** if the photo's top-left region is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
 - **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
 - Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of the three variants (`copy--bottom-left`, `copy--bottom-right`, `copy--centered`). The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
 - Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
-- Add the post to compositions/YYYY-MM-DD/batch-manifest.json (ordered list).
+- Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`.
 - Do not touch index.html except to add/remove a data-composition-src line for today's date.
 
 ## STEP 5 — PRE-FLIGHT GATE (mandatory before rendering)
@@ -419,13 +425,14 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 4. Re-run npx hyperframes lint until the report shows: 0 error(s), 0 warning(s).
 5. Run the comprehensive gate: npx hyperframes check
    - This runs lint + runtime + layout + motion + WCAG contrast in one browser session.
-   - Verify: Lint 0 errors/0 warnings, Runtime 0 errors/0 warnings, Layout 0 issues, Motion 0 errors/0 warnings, Contrast passes WCAG AA.
+   - Verify: Lint 0 errors/0 warnings, Runtime 0 errors/0 warnings, Layout 0 errors/0 warnings (info-severity `canvas_overflow` findings from the router stacking posts 2..N inside the 1920 root are STRUCTURAL and accepted — see §F.4), Motion 0 errors/0 warnings, Contrast passes WCAG AA.
+   - KNOWN BLIND SPOT: check's contrast sampler only measures story-01 inside the router canvas — posts 2..N are NOT contrast-verified. Apply the §F.2 bar-top--ink rule by inspection, not by gate luck.
    - Report is saved to .hyperframes/artifacts/checks/<uuid>.json
 6. (Deprecated) Do not use `npx hyperframes validate` — it is deprecated in favor of `check`.
 7. Show me the clean lint and check reports. Do not proceed to render until both gates are green.
 
 ## STEP 5.5 — BATCH PRE-FLIGHT ENFORCEMENT (mandatory, automated)
-- `scripts/render-batch.js` executes `npm run preflight` (lint + check) prior to rendering any composition.
+- `scripts/render-batch.js` executes `npm run preflight` (lint + check) prior to rendering any composition. **Never run `npm run preflight` manually when using `npm run render:daily`** — one batch = one check session (§F.4).
 - If the preflight exit code !== 0, the batch aborts immediately with a clear error report. No composition renders until the gate is green.
 
 ## STEP 6 — FINAL RENDER (confirmation required)
@@ -434,12 +441,13 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 3. On confirmation, run the batch render (recommended):
    npx hyperframes render --composition compositions/YYYY-MM-DD/<slug>.html --format png-sequence --output renders/YYYY-MM-DD/<slug> --strict
    (one command per post, or npm run render:daily via scripts/render-batch.js)
-4. For each post, verify the static PNG was written (frame-00000.png from png-sequence, or use snapshot --at 0.0 --no-end for a single PNG).
+4. For each post, verify the static PNG was written (the renderer emits `frame_000001.png` — underscore, 6-digit — inside the output folder; or use snapshot --at 0.0 --no-end for a single PNG).
 5. Report the final render manifest: slug → output path → file size → pass/fail.
 6. Do not move anything to archive/ until I confirm the exports are approved.
 
 ## EXIT CRITERIA FOR TODAY
-- `npm run optimize:assets` was run first; every photo used came from `assets/raw/optimized/` (raw originals untouched)
+- `npm run retire:batch` ran first; stale composition batches archived and router lines cleaned (§F.3)
+- `npm run optimize:assets` was run first; every photo used came from `assets/raw/optimized/` under its SLUGGED name (raw originals untouched)
 - Every post has a Step 1 vision inspection log and a confirmed Step 3 grounding table
 - lint: 0 errors / 0 warnings
 - All confirmed posts rendered as static PNG under renders/YYYY-MM-DD/
@@ -492,11 +500,104 @@ After these three steps, the workspace has a green lint gate, a font intake cont
 
 ---
 
-## F. THE MASTER STORY ENGINE (SINGLE IMMUTABLE LAYOUT SYSTEM — established 2026-10-20)
+## F. ENGINE CONTRACT & DAILY ZERO-SHOT RUNBOOK (authoritative)
+
+Established 2026-10-20 after the daily-run forensic post-mortem. This section is
+carried WITH the daily operator prompt (§D) — every "§F" reference inside §D
+resolves here. Layout/geometry reference for the engine lives in §G.
+
+### F.1 Asset truth (read this instead of inferring)
+- Folders that actually exist: `assets/raw/`, `assets/raw/optimized/`, `assets/references/`
+  (NOT "reference posts"), `assets/logos/`, `assets/fonts/`.
+- Asset naming: `^[A-Za-z0-9._-]+\.(jpg|jpeg|png)$`. No spaces. `npm run optimize:assets`
+  auto-slugs unsafe source names for the OPTIMIZED COPY (raw originals never renamed)
+  and prints the mapping — reference the slugged name in compositions.
+- `npm run optimize:assets` runs FIRST, always. All compositions source
+  `assets/raw/optimized/` only. Re-run it any time raws change.
+- The daily photo inventory is whatever `assets/raw/optimized/` contains after step 1 —
+  NOTHING else. Example tables in this document use `⟨photo N⟩` placeholders; they do
+  not describe real assets. Copy referencing a room/material/appliance not present in the
+  Step-1 vision log for THAT photo is forbidden and will be rejected at grounding sign-off.
+
+### F.2 Engine capability matrix (HyperFrames v0.8.163, this repo)
+- Ratios: ONLY Story 9:16 (1080×1920) works without editing shared/story-system.css.
+  `.frame` and `.photo--full` are hard-coded 1080×1920. DEFAULT RATIO = STORY; do not ask.
+  Portrait/Square require a pre-approved engine change (root-filling rules), never per-post CSS.
+- Composition imports: `../../shared/story-system.css` ONLY (it @imports token.css, fonts.css,
+  brand.css). No per-post CSS. No inline styles except data-* timing attributes.
+- Classes: `.frame`; `.photo.photo--full` + `.scrim.scrim--top|bottom`; scrim themes
+  `.scrim--charcoal` (cool/neutral undertone photos) or `.scrim--warm` (amber/warm undertone);
+  `.bar-top` (locked top:140/left:80, logo clamp 40×40) always = `<img class="dk-brand-logo">`
+  + `<p class="brand">Direct Kitchens</p>`; `.copy.copy--bottom-left|--bottom-right|--centered`
+  (pinned bottom:220px); `.t-eyebrow`, `.t-display` (+`<span class="serif-accent">` italic),
+  `.cta`.
+- BRAND-ON-PHOTO RULE: if the photo's top-left region is bright (white/cream), the header MUST
+  be `class="bar-top bar-top--ink"` (dark ink variant `var(--ink, #1a1a1a)`; WCAG AA ≥4.5:1).
+  White brand text is for dark-topped photos only. This is not optional — `check` fails otherwise.
+- Hairline budget = 0: `.rule-v/.rule-h/.plus/.diamond/.tick` never appear.
+- Token aliases: `.cta` renders via `--brass` and `.t-eyebrow` via `--bone`; both are formally
+  declared in token.css (`--brass: var(--brass-400, #c6a77d)`, `--bone: var(--bone-50, #f5f2eb)`).
+  `.t-display` letter-spacing uses `--track-tight` (−0.02em). No inline fallback drift.
+
+### F.3 Batch lifecycle (prevents stale-lint lockouts)
+- STEP 0 of every daily run: `npm run retire:batch` (scripts/retire-batch.js). It moves any
+  `compositions/YYYY-MM-DD/` folder for a date ≠ today to `archive/stale-drafts/YYYY-MM-DD/`
+  (merge-safe; existing archive files never overwritten) and strips stale router lines from
+  `index.html`. `renders/` and existing archive content are never touched. Optional
+  `--date YYYY-MM-DD` overrides the keep-date.
+- Lint scope = `compositions/**` + `index.html`; `archive/` is out of scope.
+- `index.html`: root keeps `class="hyperframes-root" data-width="1080" data-height="1920"`
+  and carries ONLY today's `data-composition-src` lines (add today's, remove prior dates').
+- `compositions/YYYY-MM-DD/batch-manifest.json` schema (render-batch.js contract):
+  `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`
+- Renderer emits `frame_000001.png` (underscore, 6-digit) — verify THAT name, not frame-00000.png.
+
+### F.4 Gate semantics (what "green" means)
+- `npx hyperframes lint`: 0 errors, 0 warnings.
+- `npx hyperframes check`: 0 lint/runtime/motion errors; contrast ≥ WCAG AA;
+  layout info-severity `canvas_overflow` findings caused by the router stacking posts 2..N
+  inside the 1920 root are STRUCTURAL and accepted — they are not gate failures.
+- KNOWN BLIND SPOT: check contrast-samples only the first composition in the router. Posts 2..N
+  are not contrast-verified — which is why F.2's bar-top--ink rule must be applied by
+  inspection, not by gate luck.
+- NEVER run `npm run preflight` manually when using `npm run render:daily` — the batch script
+  executes it internally. One batch = one check session. `validate` is deprecated.
+
+### F.5 Typography decision tree (zero-shot)
+1. Identify the reference's type category (this repo's references 1–5 = bold neo-grotesque
+   sans; ref 6 = high-contrast display serif).
+2. If the closest family is ALREADY in `assets/fonts/` + wired in `shared/fonts.css` (current:
+   Archivo variable 100–900/62–125 → `--sans`; Cormorant Garamond Italic → `--serif`), USE IT
+   and output "no drop required". Do not request a font drop.
+3. Only if no local family matches: name the Google Font + weights + exact target filename
+   (`<Family>-<Style>.woff2`), request the drop, then autonomously append the `@font-face`
+   (font-display: swap, weight/stretch range) and update `--sans`/`--serif` in token.css.
+4. No CDN font references anywhere, ever.
+
+### F.6 Copy contract
+- Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line,
+  ≤1 serif-accent italic word), 1 CTA from the fixed library: "Visit our showroom" |
+  "Book a private design consultation".
+- BANNED: prices, discounts, "%", "offer", "deal", "free", "early bird", T&Cs; any material,
+  brand, appliance, or fitting NOT in that photo's Step-1 vision log ("hand-milled",
+  "Calacatta", "hand-laid", appliance brands without visible badging = banned).
+- Tone: restrained editorial, monochrome-first; no exclamation marks; no second-person hype.
+- Alt text and `aria-label` must restate only verified inspection-log facts.
+
+### F.7 Single-round confirmation protocol
+Ask ONE bundled question round at Step 3 with these defaults pre-selected:
+[photos] all optimized ∣ [reference anchor] user's pick ∣ [ratio] Story 9:16 ∣ [batch size]
+min(photos, 2) ∣ [copy variant] bottom-left (alternate for visual rhythm in batches ≥2)
+∣ [scrim] per undertone rule F.2. Reserve a second round ONLY for gate exceptions, each with
+the forensic evidence attached.
+
+---
+
+## G. THE MASTER STORY ENGINE (LAYOUT REFERENCE — established 2026-10-20)
 
 Ad-hoc per-post CSS generation is **terminated**. All story compositions are now driven by one deterministic layout engine.
 
-### F.1 The single source of layout truth
+### G.1 The single source of layout truth
 
 | File | Role | Mutable? |
 |------|------|----------|
@@ -514,7 +615,7 @@ Ad-hoc per-post CSS generation is **terminated**. All story compositions are now
 
 The engine `@import`s `token.css` and `brand.css` internally, so a story HTML never links those directly either. Violations are a pre-flight failure.
 
-### F.2 Brand safety — logo clamp (LOCKED)
+### G.2 Brand safety — logo clamp (LOCKED)
 
 ```css
 .bar-top { top: 140px; left: 80px; display: flex; align-items: center; gap: 14px; z-index: 10; }
@@ -523,18 +624,28 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
                border-radius: 50%; object-fit: contain; flex-shrink: 0; }
 .bar-top .brand { font: 500 13px/1 var(--sans); letter-spacing: .28em;
                   text-transform: uppercase; color: #fff; opacity: .9; }
+/* Light-photo variant (WCAG AA over white/cream upper zones): */
+.bar-top--ink .brand { color: var(--ink, #1a1a1a) !important; }
 ```
 
 - **40×40px circular clamp**, anchored at `top: 140px / left: 80px` — inside the 9:16 top safe zone, never obstructing central photography.
-- Uniform header on every post (exact markup, no variants):
+- Header markup on every post (logo + wordmark pairing is invariant; only the wrapper class varies):
   ```html
+  <!-- dark-topped photo (default) -->
   <header class="bar-top">
     <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
     <p class="brand">Direct Kitchens</p>
   </header>
-  ```
 
-### F.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
+  <!-- bright-topped photo (white/cream ceiling or cabinetry behind the bar) -->
+  <header class="bar-top bar-top--ink">
+    <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+    <p class="brand">Direct Kitchens</p>
+  </header>
+  ```
+- **Selection rule (§F.2):** white brand text over a bright top-left region fails WCAG AA (measured 2.3–2.7:1) — use `bar-top--ink` whenever the region behind the bar is high-key. This is applied by INSPECTION: `check`'s contrast sampler only measures story-01 inside the router.
+
+### G.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
 
 ```css
 .copy { position: absolute; bottom: 220px; z-index: 10;
@@ -544,7 +655,7 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 - Every `.copy` block is pinned **220px** from the bottom edge — above the platform reply-bar/sticker band. Copy and CTA are **never clipped**.
 - Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`, `copy--centered` → `left: 80px; right: 80px`.
 
-### F.4 Controlled editorial dynamism — layout variants
+### G.4 Controlled editorial dynamism — layout variants
 
 Determinism at the system level, variety at the selection level. Each post picks **one** copy variant; the engine renders it identically every time.
 
@@ -554,38 +665,38 @@ Determinism at the system level, variety at the selection level. Each post picks
 | **B — Bottom-Right** | `.copy--bottom-right` | Right-aligned counter-balance | Visual mass sits left of frame |
 | **C — Centered** | `.copy--centered` | Symmetrical, architectural | Single strong central feature |
 
-### F.5 Controlled editorial dynamism — scrim themes (color-adaptive)
+### G.5 Controlled editorial dynamism — scrim themes (color-adaptive)
 
-Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` 380px, `.scrim--bottom` 680px) and differ only in undertone, so contrast behaviour is predictable.
+Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **520px**) and differ only in undertone, so contrast behaviour is predictable.
 
 | Theme | Class | Undertone | Apply to |
 |---|---|---|---|
-| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black (`rgba(10,10,12,·)`) | Marble, white stone, cool utilities, laundries, greige |
-| **Warm Amber** | `scrim--warm` | Warm brown-black (`rgba(20,14,8,·)`) | Spotted gum, warm joinery, amber lighting, timber floors |
+| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black (`rgba(0,0,0,·)` top / `rgba(12,12,14,·)` bottom) | Marble, white stone, cool utilities, greige |
+| **Warm Amber** | `scrim--warm` | Warm brown-black (`rgba(20,14,8,·)` top / `rgba(24,16,10,·)` bottom) | Spotted gum, warm joinery, amber lighting, timber floors |
 
-**Calibrated alpha ramps (locked, WCAG-AA-verified).** The top ramp holds ≥0.92 alpha through the 140px brand-bar anchor so the 13px wordmark clears AA over bright ceilings; the bottom ramp holds ≥0.96 through the 40% mark so the copy block (pinned at `bottom: 220px`) clears AA over pure-white stone. Values are piecewise-linear across the stated stops:
+**Actual alpha ramps (as implemented — intentionally AIRY, max alpha ≤0.70).** Scrims deliberately keep editorial luminance and material detail; they are NOT the primary legibility mechanism. Text legibility is carried by the engine's multi-layer `text-shadow` depth on `.t-eyebrow`/`.t-display`/`.cta`, and brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha. Ramps are linear across the stated stops:
 
 | Ramp | Stops (position % → alpha) |
 |---|---|
-| `.scrim--charcoal .scrim--top` | `0%→0.95, 50%→0.92, 75%→0.55, 100%→0` |
-| `.scrim--charcoal .scrim--bottom` | `0%→0.97, 40%→0.96, 60%→0.70, 85%→0.25, 100%→0` |
-| `.scrim--warm .scrim--top` | `0%→0.96, 50%→0.93, 75%→0.58, 100%→0` |
-| `.scrim--warm .scrim--bottom` | `0%→0.97, 40%→0.96, 60%→0.72, 85%→0.26, 100%→0` |
+| `.scrim--charcoal .scrim--top` (180deg) | `0%→0.40, 50%→0.15, 100%→0` |
+| `.scrim--charcoal .scrim--bottom` (0deg) | `0%→0.65, 50%→0.35, 100%→0` |
+| `.scrim--warm .scrim--top` (180deg) | `0%→0.45, 50%→0.18, 100%→0` |
+| `.scrim--warm .scrim--bottom` (0deg) | `0%→0.70, 50%→0.40, 100%→0` |
 
 **Edge-reset invariant.** The router also loads legacy `shared/shared.css`, whose `.scrim { inset: 0 }` pins `top: 0` on both scrim spans — CSS then honours `top` over `bottom` (over-constrained) and flips the bottom scrim to the top of the frame. `story-system.css` therefore resets `top: auto; bottom: auto` on `.scrim` and sets one explicit edge per variant. Do not remove these resets.
 
 **Verification.** `hyperframes check`'s contrast sampler only measures text inside the router canvas, which contains story-01 alone (posts 02–09 stack below it). Run `powershell -File scripts/verify-contrast.ps1` to composite every text band of all 9 stories against the engine's scrim ramps and confirm worst-case-pixel WCAG AA. Both gates must be green before any commit.
 
-### F.6 Editorial typography roles (engine-owned)
+### G.6 Editorial typography roles (engine-owned)
 
 | Role | Class | Spec |
 |---|---|---|
-| Eyebrow | `.t-eyebrow` | 13px / 600 / `--track-eyebrow` / uppercase / `--bone` at 90% |
-| Headline | `.t-display` | 52px / 700 / 1.08 / `-0.02em` / white |
+| Eyebrow | `.t-eyebrow` | 13px / 600 / `--track-eyebrow` / uppercase / `--bone` (token-declared) at 90% |
+| Headline | `.t-display` | 52px / 700 / 1.08 / `--track-tight` (−0.02em) / white |
 | Serif accent | `.serif-accent` (inside `.t-display`) | Cormorant Garamond italic 400 |
-| CTA | `.cta` | 12px / 600 / `.22em` / uppercase / `--brass` |
+| CTA | `.cta` | 12px / 600 / `.22em` / uppercase / `--brass` (token-declared) |
 
-### F.7 Dual CTA intent (brand copy policy)
+### G.7 Dual CTA intent (brand copy policy)
 
 Zero prices, zero discounts. Exactly two invitations, cycled by the batch manifest:
 
@@ -594,7 +705,7 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
 | **"Visit our showroom"** | Low-commitment foot-traffic invitation | Default closing line |
 | **"Book a private design consultation"** | High-touch, appointment-only, $50K+ showroom strategy | Alternate posts / hero pieces |
 
-### F.8 Composition contract (current, supersedes §C.3)
+### G.8 Composition contract (current, supersedes §C.3)
 
 ```html
 <!doctype html>

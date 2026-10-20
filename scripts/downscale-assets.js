@@ -95,6 +95,24 @@ function assertSafeOutput(dest, src) {
   }
 }
 
+// ── FILENAME SANITIZATION ───────────────────────────────────────────────
+// Optimized output names MUST satisfy ^[A-Za-z0-9._-]+\.(jpg|jpeg|png)$ —
+// spaces and other URL-unsafe characters break <img src> resolution in
+// headless rendering and lint asset tracing. Raw originals are never renamed;
+// only the OPTIMIZED COPY name is slugged, and the mapping is logged so
+// compositions reference the slugged name.
+const SAFE_NAME_RE = /^[A-Za-z0-9._-]+\.(jpe?g|png)$/i;
+
+function slugName(name) {
+  const ext = path.extname(name);
+  const base = path.basename(name, ext);
+  const slug = base
+    .replace(/[^A-Za-z0-9._-]+/g, '-')  // unsafe chars → single dash
+    .replace(/-{2,}/g, '-')              // collapse runs
+    .replace(/^-+|-+$/g, '');            // trim edge dashes
+  return `${slug}${ext}`;
+}
+
 function runFfmpeg(args, label) {
   try {
     execFileSync('ffmpeg', ['-y', '-v', 'error', ...args], { stdio: ['ignore', 'ignore', 'pipe'] });
@@ -211,10 +229,29 @@ let linked = 0;
 let optimized = 0;
 let unchanged = 0;
 const failures = [];
+const seenSlugs = new Map(); // safeName -> first source name (collision guard)
 
 for (const name of sources) {
   const src = path.join(SRC_DIR, name);
   try {
+    // Slug the OUTPUT name (never the raw original). Log the mapping so
+    // compositions reference the safe, regex-compliant name.
+    const safeName = slugName(name);
+    if (safeName !== name) {
+      if (seenSlugs.has(safeName)) {
+        throw new Error(`slug collision: "${name}" and "${seenSlugs.get(safeName)}" both map to "${safeName}"`);
+      }
+      console.log(`↷ [${name}] name contains unsafe characters — optimized copy will be written as: ${safeName}`);
+      // Deterministic supersede: drop the previous unslugged optimized copy
+      // (lives inside optimized/ only; raw original untouched).
+      const legacyDest = path.join(OUT_DIR, name);
+      if (SAFE_NAME_RE.test(name) === false && fs.existsSync(legacyDest)) {
+        fs.unlinkSync(legacyDest);
+        console.log(`  ↷ removed superseded unslugged optimized copy: ${name}`);
+      }
+    }
+    seenSlugs.set(safeName, name);
+
     const { size } = fs.statSync(src);
     const dims = probeDimensions(src);
     if (!dims) {
@@ -224,11 +261,11 @@ for (const name of sources) {
     }
 
     const exceeds = size > INGEST_MAX_BYTES || dims.width > MAX_DIM || dims.height > MAX_DIM;
-    const dest = path.join(OUT_DIR, name);
+    const dest = path.join(OUT_DIR, safeName);
 
     // Skip reprocessing when a compliant, current optimized copy already exists.
     if (!FORCE && !exceeds && fs.existsSync(dest)) {
-      console.log(`= [${name}] already optimized — up to date`);
+      console.log(`= [${safeName}] already optimized — up to date`);
       unchanged++;
       continue;
     }

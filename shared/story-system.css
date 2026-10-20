@@ -64,6 +64,15 @@ body {
   opacity: 0.9 !important;
 }
 
+/* LIGHT-PHOTO VARIANT — dark brand ink for bright-topped photography.
+   The white brand text fails WCAG AA (4.5:1) over white/cream upper zones;
+   the reference posts themselves ground the mark dark-on-light. Apply via
+   header.bar-top.bar-top--ink. The logo + <p class="brand"> pairing is
+   unchanged; the dark text-shadow glow below still applies. */
+.bar-top--ink .brand {
+  color: var(--ink, #1a1a1a) !important;
+}
+
 /* DYNAMIC SCRIM VARIANTS (COLOR-ADAPTIVE) */
 /* Airy architectural scrims — translucent vignettes, NO blackouts. Max alpha
    stays ≤0.70 so the photography keeps its editorial luminance and detail;
@@ -177,7 +186,7 @@ body {
   font-weight: 700;
   line-height: 1.08;
   color: #ffffff;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--track-tight, -0.02em);   /* token = −0.02em (single source of truth) */
 }
 
 .t-display .serif-accent {
