@@ -389,6 +389,66 @@ npx hyperframes snapshot --composition dk-story-01 --at 0.0 --no-end \
 
 ## D. THE DAILY OPERATOR PROMPT TEMPLATE (Crucial Deliverable)
 
+### OPERATOR PRE-FLIGHT & EXECUTION CHEATSHEET
+
+Choose your execution scenario before invoking the prompt below:
+
+---
+
+#### SCENARIO A: Fresh Day Start (Batch-01 / First Run of the Day)
+
+*Use this when starting production on a new calendar day.*
+
+1. **Clean Asset Inbox:** Ensure `assets/raw/` contains only today's initial raw photos.
+
+2. **Execute Stale Retirement & Optimization (Terminal):**
+
+   ```bash
+   npm run retire:batch && npm run optimize:assets
+   ```
+
+   - `retire:batch`: Automatically moves yesterday's compositions to `archive/stale-drafts/` and cleans stale router lines from `index.html`.
+   - `optimize:assets`: Downscales raw photos to ≤2048px (JPEG q~85), auto-slugs filenames without spaces, and writes `slug-map.json`.
+
+3. **Execute Production Prompt:** Copy the entire Operator Prompt below and submit it to the AI agent.
+
+4. **Preflight & Render (Terminal):**
+
+   ```bash
+   npm run render:daily
+   ```
+
+#### SCENARIO B: Intraday Next Batch (Batch-02, Batch-03... on the SAME Day)
+
+*Use this when generating additional creatives later in the same day without overwriting earlier batches.*
+
+1. **Prevent Asset Duplication (MANDATORY):**
+   - Delete/Remove previously consumed raw photos from `assets/raw/` so the AI agent does not re-inspect or duplicate earlier batch themes.
+   - Drop the new raw photos into `assets/raw/`.
+
+2. **One-Line Scaffolding Command (Terminal):**
+
+   ```bash
+   npm run optimize:assets && npm run batch:new
+   ```
+
+   **What happens under the hood:**
+   - `optimize:assets`: Ingests and auto-slugs the new photos into `assets/raw/optimized/` and appends them to `slug-map.json`.
+   - `batch:new`: Auto-detects the next batch number (e.g., `batch-02`), creates `compositions/<DATE>/batch-02/`, sets continuous intraday slug numbering (e.g., `story-04`, `story-05`), creates the Schema-v2 manifest, and validates `index.html` for safe router-line appends (`node scripts/new-batch.js --sync-router` adds the batch's lines once its posts exist, §F.9).
+
+3. **Execute Production Prompt:**
+   Copy the Operator Prompt below and submit it to the AI agent.
+
+   **Agent Directive:** The agent will recognize the nested directory, adopt depth-3 links (`../../../shared/story-system.css`), and write to the active batch folder per §F.9.
+
+4. **Preflight & Render (Terminal):**
+
+   ```bash
+   npm run render:daily
+   ```
+
+*(Executes `check:paths`, `photo-fit`, and browser checks before rendering exports to `renders/<DATE>/batch-XX/` — existing batch renders remain 100% untouched).*
+
 Copy and paste this entire block into OpenCode at the start of each production day. It drives the full pipeline end-to-end.
 
 ```
