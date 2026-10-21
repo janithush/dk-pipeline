@@ -10,3 +10,13 @@ renders/
 # OS artifacts
 .DS_Store
 Thumbs.db
+
+# Raw original photos (multi-MB source files, never tracked).
+# Non-recursive by design: assets/raw/optimized/ (web-sized derivatives)
+# and slug-map.json remain tracked — do NOT add a trailing slash or /**
+assets/raw/*.jpg
+assets/raw/*.jpeg
+assets/raw/*.png
+assets/raw/*.JPG
+assets/raw/*.JPEG
+assets/raw/*.PNG
