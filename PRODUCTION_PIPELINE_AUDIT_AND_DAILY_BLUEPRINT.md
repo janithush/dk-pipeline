@@ -4,7 +4,7 @@
 **Engine:** HyperFrames `v0.8.163` (devDependency)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
 **Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21
-**Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). Lint gate: 0 errors / 0 warnings.
+**Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 
 ---
 
@@ -23,15 +23,19 @@ dk-pipeline/
 ├── PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md
 ├── scripts/
 │   ├── lib/batch-date.js           # shared LOCAL-calendar-date resolver: --date > positional > DK_BATCH_DATE > today
+│   ├── lib/batch-context.js        # Model A batch identity (§F.9): listBatches / detectNextBatch / detectNextSlug / resolveBatchContext
 │   ├── retire-batch.js             # retire:batch — stale batches → archive/stale-drafts/ + router-line cleanup (§F.3)
 │   ├── downscale-assets.js         # optimize:assets — raw → web copies, auto-slugging → assets/raw/optimized/slug-map.json
 │   ├── photo-fit.js                # photo-fit — deterministic all-posts WCAG AA contrast authority (gate + design modes)
-│   ├── render-batch.js             # render:daily — preflight → loop batch-manifest.json → renders/YYYY-MM-DD/
+│   ├── check-paths.js              # check:paths — fail-closed relative-path gate for the ACTIVE batch (§F.9)
+│   ├── new-batch.js                # batch:new — scaffold the next batch-XX + Schema-v2 manifest + surgical router sync (§F.9)
+│   ├── render-batch.js             # render:daily — preflight → loop the ACTIVE batch manifest → renders/YYYY-MM-DD/[batch-XX/]/
 │   └── verify-contrast.ps1         # ⚠ TOMBSTONE (2026-10-21) — superseded by photo-fit.js; do not run
 ├── compositions/                   # WORKING BATCHES — created daily, retired automatically
-│   └── 2026-10-21/                 # today's batch
-│       ├── batch-manifest.json     # render-batch contract: {"batch":"YYYY-MM-DD","posts":[{slug,html,output}]}
-│       └── story-01.html … story-03.html
+│   └── 2026-10-21/                 # today's batch — FLAT legacy layout = immutable batch-01 (§F.9)
+│       ├── batch-manifest.json     # render-batch contract (Schema v1 legacy): {"batch":"YYYY-MM-DD","posts":[{slug,html,output}]}
+│       ├── story-01.html … story-03.html
+│       └── batch-XX/               # INTRADAY batches nest here (Model A, §F.9): story-NN.html (depth-3 links) + Schema-v2 manifest
 ├── archive/
 │   └── stale-drafts/               # retired batches (read-only): 2026-10-19/, 2026-10-20/
 ├── assets/                         # INPUTS ONLY — never written except by optimize:assets
@@ -56,7 +60,7 @@ dk-pipeline/
 2. `npm run optimize:assets` — raw photos become web-optimized copies in `assets/raw/optimized/` (≤2048px, q~85, <2MB, auto-slugged with the mapping persisted to `slug-map.json`); raw originals are never modified.
 3. Each story composition is a self-contained HTML document importing ONLY `../../shared/story-system.css` (which `@import`s token.css / fonts.css / brand.css). No per-post CSS, no inline styles beyond data-* attributes.
 4. `index.html` is the router/manifest: one `data-composition-src` line per post of the current day on a 1080×1920 root; rewritten by the daily lifecycle, never accumulating creative markup.
-5. Gating: `npm run preflight` = `hyperframes lint && node scripts/photo-fit.js && hyperframes check` — lint + all-posts deterministic WCAG AA + runtime/layout/motion in one chained run (§C.5, §F.4).
+5. Gating: `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check` — lint + fail-closed relative-path validation (§F.9) + all-posts deterministic WCAG AA + runtime/layout/motion in one chained run (§C.5, §F.4).
 6. `npm run render:daily` (scripts/render-batch.js) executes preflight, then renders each `batch-manifest.json` entry to `renders/YYYY-MM-DD/<slug>/frame_000001.png` with `--strict`.
 
 ### A.3 What works well right now
@@ -93,7 +97,7 @@ Verdict: **PRODUCTION READY & HARDENED (verified 2026-10-21).** The operational 
 
 **Verification evidence (2026-10-21):**
 - `npx hyperframes lint` → `0 error(s), 0 warning(s)` on the live workspace (every composition root carries `data-composition-id` / `data-duration` / `data-no-timeline`; router root matches `data-width="1080" data-height="1920"`).
-- `npm run preflight` wired exactly as `hyperframes lint && node scripts/photo-fit.js && hyperframes check`; `render-batch.js` executes it before any render.
+- `npm run preflight` wired exactly as `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check`; `render-batch.js` executes it before any render.
 - `npm run photo-fit` reproduces browser-measured ground truth (story-01: 4/4 bands match `hyperframes check`'s sampled post) while extending coverage to EVERY manifest post — and flags the 4 genuinely failing bands of batch 2026-10-21 instead of masking them.
 - Local font intake verified: `assets/fonts/` present, `@font-face` local-only, no CDN references in project CSS.
 - Why 98 and not 100: the 4 identified AA FAIL bands need composition-level remediation (variant/theme/`.copy--ink`/copy shortening) in the daily run — process and tooling for that remediation are already in place (§F.8).
@@ -188,15 +192,21 @@ dk-pipeline/
 ├── node_modules/                   # (gitignored)
 ├── scripts/
 │   ├── lib/batch-date.js           # shared local-date resolver (§F.8)
+│   ├── lib/batch-context.js        # intraday batch identity + Schema validation (§F.9)
 │   ├── retire-batch.js             # stale-batch archivist (see §C.5, §F.3)
 │   ├── downscale-assets.js         # optimize:assets + auto-slugging → slug-map.json
 │   ├── photo-fit.js                # deterministic all-posts WCAG AA gate
+│   ├── check-paths.js              # fail-closed relative-path gate (§F.9)
+│   ├── new-batch.js                # batch:new scaffolder + router sync (§F.9)
 │   └── render-batch.js             # daily batch loop (see §C.5)
 ├── compositions/                   # WORKING DIRECTORY — regenerated daily
 │   ├── YYYY-MM-DD/                 # one daily batch; retired automatically after the day
+│   │   ├── batch-XX/               # INTRADAY batch folder (Model A, §F.9)
+│   │   │   ├── story-04.html       # HTML ONLY, DEPTH-3 links — per-post .css is FORBIDDEN (§C.3, §F.9)
+│   │   │   └── batch-manifest.json # Schema v2: {"date","batch","posts"}
 │   │   ├── story-01.html           # HTML ONLY — per-post .css is FORBIDDEN (§C.3)
 │   │   ├── story-02.html
-│   │   └── batch-manifest.json     # ordered list of posts for the day
+│   │   └── batch-manifest.json     # legacy flat (batch-01) ordered list of posts for the day
 ├── archive/
 │   └── stale-drafts/YYYY-MM-DD/    # HISTORICAL — retired batches, read-only after sign-off
 ├── assets/                         # INPUTS ONLY — never written by the pipeline
@@ -323,8 +333,10 @@ Rule: `index.html` may only grow by adding/removing `data-composition-src` lines
     "lint": "hyperframes lint",
     "lint:verbose": "hyperframes lint --lint-verbose",
     "check": "hyperframes check",
+    "check:paths": "node scripts/check-paths.js",
     "photo-fit": "node scripts/photo-fit.js",
-    "preflight": "hyperframes lint && node scripts/photo-fit.js && hyperframes check",
+    "batch:new": "node scripts/new-batch.js",
+    "preflight": "hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check",
     "optimize:assets": "node scripts/downscale-assets.js",
     "retire:batch": "node scripts/retire-batch.js",
     "render:daily": "node scripts/render-batch.js",
@@ -345,9 +357,9 @@ Rule: `index.html` may only grow by adding/removing `data-composition-src` lines
 npm run retire:batch
 npm run optimize:assets
 
-# 1. Pre-flight gate: lint → photo-fit (all-posts WCAG AA) → check — MUST be green before any render
+# 1. Pre-flight gate: lint → check:paths (fail-closed relative paths, §F.9) → photo-fit (all-posts WCAG AA) → check — MUST be green before any render
 npm run preflight
-#   lint: "0 error(s), 0 warning(s)" | photo-fit: "0 FAIL band(s), exit 0" | check: 0 lint/runtime/motion errors
+#   lint: "0 error(s), 0 warning(s)" | check:paths: "all resolve … exit 0" | photo-fit: "0 FAIL band(s), exit 0" | check: 0 lint/runtime/motion errors
 
 # 2. Render the whole daily batch — runs preflight internally (do NOT pre-run it yourself, §F.4):
 npm run render:daily
@@ -389,7 +401,7 @@ You are acting as my Creative Technologist / Frontend Architect for today's dail
 ## CONTEXT (read-only references — do not modify)
 - Assets live under assets/: raw photos in assets/raw/ (use the web-optimized working copies in assets/raw/optimized/ for ALL composition work — regenerate them any time with `npm run optimize:assets`; the optimizer auto-slugs unsafe filenames and logs the mapping), client references in assets/references/, brand marks in assets/logos/, fonts in assets/fonts/.
 - Brand system lives in shared/ (token.css, shared.css, brand.css, fonts.css) — edit only if a new brand token/font is genuinely required. Engine/token edits (story-system.css, token.css) are DESIGN-SPRINT actions documented in §F/§G — never performed during a daily run.
-- Compositions for today go in compositions/YYYY-MM-DD/; exports go in renders/YYYY-MM-DD/.
+- Compositions for today go in compositions/YYYY-MM-DD/; exports go in renders/YYYY-MM-DD/. INTRADAY (second or later batch today): if compositions/YYYY-MM-DD/ already holds ANY batch (a flat batch-manifest.json or a batch-XX/ folder), do NOT add flat files — run `npm run batch:new` and follow §F.9 (nested compositions/YYYY-MM-DD/batch-XX/ folder, CONTINUOUS intraday slugs, depth-3 links, exports under renders/YYYY-MM-DD/batch-XX/).
 - index.html is a lightweight router/manifest only — never add creative markup to it.
 
 ## STEP 0 — RETIRE STALE BATCHES (automated, run FIRST)
@@ -459,17 +471,17 @@ Before writing code, discuss with me:
 Confirm each post's design with me before composing.
 
 ## STEP 4 — GENERATE MODULAR COMPOSITIONS
-For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-post .css files are FORBIDDEN — see §F):
+For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-post .css files are FORBIDDEN — see §F): INTRADAY, when today's folder already contains a batch, the file goes into compositions/YYYY-MM-DD/batch-XX/ instead — run `npm run batch:new` FIRST (it creates the folder + Schema-v2 manifest and prints the first CONTINUOUS slug); §F.9 governs intraday runs:
 - Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width="1080" data-height="1920" (Story 9:16 — the default and only engine-supported ratio; see §F.2). **Composition root dimensions must exactly match the index.html root canvas.**
-- Imports: ../../shared/story-system.css ONLY (it @imports token.css + brand.css internally). Do NOT link shared.css, token.css, or any per-post stylesheet.
+- Imports: ../../shared/story-system.css ONLY (it @imports token.css + brand.css internally). Do NOT link shared.css, token.css, or any per-post stylesheet. INSIDE a batch-XX/ folder the SAME links are DEPTH 3: ../../../shared/story-system.css and ../../../assets/... (../../ there is one level short and silently unstyles the render — `npm run check:paths` fails closed on it); root-absolute "/shared/..." is forbidden (headless file:// cannot resolve it). See §F.9.
 - Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps it to a 40×40px circle anchored at top 140px / left 80px. **No per-post logo CSS.**
 - **Brand contrast rule:** if the photo's top-left region is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
 - **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
 - Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of the three variants (`copy--bottom-left`, `copy--bottom-right`, `copy--centered`). The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
 - Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
-- Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`.
-- Do not touch index.html except to add/remove a data-composition-src line for today's date.
+- Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`. INTRADAY: add it to the ACTIVE batch's own manifest at compositions/YYYY-MM-DD/batch-XX/batch-manifest.json — Schema v2 `{"date":"YYYY-MM-DD","batch":"batch-XX","posts":[{"slug":"story-04",...}]}` with output renders/YYYY-MM-DD/batch-XX/<slug> (§F.9).
+- Do not touch index.html except to add/remove a data-composition-src line for today's date. Prefer `node scripts/new-batch.js --sync-router`, which appends the ACTIVE batch's lines surgically inside #root (root attributes, comments and EOL untouched), is idempotent, and hard-fails on duplicate post ids or manifest entries whose HTML file does not exist yet (§F.9).
 
 ## STEP 5 — PRE-FLIGHT GATE (mandatory before rendering)
 1. Run: npx hyperframes lint
@@ -485,11 +497,11 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 7. Show me the clean lint and check reports. Do not proceed to render until both gates are green.
 
 ## STEP 5.5 — BATCH PRE-FLIGHT ENFORCEMENT (mandatory, automated)
-- `scripts/render-batch.js` executes `npm run preflight` (lint + check) prior to rendering any composition. **Never run `npm run preflight` manually when using `npm run render:daily`** — one batch = one check session (§F.4).
+- `scripts/render-batch.js` executes `npm run preflight` (lint → check:paths → photo-fit → check) prior to rendering any composition. **Never run `npm run preflight` manually when using `npm run render:daily`** — one batch = one check session (§F.4).
 - If the preflight exit code !== 0, the batch aborts immediately with a clear error report. No composition renders until the gate is green.
 
 ## STEP 6 — FINAL RENDER (confirmation required)
-1. Show me the list of compositions ready to render and the planned output paths under renders/YYYY-MM-DD/.
+1. Show me the list of compositions ready to render and the planned output paths under renders/YYYY-MM-DD/ (INTRADAY: renders/YYYY-MM-DD/batch-XX/ — render:daily refuses any manifest output that escapes the active batch's render root, §F.9).
 2. Ask for my explicit confirmation before triggering renders.
 3. On confirmation, run the batch render (recommended):
    npx hyperframes render --composition compositions/YYYY-MM-DD/<slug>.html --format png-sequence --output renders/YYYY-MM-DD/<slug> --strict
@@ -503,6 +515,8 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 - `npm run optimize:assets` was run first; every photo used came from `assets/raw/optimized/` under its SLUGGED name (raw originals untouched)
 - Every post has a Step 1 vision inspection log and a confirmed Step 3 grounding table
 - lint: 0 errors / 0 warnings
+- check:paths: 0 broken relative paths (`npm run check:paths` exit 0, §F.9)
+- INTRADAY RUNS (second+ batch today): batch scaffolded by `npm run batch:new` into compositions/YYYY-MM-DD/batch-XX/, slugs CONTINUED (never reset), manifest Schema v2, router lines appended via `--sync-router`, renders under renders/YYYY-MM-DD/batch-XX/ (§F.9)
 - All confirmed posts rendered as static PNG under renders/YYYY-MM-DD/
 - Clean render manifest shown to me
 - index.html unchanged except data-composition-src lines for today
@@ -611,10 +625,14 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 - `compositions/YYYY-MM-DD/batch-manifest.json` schema (render-batch.js contract):
   `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`
 - Renderer emits `frame_000001.png` (underscore, 6-digit) — verify THAT name, not frame-00000.png.
+- **Intraday second+ batches:** §F.9 governs — nested `compositions/YYYY-MM-DD/batch-XX/` + CONTINUOUS slugs + Schema-v2 manifests, scaffolded by `npm run batch:new`; flat historical folders (e.g. 2026-10-21) remain immutable legacy `batch-01`. Date-based retirement above is unchanged and archives nested `batch-XX/` subfolders wholesale.
 
 ### F.4 Gate semantics (what "green" means)
 - `npx hyperframes lint`: 0 errors, 0 warnings.
-- `npm run photo-fit` (gate mode): EVERY post in `compositions/YYYY-MM-DD/batch-manifest.json`,
+- `npm run photo-fit` (gate mode): EVERY post in the ACTIVE batch manifest resolved via
+  `scripts/lib/batch-context.js` (nested `compositions/YYYY-MM-DD/batch-XX/batch-manifest.json`,
+  legacy flat `compositions/YYYY-MM-DD/batch-manifest.json` = batch-01; the gated path is echoed
+  in the output; §F.9),
   every band (eyebrow / h1 / cta / brand) ≥ WCAG AA (4.5:1 small, 3.0:1 large) at the worst-case
   pixel, composited with the engine's own scrim gradients scraped live from `story-system.css`
   (no copied constants). Exit 0 only when every band of every post passes. A FAIL band is a TRUE
@@ -626,7 +644,7 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   router composition; that historical posts-02..N blind spot is CLOSED by photo-fit's all-posts
   coverage. The two are complementary: photo-fit = deterministic worst-case coverage of every
   post; check = rendered-pixel confirmation plus the full runtime/layout/motion suite.
-- `npm run preflight` = `hyperframes lint && node scripts/photo-fit.js && hyperframes check`.
+- `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check`.
   NEVER run `npm run preflight` manually when using `npm run render:daily` — the batch script
   executes it internally. One batch = one check session. `validate` is deprecated.
 
@@ -682,11 +700,92 @@ the daily run where they overlap §D — they are carried WITH §D exactly like 
   variant: change variant/theme, shorten the copy block, use `.copy--ink` (§G.9), or swap the
   photo — never "ship and hope", never a blind browser spot-check.
 - **Gate semantics (§D Step 5):** `npm run photo-fit` gate mode is the ALL-POSTS contrast
-  authority (§F.4); `npm run preflight` = lint → photo-fit → check. photo-fit FAILs are true
+  authority (§F.4); `npm run preflight` = lint → check:paths → photo-fit → check. photo-fit FAILs are true
   defects to remediate — never tune the gate.
 - **Exit criteria (§D end of run):** slug map persisted (`assets/raw/optimized/slug-map.json`);
   every grounding table carries its Contrast pre-check row; photo-fit green (0 FAIL bands,
   exit 0) before renders are approved.
+
+### F.9 INTRADAY MULTI-BATCH RUNBOOK (Model A — added 2026-10-21)
+
+Multiple automated batches per calendar day (`batch-01`, `batch-02`, …) with no collisions, no
+manual bookkeeping, and no overwrite risk for earlier same-day runs. This section is the
+authoritative intraday companion to §F.3 and is referenced from §D — when ANY batch folder for
+today already exists, follow §F.9 instead of the flat daily instructions.
+
+**Resolver/scaffolder/gate authority (the only place batch identity is computed):**
+
+| Tool | Role |
+|---|---|
+| `scripts/lib/batch-context.js` | Batch identity: `listBatches` / `detectNextBatch` / `detectNextSlug` / `resolveBatchContext` (consumes `batch-date.js` — date truth stays in one place) |
+| `npm run batch:new` (`scripts/new-batch.js`) | Scaffolds the NEXT batch folder + Schema-v2 manifest; `--sync-router` appends router lines |
+| `npm run check:paths` (`scripts/check-paths.js`) | Fail-closed relative-path gate (closes lint's silent `<link>` skip) |
+
+**Model A — nested directory structure:**
+
+```
+compositions/YYYY-MM-DD/batch-XX/<slug>.html        # one folder per intraday batch
+compositions/YYYY-MM-DD/batch-XX/batch-manifest.json
+renders/YYYY-MM-DD/batch-XX/<slug>/frame_000001.png # manifest `output` fields carry the nesting
+```
+
+- **Batch identity:** `batch-NN`, zero-padded, monotonically increasing per calendar day.
+  `detectNextBatch` = max existing slot + 1 (gaps are NEVER refilled). Target overrides for
+  render/check/photo-fit: `--batch batch-NN` > `DK_BATCH_ID` env > default = highest-numbered
+  batch directory (the one just scaffolded). Dates continue to resolve via `batch-date.js`
+  (local calendar day, `--date` > positional > `DK_BATCH_DATE` > today).
+- **Intraday CONTINUOUS slug numbering:** slugs never reset within a day — batch 1 ships
+  `story-01..03`, batch 2 starts at `story-04` (`detectNextSlug` scans the date root AND every
+  `batch-XX/` subfolder). Continuity is what keeps router ids (`id="post-NN"`,
+  `data-composition-id="dk-story-NN"`) globally unique across same-day batches;
+  `--sync-router` hard-fails on any reused post id.
+- **Manifest Schema v2 (nested batches):** `{"date":"YYYY-MM-DD","batch":"batch-XX","posts":[{"slug","html","output"}]}`.
+  `render:daily` and `photo-fit` refuse a nested manifest whose `date`/`batch` do not match the
+  resolved context, and `render:daily` additionally refuses any `post.output` that escapes
+  `renders/YYYY-MM-DD/batch-XX/` (cross-batch overwrite = hard fail). The legacy flat manifest
+  keeps Schema v1 (`"batch"` holds the DATE) and is validated against the date as before.
+- **Router (`index.html`):** new batches APPEND their `data-composition-src` lines inside `#root`
+  (continuous slugs keep them unique); root attributes, comments and EOL style are never touched.
+  `retire:batch` still strips everything by DATE at midnight — unchanged (§F.3).
+
+**Historical flat batches are IMMUTABLE legacy `batch-01`:** a date folder that holds a
+date-level `batch-manifest.json` and no `batch-XX/` subdirectories IS `batch-01` (e.g.
+`compositions/2026-10-21/` with its approved `story-01..03.html`). It is never moved, renamed, or
+rewritten; the resolver folds it into slot 01, which is why the first intraday folder created on
+such a day is `batch-02`.
+
+**`npm run batch:new` scaffolding flow (zero-shot):**
+
+1. `npm run batch:new` → creates `compositions/<DATE>/<nextBatch>/` + an empty Schema-v2
+   `batch-manifest.json`, validates `index.html`'s `#root` structure, and prints the next free
+   slug plus the depth-3 import block (`--date` / `DK_BATCH_DATE` honored; scaffolding always
+   creates the NEXT free id — it never overwrites).
+2. Create `<slug>.html` in that folder (template §G.8 with **depth-3** links, below).
+3. Append its `{slug, html, output}` entry to that batch's `batch-manifest.json`
+   (`output` = `renders/<DATE>/<batch-XX>/<slug>`).
+4. `node scripts/new-batch.js --sync-router` → appends the router line(s) for the ACTIVE batch
+   (idempotent; refuses if a manifest post's HTML file does not exist yet — fail-closed).
+5. `npm run preflight` → `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check`.
+
+**Depth-3 relative links (INSIDE a `batch-XX/` folder — one level deeper than legacy):**
+
+```html
+<link rel="stylesheet" href="../../../shared/story-system.css">
+<img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+<img src="../../../assets/raw/optimized/<file>.jpg" alt="...">
+```
+
+- Depth math: `compositions/<DATE>/batch-XX/<slug>.html` sits 3 folders below the project root —
+  `../../` is ONE LEVEL SHORT there and silently unstyles the render (HyperFrames lint SKIPS an
+  unresolvable `<link>` instead of failing).
+- `npm run check:paths` closes that hole: for the ACTIVE batch it requires EXACTLY ONE stylesheet
+  per composition resolving to `shared/story-system.css`, every `<img>`/`<source>`/`<video>` src
+  resolving to an existing file UNDER `assets/`, and rejects root-absolute (`/shared/...` —
+  headless `file://` cannot resolve it) or any reference escaping the project root. Exit 1 with
+  per-file `fix:` diagnostics on any violation.
+- Everything else is depth-agnostic by construction: CSS-internal `@import`/`url()` resolve
+  relative to `shared/`, `photo-fit` resolves `<img>` relative to each composition file, and
+  `retire-batch` matches router lines by their DATE segment — none of them change.
 
 ---
 

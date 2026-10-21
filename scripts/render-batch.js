@@ -1,11 +1,17 @@
 // scripts/render-batch.js
 // Daily static-render loop for HyperFrames production pipeline.
-// Reads compositions/YYYY-MM-DD/batch-manifest.json and renders each post
-// as a strict static PNG sequence into renders/YYYY-MM-DD/<slug>/.
+// Resolves the ACTIVE batch manifest via lib/batch-context.js:
+//   nested  compositions/YYYY-MM-DD/batch-XX/batch-manifest.json  (Model A, §F.9)
+//   flat    compositions/YYYY-MM-DD/batch-manifest.json           (legacy batch-01)
+// and renders each post as a strict static PNG sequence into
+// renders/YYYY-MM-DD/[batch-XX/]<slug>/ — every post.output is contained
+// under this batch's render root (cross-batch overwrites hard-fail).
 //
 // Usage:
-//   node scripts/render-batch.js                 # renders today's batch (YYYY-MM-DD)
-//   node scripts/render-batch.js 2026-10-19      # renders a specific batch date
+//   node scripts/render-batch.js                  # renders the active batch of today
+//   node scripts/render-batch.js 2026-10-19       # renders a specific batch date
+//   node scripts/render-batch.js --batch batch-02 # targets an explicit intraday batch
+//   (DK_BATCH / DK_BATCH_ID env: same override — see lib/batch-context.js)
 //
 // Requires: every composition must pass `npx hyperframes lint` first.
 // Renders with --strict so any lint error aborts that post.
@@ -14,29 +20,58 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 const { resolveBatchDate, logResolved } = require('./lib/batch-date');
+const { resolveBatchContext, manifestSchemaError, listBatches } = require('./lib/batch-context');
 
 const ROOT = process.cwd();
 // Local calendar day by default; --date flag, positional arg, or DK_BATCH_DATE
-// env override it (see lib/batch-date.js).
+// env override it (see lib/batch-date.js). The ACTIVE BATCH within that date
+// resolves via lib/batch-context.js (--batch flag / DK_BATCH_ID env; default =
+// highest-numbered batch dir, else the legacy flat batch = batch-01).
 const { date: batchDate, basis } = resolveBatchDate(process.argv.slice(2));
 logResolved({ date: batchDate, basis }, 'Render batch');
 
-const manifestPath = path.join(ROOT, 'compositions', batchDate, 'batch-manifest.json');
-const renderDir = path.join(ROOT, 'renders', batchDate);
+const ctx = resolveBatchContext(batchDate, undefined);
+const manifestPath = ctx.manifestPath;
+const renderDir = path.join(ROOT, ...ctx.renderRoot.split('/'));
+console.log(`◆ Active batch: ${ctx.batch} (layout: ${ctx.layout}) · render root: ${ctx.renderRoot}/`);
 
 if (!fs.existsSync(manifestPath)) {
   const others = fs.existsSync(path.join(ROOT, 'compositions'))
     ? fs.readdirSync(path.join(ROOT, 'compositions')).filter((d) => /^\d{4}-\d{2}-\d{2}$/.test(d))
     : [];
   console.error(`✗ batch manifest not found: ${manifestPath}`);
+  const avail = listBatches(ctx.dateDir);
+  if (avail.length) console.error(`   (available batches for ${batchDate}: ${avail.join(', ')})`);
   if (others.length) console.error(`   (available batch folders: ${others.join(', ')})`);
   process.exit(1);
 }
 
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-if (manifest.batch !== batchDate) {
-  console.error(`✗ manifest.batch "${manifest.batch}" ≠ resolved batch date "${batchDate}" — refusing to render.`);
+// Manifest Schema v2 (nested: {date, batch, posts}) vs Schema v1 (legacy flat:
+// {batch: <DATE>, posts}) — a manifest that does not match the resolved batch
+// context is foreign → hard refusal (zero silent failures).
+const schemaErr = manifestSchemaError(ctx, manifest);
+if (schemaErr) {
+  console.error(schemaErr);
   process.exit(1);
+}
+
+// ── BATCH OUTPUT CONTAINMENT (fail-closed) ──────────────────────────────
+// Every post.output must stay under THIS batch's render root so a stale or
+// hand-edited manifest can never overwrite another batch's approved PNGs.
+for (const post of manifest.posts) {
+  const out = String(post.output || '').replace(/\\/g, '/');
+  const inside = out === ctx.renderRoot || out.startsWith(ctx.renderRoot + '/');
+  const intoNestedFromFlat = ctx.layout === 'flat' && out.startsWith(`${ctx.renderRoot}/batch-`);
+  if (!inside || out.split('/').includes('..') || intoNestedFromFlat) {
+    console.error(`✗ [${post.slug}] output "${post.output}" escapes render root "${ctx.renderRoot}/" — refusing to render.`);
+    process.exit(1);
+  }
+}
+
+if (manifest.posts.length === 0) {
+  console.log(`⚠ manifest has 0 posts — nothing to render (batch ${ctx.batch} scaffolded but not yet populated).`);
+  process.exit(0);
 }
 fs.mkdirSync(renderDir, { recursive: true });
 

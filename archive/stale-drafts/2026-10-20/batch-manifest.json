@@ -1,0 +1,7 @@
+{
+  "batch": "2026-10-20",
+  "posts": [
+    { "slug": "story-01", "html": "compositions/2026-10-20/story-01.html", "output": "renders/2026-10-20/story-01" },
+    { "slug": "story-02", "html": "compositions/2026-10-20/story-02.html", "output": "renders/2026-10-20/story-02" }
+  ]
+}

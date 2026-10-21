@@ -1,8 +1,10 @@
 // scripts/photo-fit.js
 // Deterministic WCAG AA feasibility gate for the daily batch.
-//   node scripts/photo-fit.js                      # gate mode: all posts in today's manifest
+//   node scripts/photo-fit.js                      # gate mode: all posts in the ACTIVE batch manifest
 //   node scripts/photo-fit.js --photo <file>       # design mode: feasibility matrix for one photo
 //   node scripts/photo-fit.js --photo <file> --variant bottom-right --theme warm
+// Gate mode resolves the ACTIVE batch via lib/batch-context.js (nested
+// batch-XX or legacy flat batch-01) and ECHOES the gated manifest path.
 // Scrapes scrim geometry + alpha ramps + token colors from shared/*.css at
 // runtime (anti-drift: no copied engine constants).
 // Geometry constants mirror the APPROVED 1080x1920 Story engine (story-system.css).
@@ -28,6 +30,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 const { resolveBatchDate, logResolved } = require('./lib/batch-date');
+const { resolveBatchContext, manifestSchemaError, listBatches } = require('./lib/batch-context');
 
 const ROOT = process.cwd();
 const CANVAS_W = 1080, CANVAS_H = 1920;          // approved Story geometry — do not change
@@ -243,12 +246,28 @@ if (photoArg) {
   // GATE MODE — every post in the manifest (closes the posts-02..N blind spot)
   const { date, basis } = resolveBatchDate(argv);
   logResolved({ date, basis }, 'Photo-fit gate');
-  const manifestPath = path.join(ROOT, 'compositions', date, 'batch-manifest.json');
+  // Resolve the ACTIVE batch (nested batch-XX or legacy flat batch-01) and
+  // ECHO the exact gated manifest path so the operator always sees which
+  // batch this WCAG run covered (zero silent failures).
+  const ctx = resolveBatchContext(date, undefined);
+  const manifestPath = ctx.manifestPath;
   if (!fs.existsSync(manifestPath)) {
     console.error(`✗ batch manifest not found: ${manifestPath}`);
+    const avail = listBatches(ctx.dateDir);
+    if (avail.length) console.error(`   (available batches for ${date}: ${avail.join(', ')})`);
     process.exit(1);
   }
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const schemaErr = manifestSchemaError(ctx, manifest);
+  if (schemaErr) {
+    console.error(schemaErr);
+    process.exit(1);
+  }
+  console.log(`◆ Gated manifest: ${path.relative(ROOT, manifestPath).split(path.sep).join('/')} (batch: ${ctx.batch}, layout: ${ctx.layout}, posts: ${manifest.posts.length})`);
+  if (manifest.posts.length === 0) {
+    console.log(`⚠ photo-fit: manifest has 0 posts — nothing gated (batch ${ctx.batch} not yet populated).`);
+    process.exit(0);
+  }
   const DEBUG = !!process.env.DK_PHOTOFIT_DEBUG;
   let fails = 0;
   for (const post of manifest.posts) {
