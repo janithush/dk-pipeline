@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-22",
+  "batch": "batch-01",
+  "posts": [
+    {
+      "slug": "story-01",
+      "html": "compositions/2026-10-22/batch-01/story-01.html",
+      "output": "renders/2026-10-22/batch-01/story-01",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Past the cooktop, the pantry carries the same green tile beneath LED-lit shelving. Config: Photo A DSC07397 · scrim--charcoal · copy--bottom-left copy--ink · bar-top--ink. PHOTO-FIT AUDIT (2026-10-22, DEBUG worst-pixel): eyebrow 4.5 FAIL @(96,1545) · h1 6.19 PASS · cta 3.94 FAIL @(288,1697) · brand 5.79 PASS. Root cause: joinery shadow-gap lattice (strips at photo x~209/x~439, 110px spacing < 120-230px run width) + toe-kick shadow row — structural at every variant/theme/crop; 2 bands WAIVED by operator 2026-10-22 (batch-01 precedent, §A.4 class). HYPERFRAMES CHECK DIVERGENCE: browser sampler read eyebrow 4.0 / h1 2.17 / cta 1.78 — instrument artifact (its sampling resolution blends the 12px+24px white halos of copy--ink into the glyph strokes); full-res frame_000001.png inspected 2026-10-22 = h1/eyebrow/cta/brand clearly legible, photo-fit's 6.19 h1 matches ground truth. Logged under the same operator waiver."
+    },
+    {
+      "slug": "story-02",
+      "html": "compositions/2026-10-22/batch-01/story-02.html",
+      "output": "renders/2026-10-22/batch-01/story-02",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): The island pairs a charcoal base with a white stone waterfall — sink to the window, tile either side. Config: Photo B DSC07464-Edit · scrim--warm (raised eyebrow 4.08→4.97 PASS, h1 14.42 PASS) · copy--bottom-right white copy · bar-top--ink REJECTED. PHOTO-FIT AUDIT (2026-10-22): eyebrow 4.97 PASS · h1 14.42 PASS · cta 4.28 FAIL @(120,1688) · brand 1.06 FAIL @(276,161). Root cause: black chandelier ceiling rose at brand height (ink 1.04 / white ~1.8 — both colors fail the mixed band; no crop avoids rose/rod/globes/tile) + charcoal-base floor-bounce at cta row. Fallbacks TESTED AND REJECTED: copy--ink (eyebrow 1.42 / cta 2.81 — dark base). 2 bands WAIVED by operator 2026-10-22."
+    },
+    {
+      "slug": "story-03",
+      "html": "compositions/2026-10-22/batch-01/story-03.html",
+      "output": "renders/2026-10-22/batch-01/story-03",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): A full-height bank holds what the room shouldn't show; the dryer rides the wall, bench clear beneath. Config: Photo C DSC09949 · scrim--charcoal (ink-brand 4.56 PASS here vs 4.43 FAIL on warm) · copy--centered copy--ink · bar-top--ink. PHOTO-FIT AUDIT (2026-10-22): eyebrow 6.71 PASS · h1 5.44 PASS · cta 3.95 FAIL @(464,1694) · brand 4.56 PASS. Root cause: timber floor row at cta height. CROP REMEDIAL AVAILABLE (not taken under waiver): derived crop y0-1477 maps cta→wardrobe doors (pred ~8.8) and brand→ceiling (pred ~9.7). 1 band WAIVED by operator 2026-10-22."
+    },
+    {
+      "slug": "story-04",
+      "html": "compositions/2026-10-22/batch-01/story-04.html",
+      "output": "renders/2026-10-22/batch-01/story-04",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): A brass gooseneck reaches over the stainless tub, wall taps in the same finish — every handle in the room matches. Config: Photo D DSC09961 · scrim--warm · copy--bottom-right copy--ink (variant flip RESCUED cta 4.22→4.83 PASS) · default white bar (ink bar rejected: 1.28 over shelf cans). PHOTO-FIT AUDIT (2026-10-22): eyebrow 6.11 PASS · h1 4.66 PASS · cta 4.83 PASS · brand 3.28 FAIL @(228,164). Root cause: shadowed open-shelf interior at brand height (white 3.28 vs ink 1.28 — band capped by shelf-mid + dark cans; brand-vs-cta crop tension blocks remedial crop). 1 band WAIVED by operator 2026-10-22."
+    }
+  ]
+}
