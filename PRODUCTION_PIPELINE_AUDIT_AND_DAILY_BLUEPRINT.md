@@ -4,7 +4,278 @@
 **Engine:** HyperFrames `v0.8.163` (devDependency)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
 **Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22
+**Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
+
+---
+
+# OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)
+
+> **Authoritative for daily operations (2026-10-23).** This runbook is the complete, copy-pasteable
+> operational surface of the pipeline. Detailed contracts behind each command live in §F/§G/§H.
+> If this section ever disagrees with §A–§G, this section governs *daily operations* and the
+> conflict must be repaired in the next hardening edit. All commands assume: repo root
+> `D:\Projects\dk-pipeline`, PowerShell, local calendar day.
+>
+> ⚠ **THE ONE HARD RULE OF DAILY OPERATION:** run every command exactly as printed — **never add
+> `--date`, `--batch`, or `DK_BATCH_DATE/DK_BATCH_ID` overrides to routine commands.** Retirement
+> is date-scoped: a `--date <other-day>` run will treat *today's in-flight drafts* as stale and
+> archive them (merge-safe, recoverable, but avoidable). Override flags exist for clean workspaces
+> and forensics only (§F.3/§F.8). You will never need them: the machine already knows the date
+> and the active batch.
+
+---
+
+## 1. THE 4-STEP DAILY PRODUCTION CYCLE (STANDARD RUN)
+
+### Step 1 — Ingest Assets
+
+Drop **4–8 raw camera photos** (`.jpg`, `.jpeg`, `.png`) directly into:
+
+```
+assets/raw/
+```
+
+That is the entire intake job. Do not rename them, do not resize them, and do not manage
+`assets/raw/optimized/` by hand — the optimizer does everything (auto-slugging included)
+and logs the mapping.
+
+### Step 2 — Prepare Environment & Batch Scaffolding
+
+```powershell
+npm run produce
+```
+
+The machine, fully unattended — and idempotent (safe to re-run any number of times):
+
+- **Retires past calendar dates cleanly** into `archive/stale-drafts/<DATE>/` (even if you are
+  returning after a multi-day gap; see Scenario 3 below) and strips their stale router lines
+  from `index.html`.
+- **Optimizes raw images** via ffmpeg into `assets/raw/optimized/` (≤2048px, ≤2MB, auto-slugged)
+  and updates `slug-map.json` **without erasing history** (merge-updated: current + consumed
+  sources both stay mapped). Raw originals are never modified.
+- **Scaffolds the working batch** `compositions/YYYY-MM-DD/batch-01/` (+ Schema-v2
+  `batch-manifest.json`) on a fresh day; if the day's earlier batch(es) are already fully
+  shipped, it automatically scaffolds the NEXT one (`batch-02`, `batch-03`, …) with continuous
+  slugs. It never forks a new batch while one is unfinished.
+- **Outputs the photo inventory ledger** in the terminal: which optimized photos are already
+  consumed by today's batches and which are **available** for the next posts.
+
+Read the terminal: note the `active` batch, the `next slug` and the available photo list.
+Screenshot it or leave it open — Step 3's authoring prompt consumes exactly that inventory.
+
+### Step 3 — Vision Model Composition (The Authoring Prompt)
+
+Open your **vision-capable** LLM session (OpenCode / Claude / equivalent — dictation-only
+models must NOT run this step) in the repo root, paste the block below, and let it work.
+It authors the stories AND finishes cleanly without asking anything; the ship gate (Step 4)
+is the sole arbiter of quality.
+
+```text
+# DAILY HYPERFRAMES STORY AUTHORING — ZERO-QUESTIONS COMPOSITION RUN (runbook Step 3)
+# Project: dk-pipeline | Engine: shared/story-system.css | Canvas: Story 1080x1920
+
+You are the Creative Technologist for Direct Kitchens today. Produce the next stories for the
+ACTIVE batch with ZERO questions to me — every decision you make is grounded and validated
+downstream by the automated ship gate. If your session cannot actually SEE images, STOP and
+say so; never fabricate observations.
+
+== INVENTORY (author ONLY from this) ==
+1. Run: npm run produce -- status
+2. Note: active batch folder compositions/<DATE>/<batch-XX>/, the next free slug (story-NN),
+   and the "photos available" list in the photo ledger. NEVER use photos marked as consumed
+   by today's batches, and NEVER invent photos that are not listed.
+
+== GROUNDING (mandatory, one image at a time) ==
+3. Inspect EACH candidate photo SEQUENTIALLY — exactly ONE image per tool call, seen alone
+   before it is reasoned about. Batched multi-image reads are forbidden (they evict evidence).
+4. Log what you SEE per photo: room/space type, hero materials (as literally visible),
+   visible appliances/fittings, color accent + lighting undertone, light direction.
+   This log is the single source of truth for alt text, copy, and scrim choice. A copy claim
+   that does not trace to YOUR observation of THAT photo is forbidden.
+5. Before choosing a variant/theme per post, run the advisory feasibility matrix:
+      node scripts/photo-fit.js --photo assets/raw/optimized/<file>.jpg
+   Do not author a variant x theme combination that its matrix reports infeasible for the
+   default white stack.
+
+== LAYOUT CONTRACT (engine-owned — never repositioned per post) ==
+- Brand bar LOCKED TOP-RIGHT: top: 140px; right: 80px, logo flush right, wordmark to its
+  LEFT (engine flex row-reverse). Markup invariant per post:
+    <header class="bar-top"> … </header>                     (white wordmark — dark tops)
+    or <header class="bar-top bar-top--ink"> … </header>      (ink wordmark — bright tops)
+  Logo: <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+  paired with <p class="brand">Direct Kitchens</p>. If inspection shows the top-RIGHT region
+  bright (white/cream), use bar-top--ink. (If the ship gate still disagrees, it will
+  auto-escalate to bar-top--plate — do not preempt it.)
+- Copy variants: EXACTLY TWO EXIST. <section class="copy copy--bottom-left"> or
+  <section class="copy copy--bottom-right"> (alternate bottom-right every OTHER post for
+  rhythm, per §F.7). Any other position — centered included — is PERMANENTLY ELIMINATED
+  from the engine; never emit it.
+- Scrims: <span class="scrim scrim--top"></span> + <span class="scrim scrim--bottom"></span>
+  inside <figure class="photo photo--full scrim--charcoal"> (cool/neutral undertones) or
+  scrim--warm (amber/timber undertone). The deepened 620px bottom scrim is the declared
+  legibility floor — your crisp WHITE typography rides it; author plain white markup and
+  trust the gates (they will auto-escalate shield/plate rungs only if WCAG AA needs it).
+
+== STRICT DOM CONTRACT (per story — no body copy in the DOM) ==
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direct Kitchens — story-NN</title>
+  <link rel="stylesheet" href="../../../shared/story-system.css">
+</head>
+<body>
+  <main id="root" data-composition-id="dk-story-NN" data-duration="0.033" data-no-timeline
+        data-width="1080" data-height="1920">
+    <article class="frame" aria-label="<2-line grounded description>">
+      <figure class="photo photo--full scrim--{charcoal|warm}">
+        <img src="../../../assets/raw/optimized/<slugged file>.jpg" alt="<grounded alt text>">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--bottom" aria-hidden="true"></span>
+      </figure>
+      <header class="bar-top[ bar-top--ink]">
+        <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+        <p class="brand">Direct Kitchens</p>
+      </header>
+      <section class="copy copy--{bottom-left|bottom-right}">
+        <p class="t-eyebrow">…</p>
+        <h1 class="t-display">…<span class="serif-accent">…</span></h1>
+        <p class="cta">…</p>
+      </section>
+    </article>
+  </main>
+</body>
+</html>
+DEPTH-3 imports are MANDATORY inside a batch-XX/ folder ("../../" is one level short there
+and silently unstyles the render). root-absolute "/shared/..." is forbidden.
+
+== COPY RULES ==
+- ONE .t-eyebrow (≤2 words, uppercase, category style), ONE .t-display headline (≤2 lines,
+  ≤18 chars/line, ≤1 .serif-accent italic word), ONE .cta drawn ONLY from:
+    "Visit our showroom" | "Book a private design consultation"
+- STRICTLY NO body-copy paragraph in the DOM. NO prices, discounts, "%", offers, T&Cs,
+  exclamation marks, second-person hype. NO material/appliance/room name that is not in
+  YOUR inspection log for THAT photo ("Calacatta", appliance brands without a visible
+  badge = banned).
+- Photo filenames and rendering-safe alt text may restate only verified inspection-log facts.
+
+== OUTPUT (finish cleanly, ask NOTHING) ==
+- Write each composition as compositions/<DATE>/<batch-XX>/<next-slug>.html (slug sequence
+  is CONTINUOUS across the day's batches — start at the "next free slug" from status).
+- Append ONE manifest entry per post to that batch's Schema-v2 manifest
+  compositions/<DATE>/<batch-XX>/batch-manifest.json:
+      { "slug": "story-NN",
+        "html": "compositions/<DATE>/<batch-XX>/story-NN.html",
+        "output": "renders/<DATE>/<batch-XX>/story-NN",
+        "notes": "Body caption (not in DOM): <your verified caption one-liner>" }
+- DO NOT touch index.html (the ship step routes every manifest post automatically).
+- DO NOT run preflight, gates, or renders (the ship step owns them — one batch = one session).
+- END your run by printing: batch folder, each slug → photo → {variant, theme, bar polarity},
+  and the per-photo inspection table summary. No confirmation prompts, no questions.
+```
+
+### Step 4 — Autonomous Ship (Zero Prompts, Full Safety)
+
+```powershell
+npm run produce -- ship
+```
+
+The machine, fully unattended, for the ACTIVE batch — and the ONLY confirmation step of the
+day is the gate itself:
+
+- **Router sync:** appends/removes the active manifest's `data-composition-src` lines in
+  `index.html` surgically (idempotent, fail-closed, root attributes untouched).
+- **Optimization refresh:** any photos dropped since prepare enter `slug-map.json`.
+- **`photo-fit` self-heal:** deterministic WCAG AA evaluation of every text band of every post;
+  a failing band is auto-escalated along the declared engine ladder
+  (`copy--ink → copy--shield → copy--shield--deep`; `bar-top--ink → bar-top--plate`) —
+  **no interactive questions, no waivers, no TUI stalls.**
+- **Chromium headless `verify-contrast` authority:** a real rendered-pixel WCAG AA session per
+  post (same reconcile ladder, fail-closed on any disagreement).
+- **Render:** every post through `hyperframes render --strict` → PNG frames in
+  `renders/YYYY-MM-DD/batch-XX/<slug>/`.
+- **Ship certificate** stamped per post into the manifest notes + a ship receipt printed.
+- **Atomic git commit** of the day (`feat(batch): deliver YYYY-MM-DD batch-XX …`) — certification
+  fully green only; a failing ship commits nothing.
+
+Expected tail of a healthy run:
+
+```
+◇ produce ship: batch certified + rendered + archived — DONE (zero waivers, zero prompts).
+```
+
+Any RED output names the exact file/fix; re-run `npm run produce -- ship` after fixing —
+every step is idempotent and prior renders of shipped batches are never overwritten.
+
+---
+
+## 2. THE MULTI-BATCH SCENARIO (RUNNING BATCH-02 / BATCH-03 ON THE SAME DAY)
+
+Same 4 steps, the machine handles the sequencing:
+
+- **Step 1:** Drop the NEW photos into `assets/raw/`.
+- **Step 2:** Run `npm run produce`. The system detects `batch-01` is already fully shipped
+  (its manifest's posts all have rendered frames), cleanly scaffolds `batch-02`, and sequences
+  slugs **monotonically** (`story-05..08` — slugs never reset within a calendar day). It then
+  prints the updated ledger, which now shows only the new photos as available.
+- **Step 3:** Author stories via the same Vision-model prompt (Step 3 of Scenario 1) — the
+  prompt reads the active batch/slug from `npm run produce -- status` automatically, so the
+  same block works for `batch-02` and `batch-03` with zero edits.
+- **Step 4:** Run `npm run produce -- ship`. Renders land in `renders/YYYY-MM-DD/batch-02/…`
+  — earlier batches' outputs are containment-protected (a manifest output escaping the active
+  batch's render root hard-fails the gate), so nothing ever overwrites approved work.
+
+While a batch of the day is unfinished, `npm run produce` is a no-op for scaffolding
+(`SKIPPED — a batch of the day is not fully shipped yet`) — it will never silently fork
+`batch-03` over half-built `batch-02` work.
+
+---
+
+## 3. THE "RETURNING AFTER MULTI-DAY BREAK" SCENARIO (E.G. 3 DAYS LATER)
+
+Friday paused, Monday resumed — the system reads the **local system clock** (never UTC, never
+a config file — §F.8) and resolves everything by evidence:
+
+1. Run plain:
+
+   ```powershell
+   npm run produce
+   ```
+
+2. Friday's date folder (e.g. `compositions/2026-10-24/`) is examined against `renders/`:
+   - **Friday was shipped** (its `renders/<FRIDAY>/` holds rendered frames) → preserved as
+     **immutable history**, archived to `archive/stale-drafts/<FRIDAY>/`, and its stale
+     `data-composition-src` lines are stripped from `index.html`. Observed live 2026-10-23:
+     the 2026-10-22 batches archived exactly this way during the day's prepare run.
+   - **Friday had unrendered drafts** → archived to `archive/unshipped/<FRIDAY>/` (kept intact,
+     clearly separated, recoverable by hand if ever needed — never deleted).
+   - Every move is append-logged to `archive/retire-log.json` for audit.
+3. Today's folder is created **cleanly for today's date** (`compositions/<TODAY>/batch-01/`,
+   slugs restarting at `story-01` — slug numbers are day-scoped, so there is nothing to carry
+   over and no collision risk).
+4. **The operator does NOT need to manually delete, rename, or run legacy flags.** No
+   `--date`, no `retire:batch` chore, no router hand-editing — retirement, router cleanup,
+   asset re-optimization (idempotent), scaffolding, and the photo ledger all happen inside
+   the single `produce` call.
+
+> 💡 This scenario is real-world verified: `archive/stale-drafts/2026-10-22/{batch-01,batch-02}/`
+> and `archive/retire-log.json` entries were produced by exactly this flow.
+
+---
+
+### Scenario dispatch cheatsheet
+
+| Situation | Run |
+|---|---|
+| Standard day | `npm run produce` → author → `npm run produce -- ship` |
+| More batches today | drop photos → `npm run produce` (scaffolds next batch) → author → ship |
+| Returning after N days | just `npm run produce` (archives the gap, scaffolds today) then continue batch-01 |
+| "Where am I?" | `npm run produce -- status` (pure read-only report + photo ledger) |
+| Red gate output | fix what the `fix:` line names → re-run the SAME command (all idempotent) |
+
+---
 
 ---
 
@@ -1063,6 +1334,9 @@ For high-key photography (white stone, beadboard, pale cabinetry) where the whit
 ## H. THE ZERO-FRICTION PRODUCTION FACTORY (authoritative — established 2026-10-23)
 
 This section is the live operator contract the `scripts/produce.js` entrypoint was built around.
+The copy-pasteable operational surface (commands + the ready-to-paste vision-model authoring
+prompt) lives at the top of this document as **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION
+FACTORY)** — that runbook governs daily operations; §H maintains the engineering rationale.
 Every produce.js header reference to "§H" resolves HERE. Where §D previously prescribed
 interactive confirmation rounds, §H replaces them: the pipeline decides, heals, certifies, and
 archives — the operator answered exactly two questions per day, and both are answered by the

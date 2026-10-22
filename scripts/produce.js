@@ -73,7 +73,7 @@ function printLedger(dateDir) {
 // ── GIT ARCHIVAL (deterministic ship commit — fail-open, never blocks) ──
 function commitShip(date, batch, count) {
   if (NO_GIT) { console.log('  ⊘ git archival: skipped (--no-git)'); return; }
-  const msg = `ship(batch): ${date} ${batch} — ${count} post(s) certified + rendered (zero-waiver preflight GREEN)`;
+  const msg = `feat(batch): deliver ${date} ${batch} — ${count} post(s) certified + rendered (zero-waiver preflight GREEN)`;
   try {
     const run = (args) => {
       const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf8', shell: process.platform === 'win32' });
@@ -160,15 +160,43 @@ if (RUN === 'prepare') {
     title: '2/3 · optimize assets: assets/raw/* → assets/raw/optimized/* (idempotent)',
     failMsg: 'asset optimization failed — check "npm run optimize:assets" output.',
   });
-  // scaffold the day's first batch ONLY when the day has no batch yet —
-  // mid-day prepares must never fork a second batch silently.
-  if (listBatches(ctx.dateDir).length === 0) {
+  // SCAFFOLD RULE (deterministic, evidence-based — §D.2 of the quick-start runbook):
+  //   · fresh day (no batch at all)            → scaffold batch-01
+  //   · every existing batch is fully SHIPPED
+  //     (manifest non-empty, every post's
+  //      renders/<date>/<batch-XX>/<slug>/ holds a frame) → scaffold the NEXT batch
+  //   · otherwise (work in progress on the day) → skip; never fork a batch mid-flight.
+  const batchesBefore = listBatches(ctx.dateDir);
+  const frameRendered = (post) => {
+    const outDir = path.join(ROOT, ...String(post.output).split('/'));
+    return fs.existsSync(outDir) && fs.readdirSync(outDir).some((f) => /^frame[-_]\d+\.png$/i.test(f));
+  };
+  const batchShipped = (b) => {
+    const bctx = resolveBatchContext(date, b);
+    if (!fs.existsSync(bctx.manifestPath)) return false;   // missing manifest = unshipped
+    let manifest;
+    try {
+      manifest = JSON.parse(fs.readFileSync(bctx.manifestPath, 'utf8'));
+    } catch {
+      return false;                                        // corrupt manifest = unshipped
+    }
+    if (!Array.isArray(manifest.posts) || manifest.posts.length === 0) return false;
+    return manifest.posts.every(frameRendered);
+  };
+  const dayFresh = batchesBefore.length === 0;
+  const allShipped = !dayFresh && batchesBefore.every(batchShipped);
+  if (dayFresh) {
     step('node', ['scripts/new-batch.js', '--date', date], {
       title: '3/3 · scaffold batch-01 (no batch exists for today yet)',
       failMsg: 'scaffold failed — create the batch with "npm run batch:new".',
     });
+  } else if (allShipped) {
+    step('node', ['scripts/new-batch.js', '--date', date], {
+      title: `3/3 · scaffold the NEXT batch (all shipped: ${batchesBefore.join(', ')} — continuous slugs follow)`,
+      failMsg: 'scaffold failed — create the batch with "npm run batch:new".',
+    });
   } else {
-    console.log('\n◈ 3/3 · scaffold: SKIPPED — batches already exist for today (idempotent prepare).');
+    console.log('\n◈ 3/3 · scaffold: SKIPPED — a batch of the day is not fully shipped yet (never forks mid-flight).');
   }
   const manifest = loadManifest();
   const batches = listBatches(ctx.dateDir);
