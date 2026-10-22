@@ -11,6 +11,9 @@
 //   node scripts/render-batch.js                  # renders the active batch of today
 //   node scripts/render-batch.js 2026-10-19       # renders a specific batch date
 //   node scripts/render-batch.js --batch batch-02 # targets an explicit intraday batch
+//   node scripts/render-batch.js --no-preflight   # produce.js has ALREADY run the
+//                                                 # preflight chain this invocation —
+//                                                 # skipping an identical re-run
 //   (DK_BATCH / DK_BATCH_ID env: same override — see lib/batch-context.js)
 //
 // Requires: every composition must pass `npx hyperframes lint` first.
@@ -77,15 +80,23 @@ fs.mkdirSync(renderDir, { recursive: true });
 
 // ── BATCH-LEVEL PRE-FLIGHT GATE ─────────────────────────────────────────
 // Run lint + check before rendering any composition. Abort immediately
-// if the gate is not green (exit code !== 0).
-console.log(`◆ Running pre-flight gate for batch: ${batchDate}`);
-try {
-  execSync('npm run preflight', { cwd: ROOT, stdio: 'inherit' });
-  console.log('   Pre-flight gate: GREEN (0 errors, 0 warnings)\n');
-} catch (err) {
-  console.error('✗ Pre-flight gate FAILED — aborting render batch.');
-  console.error('   Fix lint/check errors before rendering.');
-  process.exit(1);
+// if the gate is not green (exit code !== 0). `--no-preflight` skips this
+// when the caller (produce.js ship) has ALREADY run the identical preflight
+// chain this invocation — render is then trusted to run directly.
+const SKIP_PREFLIGHT = process.argv.slice(2).includes('--no-preflight');
+if (SKIP_PREFLIGHT) {
+  console.log('◆ Pre-flight gate: SKIPPED (--no-preflight — caller already ran the identical preflight chain, e.g. produce ship)\n');
+} else {
+  console.log(`◆ Running pre-flight gate for batch: ${batchDate}`);
+  try {
+    execSync('npm run preflight', { cwd: ROOT, stdio: 'inherit' });
+    console.log('   Pre-flight gate: GREEN (fail-closed chain — see section outputs above for the exact error/warning counts)');
+    console.log('');
+  } catch (err) {
+    console.error('✗ Pre-flight gate FAILED — aborting render batch.');
+    console.error('   Fix lint/check errors before rendering.');
+    process.exit(1);
+  }
 }
 
 let passed = 0;

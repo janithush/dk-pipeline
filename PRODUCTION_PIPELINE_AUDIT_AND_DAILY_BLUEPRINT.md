@@ -30,7 +30,7 @@ dk-pipeline/
 │   ├── check-paths.js              # check:paths — fail-closed relative-path gate for the ACTIVE batch (§F.9)
 │   ├── new-batch.js                # batch:new — scaffold the next batch-XX + Schema-v2 manifest + surgical router sync (§F.9)
 │   ├── render-batch.js             # render:daily — preflight → loop the ACTIVE batch manifest → renders/YYYY-MM-DD/[batch-XX/]/
-│   └── verify-contrast.ps1         # ⚠ TOMBSTONE (2026-10-21) — superseded by photo-fit.js; do not run
+│   └── produce.js                   # produce — zero-friction operator entrypoint (§H): prepare/ship/status
 ├── compositions/                   # WORKING BATCHES — created daily, retired automatically
 │   └── 2026-10-21/                 # today's batch — FLAT legacy layout = immutable batch-01 (§F.9)
 │       ├── batch-manifest.json     # render-batch contract (Schema v1 legacy): {"batch":"YYYY-MM-DD","posts":[{slug,html,output}]}
@@ -60,7 +60,7 @@ dk-pipeline/
 2. `npm run optimize:assets` — raw photos become web-optimized copies in `assets/raw/optimized/` (≤2048px, q~85, <2MB, auto-slugged with the mapping persisted to `slug-map.json`); raw originals are never modified.
 3. Each story composition is a self-contained HTML document importing ONLY `../../shared/story-system.css` (which `@import`s token.css / fonts.css / brand.css). No per-post CSS, no inline styles beyond data-* attributes.
 4. `index.html` is the router/manifest: one `data-composition-src` line per post of the current day on a 1080×1920 root; rewritten by the daily lifecycle, never accumulating creative markup.
-5. Gating: `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check` — lint + fail-closed relative-path validation (§F.9) + all-posts deterministic WCAG AA + runtime/layout/motion in one chained run (§C.5, §F.4).
+5. Gating: `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js` — lint + fail-closed relative-path validation (§F.9) + all-posts deterministic WCAG AA WITH the self-heal ladder + the browser-authority contrast certification (§C.5, §F.4, §H).
 6. `npm run render:daily` (scripts/render-batch.js) executes preflight, then renders each `batch-manifest.json` entry to `renders/YYYY-MM-DD/<slug>/frame_000001.png` with `--strict`.
 
 ### A.3 What works well right now
@@ -336,7 +336,7 @@ Rule: `index.html` may only grow by adding/removing `data-composition-src` lines
     "check:paths": "node scripts/check-paths.js",
     "photo-fit": "node scripts/photo-fit.js",
     "batch:new": "node scripts/new-batch.js",
-    "preflight": "hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check",
+    "preflight": "hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js",
     "optimize:assets": "node scripts/downscale-assets.js",
     "retire:batch": "node scripts/retire-batch.js",
     "render:daily": "node scripts/render-batch.js",
@@ -388,6 +388,16 @@ npx hyperframes snapshot --composition dk-story-01 --at 0.0 --no-end \
 ---
 
 ## D. THE DAILY OPERATOR PROMPT TEMPLATE (Crucial Deliverable)
+
+> **⚠ SUPERSEDED IN PART (2026-10-23) — §H is now the authoritative daily authority.**
+> §D remains the reference for the *creative* protocol the composition step must follow
+> (inspect-first vision grounding, typography pipeline, luxury constraints, composition HTML
+> contract). The **interactive confirmation rounds it prescribes (Steps 1.5/3/5/6 — "ask me to
+> confirm", "get my sign-off before composing", "ask for my explicit confirmation before
+> triggering renders") are RETIRED**: under the §H zero-friction factory the gates self-heal,
+> self-certify, and self-archival-commit, and the operator's whole day is
+> `drop photos → npm run produce → npm run produce -- ship`. When an instruction here
+> conflicts with §H, **§H wins**; when it describes composition craft, this section stands.
 
 ### OPERATOR PRE-FLIGHT & EXECUTION CHEATSHEET
 
@@ -707,9 +717,16 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   router composition; that historical posts-02..N blind spot is CLOSED by photo-fit's all-posts
   coverage. The two are complementary: photo-fit = deterministic worst-case coverage of every
   post; check = rendered-pixel confirmation plus the full runtime/layout/motion suite.
-- `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check`.
+- `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js`.
+  The chain is SELF-HEALING: photo-fit's `--fix` applies the minimal declared escalation ladder
+  (copy: as-authored → ink → shield → shield-deep · brand: as-authored → ink → plate) per post;
+  verify-contrast then certifies every post against the REAL browser sampler with the same
+  ladder as its reconcile mechanism. Neither gate asks a question, prints a prompt, or accepts a
+  waiver — a TRUE defect (ladder exhausted) fails the chain and demands a copy/variant/photo change.
   NEVER run `npm run preflight` manually when using `npm run render:daily` — the batch script
-  executes it internally. One batch = one check session. `validate` is deprecated.
+  executes it internally (or has already run it via `produce ship --no-preflight`). One batch = one
+  check session. `validate` is deprecated; the old standalone `hyperframes check` pre-render rung is
+  superseded by `verify-contrast` (which runs per-post `hyperframes check --json` sessions internally).
 
 ### F.5 Typography decision tree (zero-shot)
 1. Identify the reference's type category (this repo's references 1–5 = bold neo-grotesque
@@ -762,9 +779,10 @@ the daily run where they overlap §D — they are carried WITH §D exactly like 
   any composition is written. If photo-fit reports the full copy block infeasible for every
   variant: change variant/theme, shorten the copy block, use `.copy--ink` (§G.9), or swap the
   photo — never "ship and hope", never a blind browser spot-check.
-- **Gate semantics (§D Step 5):** `npm run photo-fit` gate mode is the ALL-POSTS contrast
-  authority (§F.4); `npm run preflight` = lint → check:paths → photo-fit → check. photo-fit FAILs are true
-  defects to remediate — never tune the gate.
+- **Gate semantics (§D Step 5):** `npm run photo-fit` gate mode (with `--fix`) is the ALL-POSTS
+  contrast authority (§F.4); `npm run preflight` = lint → check:paths → photo-fit --fix →
+  verify-contrast (browser authority). photo-fit FAILs are true defects to remediate when the
+  ladder is exhausted — never tune the gate, never accept an operator waiver.
 - **Exit criteria (§D end of run):** slug map persisted (`assets/raw/optimized/slug-map.json`);
   every grounding table carries its Contrast pre-check row; photo-fit green (0 FAIL bands,
   exit 0) before renders are approved.
@@ -838,7 +856,7 @@ such a day is `batch-02`.
    (`output` = `renders/<DATE>/<batch-XX>/<slug>`).
 4. `node scripts/new-batch.js --sync-router` → appends the router line(s) for the ACTIVE batch
    (idempotent; refuses if a manifest post's HTML file does not exist yet — fail-closed).
-5. `npm run preflight` → `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js && hyperframes check`.
+5. `npm run preflight` → `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js` (§F.4).
 
 **Depth-3 relative links (INSIDE a `batch-XX/` folder — one level deeper than legacy):**
 
@@ -957,7 +975,7 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 
 **Edge-reset invariant.** The router also loads legacy `shared/shared.css`, whose `.scrim { inset: 0 }` pins `top: 0` on both scrim spans — CSS then honours `top` over `bottom` (over-constrained) and flips the bottom scrim to the top of the frame. `story-system.css` therefore resets `top: auto; bottom: auto` on `.scrim` and sets one explicit edge per variant. Do not remove these resets.
 
-**Verification (2026-10-21 — authoritative command).** `hyperframes check`'s contrast sampler only measures text inside the router canvas, which contains story-01 alone. The all-posts contrast authority is **`npm run photo-fit`** (`node scripts/photo-fit.js`): gate mode reads `compositions/YYYY-MM-DD/batch-manifest.json` and evaluates every text band of every post (eyebrow / h1 / cta / brand) against WCAG AA — 4.5:1 small, 3.0:1 large — at the worst-case pixel, composited with these scrim ramps **scraped live from `story-system.css`** (no copied constants), and exits 0 only when every band passes. Use `npm run photo-fit -- assets/raw/optimized/<file>` (design mode) to read a photo's feasible variant × theme matrix before composing, and `DK_PHOTOFIT_DEBUG=1` to print worst-pixel coordinates. **`scripts/verify-contrast.ps1` is a tombstone (stale alphas, hardcoded old batch) — do not run it.** Both gates — `npm run photo-fit` and `hyperframes check` — must be green before any commit (§F.4). **Model note (2026-10-22):** photo-fit parses a SINGLE linear rgba ramp per band (`linear-gradient(180deg/0deg, …)`) — the top vignette's radial-at-`100% 0%` layer and its `transparent` stop sit beyond the model, so re-run the gate (and quote brand-band numbers fresh) after this re-anchor rather than trusting pre-2026-10-22 brand figures.
+**Verification (2026-10-22 — authoritative command).** The all-posts contrast authority is the preflight chain itself: **`npm run photo-fit`** (`node scripts/photo-fit.js` — deterministic pre-render model) followed by **`node scripts/verify-contrast.js`** (per-post `hyperframes check --json` browser sessions — the FINAL verdict). photo-fit gate mode reads the ACTIVE batch manifest and evaluates every text band of every post (eyebrow / h1 / cta / brand) against WCAG AA — 4.5:1 small, 3.0:1 large — at the 2%-worst pixel (p98 verdict with a 1.35 hard floor, so a single grain/shadow-line pixel can never block a clean band), composited with these scrim ramps **scraped live from `story-system.css`** (no copied constants; ramps, geometry custom properties, typography tracking and display font-size all fuel from the CSS — the anti-drift contract, photo-fit header v3). The former "single linear ramp" model note is OBSOLETE: the v3 parser splits ALL declared gradient layers at paren depth 0 and composites them in paint order, including the radial-at-`100% 0%` top vignette (Chromium-calibrated radii, ≤0.63% total-alpha error). Use `node scripts/photo-fit.js --photo assets/raw/optimized/<file>` (design mode) to read a photo's feasible variant × theme matrix before composing, and `DK_PHOTOFIT_DEBUG=1` to print worst-pixel coordinates. `scripts/verify-contrast.ps1` was a tombstone and has been DELETED (2026-10-23) — it no longer exists and must never be recreated. Both gates — photo-fit and verify-contrast — must be green before any render (§F.4, §H).
 
 ### G.6 Editorial typography roles (engine-owned)
 
@@ -1037,5 +1055,125 @@ For high-key photography (white stone, beadboard, pale cabinetry) where the whit
 - **What it changes:** recolors the copy stack to dark ink (`var(--ink)` / espresso) and strips all text-shadows: the former white light-halos are gone (they produced muddy glows over highlights), and `text-shadow: none !important` also overrides the base classes' dark cinematic stacks (same-specificity `!important` cascade, higher selector specificity), so dark ink renders dead-clean with no glow of either polarity. The deepened bottom scrim (§G.5) is now the legibility floor. Eyebrow uses `--bone`→ink inversion; CTA stays warm-dark espresso rather than brass for legibility.
 - **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
 - **When to use it:** whenever the Step-3 **Contrast pre-check** (`npm run photo-fit -- <file>`, §F.8) reports the default white/bone stack infeasible over a bright surface and a scrim/variant change isn't enough. It is one of the four sanctioned remediations (variant/theme, shorten copy, `.copy--ink`, swap photo) — never a substitute for re-running the gate.
-- **Usage:** `<section class="copy copy--bottom-right copy--ink">` — no per-post CSS, no inline styles.
-- ⚠ **Gate-model note:** photo-fit still credits ink bands with white-shadow lifts calibrated for the REMOVED halos (ink h1 s=0.5, small text s=0.2 toward white) — treat its `copy--ink` verdicts as generous until that model is re-calibrated, and confirm ink posts against the rendered `check` sampler or a browser spot-check.
+- **Usage:** `<section class="copy copy--bottom-right copy--ink">` - no per-post CSS, no inline styles.
+- ⚠ **Gate-model note:** photo-fit still credits ink bands with white-shadow lifts calibrated for the REMOVED halos (ink h1 s=0.5, small text s=0.2 toward white) - treat its `copy--ink` verdicts as generous until that model is re-calibrated, and confirm ink posts against the rendered `check` sampler or a browser spot-check.
+
+---
+
+## H. THE ZERO-FRICTION PRODUCTION FACTORY (authoritative — established 2026-10-23)
+
+This section is the live operator contract the `scripts/produce.js` entrypoint was built around.
+Every produce.js header reference to "§H" resolves HERE. Where §D previously prescribed
+interactive confirmation rounds, §H replaces them: the pipeline decides, heals, certifies, and
+archives — the operator answered exactly two questions per day, and both are answered by the
+machine (see §H.3).
+
+### H.1 The operator's complete job description
+
+```
+1. Drop raw photos into        assets/raw/
+2. npm run produce             # prepare the day (retire → optimize → scaffold → ledger report)
+3. [Agent builds posts]        # the CREATIVE step — §D craft rules, zero questions
+4. npm run produce -- ship     # router-sync → preflight (self-heal) → certify → render → git commit
+```
+
+That is the entire day. No flags for normal operation; nothing to delete between batches; no
+confirmation prompts, waivers, or TUI stalls anywhere in the chain.
+
+### H.2 `produce` modes (the only commands an operator needs)
+
+| Command | What it does | Writes |
+|---|---|---|
+| `npm run produce` (prepare) | 1. `retire-batch.js` — non-target dates archive SHIPPED-AWARE (§H.3). 2. `downscale-assets.js` — raws → optimized (idempotent, slug-map history-safe). 3. Scaffolds `batch-01` ONLY when the day has no batch (mid-day prepares never fork a batch silently). 4. Kickoff report: context, manifest state, **photo ledger** (§H.4), next slug. | nothing else |
+| `npm run produce -- ship` | 1. Re-optimizes assets (idempotent). 2. Surgical router sync (`new-batch.js --sync-router`). 3. Full preflight: lint → check-paths (manifest 1:1 parity audit) → **photo-fit --fix** (self-healing ladder) → **verify-contrast** (browser authority, fail-closed). 4. `render-batch.js --no-preflight` renders every post with `--strict`. 5. Stamps the per-post SHIP-CERT line into manifest notes (marker-keyed, idempotent). 6. Prints the ship receipt; on a full pass, commits the day deterministically (§H.5). | compositions classes (heal rungs), index.html routes, renders/, manifest notes, one git commit |
+| `npm run produce -- status` | Pure read: date/batches/active/next slug, per-post composition+render state, contrast digest verdict, photo ledger. | nothing |
+
+Date basis and batch selection stay in `lib/batch-date.js` / `lib/batch-context.js`
+(`--date` > positional > `DK_BATCH_DATE` > local today; `--batch` > `DK_BATCH_ID` > highest
+batch dir). `npm run produce:daily` is a byte-for-byte alias of `npm run produce`.
+
+### H.3 Date rollover is settled by SHIPPED-AWARE retirement — never a question
+
+`retire-batch.js` classifies every non-target date folder before moving it, so the
+"archive yesterday's empty shells or carry them over?" question is answered by state, not by
+the operator:
+
+- `renders/<DATE>/` holds at least one file → that day WAS produced → `archive/stale-drafts/<DATE>/`
+  (immutable approved history).
+- `renders/<DATE>/` absent or empty → that day was abandoned mid-session →
+  `archive/unshipped/<DATE>/` (recoverable, clearly separated).
+- Every move is logged append-only to `archive/retire-log.json`; merge is non-destructive
+  (archive entries are never overwritten); `renders/` and target-date compositions are never touched.
+
+Raws left in `assets/raw/` across midnight are harmless: optimization is idempotent, and the
+**photo ledger** (§H.4) — not human memory — decides which optimized photos remain usable.
+
+### H.4 The photo ledger (consumed-vs-available, derived from evidence)
+
+`prepare` and `status` print a ledger computed by scanning today's manifests: every optimized
+photo referenced by ANY of today's batch compositions is **consumed**; every other file in
+`assets/raw/optimized/` is **available** for the next posts. Consequences:
+
+- Agents building a batch pick ONLY from the "available" list — the Scenario-B rule
+  "delete the previous batch's raws first" is retired (deleting raws is still fine for hygiene;
+  the ledger no longer depends on it).
+- `downscale-assets.js` never loses the mapping history: `slug-map.json` is MERGE-updated
+  (current sources + every already-consumed source) — the audit trail promised by §F.1 holds.
+- Unreferenced optimized copies whose raws are gone are reported as **stale inventory** every
+  run; `npm run optimize:assets -- --prune` deletes the unreferenced ones on demand.
+
+### H.5 Git archival is part of ship, not an operator chore
+
+A fully-certified ship ends with one deterministic commit:
+`ship(batch): <date> <batch> — N post(s) certified + rendered (zero-waiver preflight GREEN)`
+(`git add -A` respecting .gitignore; skipped cleanly when nothing changed; `--no-git` opts out;
+commit failure makes the batch RED but never destroys rendered artifacts). This closes the
+2026-10-22 residual where batches 01/02 shipped to the render loop but never reached git: a
+next-day retirement can only archive committed work.
+
+### H.6 Why there is no longer anything to confirm (gate semantics, recapped)
+
+| Old friction | §H resolution |
+|---|---|
+| "Ask me to confirm which photos to use" | Photo ledger lists the available inventory; the agent designs for exactly that list |
+| "Ask me which reference post" | Reference anchors live in `assets/references/`; plural-sufficiency is a §D craft rule, not a gate |
+| Interactive polar/contrast waivers | `photo-fit --fix` + `verify-contrast` reconcile through the declared engine ladder (`copy--ink` → `copy--shield` → `copy--shield--deep`; `bar-top--ink` → `bar-top--plate`) with NO prompts, NO waivers: worst-case is a RED ship demanding a copy/variant/photo change |
+| Grain/shadow-line false FAILs | p98 (2%-worst) verdict + 1.35 hard floor — single pixels of noise can no longer block a clean band; uniform dimness still fails deterministically |
+| "Confirm before triggering renders" | ship IS the confirmation: its preflight chain must be green or nothing renders |
+| Engine-vs-script geometry drift | photo-fit scrapes ALL consumed numbers live from `shared/*.css` (geometry custom properties, ramps, typography) — a design-sprint edit propagates by scrape, never by mirrored constants |
+
+### H.7 Vision-grounding remains a MODEL constraint (the one thing code cannot gate)
+
+§D Steps 1/3 (inspect EVERY optimized photo alone before writing copy; every copy claim must
+trace to the per-image inspection log; no material/apppliance/room invented) are UNCHANGED and
+non-negotiable — the pipeline can gate paths, geometry, and contrast, but cannot gate semantic
+truth. Operational hard rules for the composing session:
+
+1. Run production with a **vision-capable** model — filenames are not evidence (§D Step 1).
+2. Inspect images SEQUENTIALLY (one image per tool call) — batched reads evict earlier images
+   and silently destroy the evidence base (§F.8).
+3. Run design-mode `node scripts/photo-fit.js --photo <file>` per candidate BEFORE design
+   discussion; carry the viable variant × theme matrix into the grounding table (§F.8).
+4. If the composing session cannot actually see the photos, it must STOP and report missing
+   capability — never fabricate an inspection log.
+
+### H.8 Troubleshooting matrix (what a RED shows you)
+
+| Failure surface | Meaning | Operator action |
+|---|---|---|
+| `lint` RED | composition syntax/asset tracing | fix the named file (composition step), re-ship |
+| `check-paths` RED | depth drift, foreign path, manifest ≠ disk (orphans/missing) | follow the printed `fix:` line; re-ship |
+| `photo-fit` RED after `--fix` | TRUE defect — escalation ladder exhausted on ≥1 band | change copy (shorter), variant, theme, or photo for that post; re-ship |
+| `verify-contrast` RED | browser sampler disagrees post-reconcile | same as photo-fit RED — change copy/variant/photo; NEVER tune the gate |
+| render RED | hyperframes render `--strict` abort | inspect `.hyperframes/` diagnostics; re-ship |
+| ship receipt RED-suffix | some posts did not render | re-ship (git archival only fires on a full pass) |
+
+### H.9 Anti-regression invariants (protected by this section)
+
+1. `produce ship` never asks anything and never accepts a waiver — any future change that
+   reintroduces an interactive prompt or a waiver path is a regression against §H.6.
+2. `photo-fit` consumes engine numbers ONLY by live scrape from `shared/*.css` — adding a
+   hardcoded geometry constant there is a regression against the anti-drift contract.
+3. `slug-map.json` is append-history (merge, never clobber) — §H.4.
+4. Retirement classification is derived from `renders/` state — §H.3.
+5. Every certified day ends in git — §H.5.

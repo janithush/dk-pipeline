@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-22",
+  "batch": "batch-02",
+  "posts": [
+    {
+      "slug": "story-05",
+      "html": "compositions/2026-10-22/batch-02/story-05.html",
+      "output": "renders/2026-10-22/batch-02/story-05",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Cream shaker tall run with a black built-in microwave and wall oven in one framed column — the kitchen's heat, consolidated. Config: Photo 0K5A6408 · scrim--charcoal · copy--bottom-left WHITE STACK · bar-top--ink (ink brand 4.59 PASS = higher polar at the top-right bbox; white 3.79 FAIL — ink per §F.2 rule-polar). PHOTO-FIT FINAL (2026-10-22 gate run): eyebrow 3.79 FAIL · h1 14.71 PASS · cta 3.85 FAIL · brand 4.59 PASS. Variant×theme matrix flat (eyebrow 3.79-4.0 across both corners and themes; brand ink 4.59 best). WAIVER: 2 small-type bands (eyebrow/cta) re-waived by OPERATOR 2026-10-22 under batch-01 §A.4 instrument-artifact precedent (browser-sampler worst-pixel on small glyphs; rendered-frame ground truth governs) — post-render frame check ordered. POST-RENDER VERIFIED 2026-10-22: frame_000001.png inspected — eyebrow/cta bands legible, ink polar correct."
+    },
+    {
+      "slug": "story-06",
+      "html": "compositions/2026-10-22/batch-02/story-06.html",
+      "output": "renders/2026-10-22/batch-02/story-06",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Heavily veined marble-look splashback meets a black-framed window — twin goosenecks, one sink corner, everything grounded. Config: Photo 0K5A6443 · scrim--charcoal · copy--bottom-left WHITE STACK · bar-top WHITE POLAR (operator-ratified switch 2026-10-22: white brand 4.51 PASS vs ink 3.7 FAIL at the top-right bbox — shadowed corner-shelf cavity zone; §F.2 higher-figure rule). PHOTO-FIT FINAL (2026-10-22 gate run): eyebrow 3.4 FAIL · h1 13.96 PASS · cta 7.98 PASS · brand 4.51 PASS. Variant×theme matrix flat (eyebrow 3.4-3.58 across both corners and themes). WAIVER: 1 small-type band (eyebrow) re-waived by OPERATOR 2026-10-22 under batch-01 §A.4 instrument-artifact precedent — post-render frame check ordered. POST-RENDER VERIFIED 2026-10-22: frame_000001.png inspected — eyebrow legible, white polar correct in the shadowed ceiling corner."
+    },
+    {
+      "slug": "story-07",
+      "html": "compositions/2026-10-22/batch-02/story-07.html",
+      "output": "renders/2026-10-22/batch-02/story-07",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Glass-front shaker display of crystal stemware over a sage-green chevron splashback — the LED glow does the merchandising. Config: Photo DSC00747-RZ-Studios · scrim--charcoal · copy--bottom-left WHITE STACK · bar-top WHITE POLAR (operator-ratified switch 2026-10-22: white brand 6.43 PASS vs ink 2.44 FAIL at the top-right bbox — dark glass/shelf-cans zone; §F.2 higher-figure rule). PHOTO-FIT FINAL (2026-10-22 gate run): eyebrow 5.98 PASS · h1 14.88 PASS · cta 4.12 FAIL · brand 6.43 PASS. Variant×theme matrix flat (cta 4.12-4.27). WAIVER: 1 small-type band (cta) re-waived by OPERATOR 2026-10-22 under batch-01 §A.4 instrument-artifact precedent — post-render frame check ordered. POST-RENDER VERIFIED 2026-10-22: frame_000001.png inspected — cta legible, white polar correct over the glass cabinet zone."
+    },
+    {
+      "slug": "story-08",
+      "html": "compositions/2026-10-22/batch-02/story-08.html",
+      "output": "renders/2026-10-22/batch-02/story-08",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): First sunlight crosses the honey timber floorboards; the espresso machine warms up in the corner. Config: Photo DSC09173 · scrim--warm (golden-hour undertone — same call class as batch-01 story-02 warm daylight) · copy--bottom-left WHITE STACK · bar-top WHITE POLAR (operator-ratified switch 2026-10-22: white brand 5.11 PASS vs ink 2.69 FAIL at the top-right bbox — warm mid-toned cabinet/sun band; §F.2 higher-figure rule; the earlier in-house bright→ink call was superseded by the calibrated bbox probe). PHOTO-FIT FINAL (2026-10-22 gate run): ALL FOUR BANDS PASS (eyebrow 7.16 · h1 17.55 · cta 6.91 · brand 5.11) — no waiver required. POST-RENDER VERIFIED 2026-10-22: frame_000001.png inspected — all bands legible, white polar correct over the warm top-right wall."
+    }
+  ]
+}

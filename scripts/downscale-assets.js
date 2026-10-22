@@ -25,11 +25,13 @@ const { execFileSync } = require('child_process');
 const ROOT = process.cwd();
 const SRC_DIR = path.join(ROOT, 'assets', 'raw');
 const OUT_DIR = path.join(SRC_DIR, 'optimized');
+const COMPOSITIONS_REF_DIR = path.join(ROOT, 'compositions');
 
 const INGEST_MAX_BYTES = 15 * 1024 * 1024; // 15MB ingestion ceiling
 const OPT_MAX_BYTES = 2 * 1024 * 1024;     // optimized copy target: <= 2MB
 const MAX_DIM = 2048;                      // max width/height (px)
 const FORCE = process.argv.includes('--force');
+const PRUNE = process.argv.includes('--prune');
 
 // JPEG quality ladder (ffmpeg mjpeg qscale: lower = better quality).
 // Index 0 (~3) approximates libjpeg quality ~85%; we only step DOWN quality
@@ -287,12 +289,59 @@ for (const name of sources) {
 
 // P6 (2026-10-21 audit): persist the slug map so later steps (manifest build,
 // runbook review, incident forensics) can resolve safeName -> original name
-// without re-running the optimizer. Written once after the full scan so the
-// file always reflects the COMPLETE mapping for this run.
-if (seenSlugs.size > 0) {
-  const mapPath = path.join(OUT_DIR, 'slug-map.json');
-  fs.writeFileSync(mapPath, JSON.stringify(Object.fromEntries(seenSlugs), null, 2));
-  console.log(`\n◆ slug map persisted: ${path.relative(ROOT, mapPath)} (${seenSlugs.size} entr${seenSlugs.size === 1 ? 'y' : 'ies'})`);
+// without re-running the optimizer. MERGE-aware (2026-10-23 hardening): raws
+// are routinely deleted after a batch consumes them (intraday Scenario B),
+// so the map below carries BOTH the current sources' mapping AND the history
+// of already-consumed sources — a destructive rewrite would erase the audit
+// trail this file exists to provide.
+const mapPath = path.join(OUT_DIR, 'slug-map.json');
+if (seenSlugs.size > 0 || fs.existsSync(mapPath)) {
+  let existingMap = {};
+  try {
+    const parsed = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
+    if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) existingMap = parsed;
+    else if (fs.existsSync(mapPath)) throw new Error('slug-map.json is not an object');
+  } catch (err) {
+    console.warn(`⚠ slug-map.json unreadable (${err.message}) — starting a fresh mapping (history lost).`);
+  }
+  const merged = { ...existingMap, ...Object.fromEntries(seenSlugs) };
+  fs.writeFileSync(mapPath, JSON.stringify(merged, null, 2) + '\n');
+  console.log(`\n◆ slug map persisted: ${path.relative(ROOT, mapPath)} (${Object.keys(merged).length} entr${Object.keys(merged).length === 1 ? 'y' : 'ies'} — ${seenSlugs.size} current, ${Object.keys(merged).length - seenSlugs.size} historical)`);
+}
+
+// ── ORPHAN REPORT (2026-10-23 hardening) ────────────────────────────────
+// Optimized copies whose raw source is gone (deleted after consumption) are
+// NOT deleted silently — a retired batch's manifest in archive/ still names
+// them, and pruning could break forensics — but they are REPORTED so the next
+// composition step never mistakes stale inventory for today's shoot.
+// `--prune` deletes the ones no composition HTML still references.
+const currentSafe = new Set(seenSlugs.keys());
+const referenced = new Set();
+const scanRef = (dir) => {
+  if (!fs.existsSync(dir)) return;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) scanRef(p);
+    else if (e.name.endsWith('.html')) {
+      const h = fs.readFileSync(p, 'utf8');
+      for (const m of h.matchAll(/assets\/raw\/optimized\/([A-Za-z0-9._-]+\.(?:jpe?g|png))/gi)) referenced.add(m[1]);
+    }
+  }
+};
+scanRef(COMPOSITIONS_REF_DIR);
+const orphans = fs.existsSync(OUT_DIR)
+  ? fs.readdirSync(OUT_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f) && !currentSafe.has(f) && !referenced.has(f))
+  : [];
+if (orphans.length) {
+  console.log(`\n◆ orphaned optimized copies (source raw gone AND not referenced by any active composition): ${orphans.length}`);
+  for (const f of orphans) {
+    if (PRUNE) {
+      try { fs.unlinkSync(path.join(OUT_DIR, f)); console.log(`   ↷ pruned: assets/raw/optimized/${f}`); }
+      catch (err) { console.warn(`   ⚠ prune failed (${f}): ${err.message}`); }
+    } else {
+      console.log(`   · assets/raw/optimized/${f} — stale inventory (kept; run "npm run optimize:assets -- --prune" to remove)`);
+    }
+  }
 }
 
 console.log(`\n◆ Complete: ${optimized} downscaled, ${linked} linked/copied, ${unchanged} unchanged, ${failures.length} failed`);

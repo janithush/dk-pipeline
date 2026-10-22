@@ -1,68 +1,74 @@
 # dk-pipeline
 
-**dk-pipeline** is a headless HyperFrames static creative engine for producing high-fidelity marketing creatives (1080×1350 static posts) at daily volume — zero CDN, zero runtime, fully local font and asset pipeline.
+**dk-pipeline** is a headless HyperFrames static creative engine for producing high-fidelity
+Direct Kitchens Instagram/Facebook **Stories (1080×1920)** at daily volume — zero CDN, zero
+runtime, fully local font and asset pipeline, zero-friction automated production.
 
 ## Tech stack
 
 - **[HyperFrames](https://hyperframes.heygen.com)** `^0.8.163` — headless composition renderer / linter / validator
-- **Vanilla CSS Design Tokens** — `shared/token.css` is the single source of truth (semantic colors, type scale, spacing, shadow, motion)
+- **Vanilla CSS engine** — `shared/story-system.css` is the single source of layout truth (geometry lives in CSS custom properties that the validation scripts scrape live — scripts and styles are synchronized *by construction*)
 - **Self-hosted fonts** — `.woff2` binaries in `assets/fonts/`, `@font-face` declared in `shared/fonts.css` (no Google Fonts CDN, `font-display: swap` for headless-safe rendering)
-- **Node.js scripts** — `scripts/render-batch.js` drives the daily static-render loop with a `--strict` lint gate
+- **Node.js scripts** — `scripts/produce.js` drives the entire day; deterministic gates in `scripts/photo-fit.js` (WCAG oracle + self-heal ladder) and `scripts/verify-contrast.js` (browser-authority certification)
 
 ## Project structure
 
 ```
 dk-pipeline/
-├── index.html                      # lightweight router/manifest (data-composition-src only)
-├── package.json                    # scripts: lint, render:daily, render:post, snapshot
-├── package-lock.json
+├── index.html                      # lightweight router/manifest (data-composition-src only, 1080×1920)
+├── package.json                    # scripts: produce, ship, batch:new, preflight, optimize:assets, retire:batch, render:daily …
 ├── hyperframes.json                # paths (blocks/components/assets) + media.autoProxy
-├── .gitignore                      # node_modules, .hyperframes, renders, OS artifacts
-├── README.md
+├── .gitignore                      # node_modules, .hyperframes, renders, raw originals, OS artifacts
 ├── scripts/
-│   └── render-batch.js             # daily batch loop over batch-manifest.json (--strict)
-├── compositions/                   # working directory, regenerated daily
-│   ├── YYYY-MM-DD/
-│   │   ├── post-*.html / post-*.css
-│   │   └── batch-manifest.json
-│   └── archive/                    # read-only after client sign-off
-├── assets/                         # inputs only — never written by the pipeline
-│   ├── references/                 # client reference posts
-│   ├── raw/                        # client raw photos
-│   ├── logos/                      # logo.svg (master), logo.png (fallback)
-│   └── fonts/                      # .woff2 drop zone
-├── shared/                         # brand system
-│   ├── token.css                   # design tokens (single source of truth)
-│   ├── fonts.css                   # @font-face → assets/fonts/*.woff2
-│   ├── shared.css                  # primitives & utilities
-│   └── brand.css                   # brand marks (.dk-brand-logo dimensions)
-├── renders/                        # outputs (gitignored)
-│   └── YYYY-MM-DD/
-└── .hyperframes/                   # HyperFrames internal state (gitignored)
+│   ├── produce.js                  # operator entrypoint: prepare / ship / status (§H)
+│   ├── photo-fit.js                # gate: deterministic WCAG AA oracle + self-heal escalation ladder
+│   ├── verify-contrast.js          # gate: per-post browser-authority contrast certification
+│   ├── check-paths.js              # gate: fail-closed path + manifest-parity validation
+│   ├── new-batch.js                # intraday batch scaffolder + surgical router sync
+│   ├── render-batch.js             # strict render loop over the ACTIVE batch manifest
+│   ├── retire-batch.js             # shipped-aware stale-batch archivist + router cleanup
+│   ├── downscale-assets.js         # ffmpeg optimizer: raw → optimized (≤2048px, ≤2MB, slug-mapped)
+│   └── lib/                        # batch-date.js (local-calendar date truth) · batch-context.js (batch identity)
+├── compositions/YYYY-MM-DD/        # working directory: batch-XX/story-NN.html + Schema-v2 batch-manifest.json
+├── archive/                        # stale-drafts/ (shipped) · unshipped/ (abandoned) · retire-log.json
+├── assets/                         # inputs only: raw/ (originals) · raw/optimized/ (only render source) ·
+│                                   #   references/ · logos/ · fonts/
+├── shared/                         # story-system.css (engine) · token.css · fonts.css · brand.css · shared.css (legacy)
+├── renders/                        # outputs (gitignored): YYYY-MM-DD/batch-XX/<slug>/frame_000001.png
+└── PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md   # full architecture + runbooks (§A–§H)
 ```
 
-## Available npm scripts
-
-| Script | Command | Purpose |
-|--------|---------|---------|
-| `npm run lint` | `hyperframes lint` | Lint the project — gate must be `0 errors, 0 warnings` before any render |
-| `npm run render:daily` | `node scripts/render-batch.js` | Render today's batch as static PNGs into `renders/YYYY-MM-DD/` |
-| `npm run snapshot` | `hyperframes snapshot` | Spot-check a static frame from a composition |
-| `npm run validate` | `hyperframes validate` | Validate runtime (missing assets, headless font load, contrast) |
-| `npm run render:post` | `hyperframes render --composition` | Render a single composition strictly |
-
-## Daily production loop
+## Daily production loop (the operator's entire job)
 
 ```bash
-# 1. Lint — gate must be green
-npm run lint
-#   (fix any errors; re-run until: 0 error(s), 0 warning(s))
+# 1. Drop raw photos into assets/raw/
 
-# 2. Render the whole daily batch
-npm run render:daily
+# 2. Prepare the day (retire stale dates → optimize assets → scaffold batch → photo ledger)
+npm run produce
 
-# 3. Spot-check a frame
-npm run snapshot
+# 3. Build posts (agent/creative step — see PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md §D/§H)
+#    compositions/YYYY-MM-DD/batch-XX/<slug>.html + manifest entries
+
+# 4. Ship the batch (self-healing preflight → render → certify → git commit — unattended)
+npm run produce -- ship
 ```
 
-See `PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md` for the full operator prompt template and architecture blueprint.
+Multi-batch days: scaffold the next intraday batch with `npm run batch:new` (continuous slugs
+are automatic), build posts, then `npm run produce -- ship` again — earlier batches on the same
+day are never overwritten.
+
+## Key npm scripts
+
+| Script | Purpose |
+|--------|---------|
+| `npm run produce` | Prepare the production day (retire → optimize → scaffold → report) |
+| `npm run produce -- ship` | Certify + render + git-commit the active batch, unattended |
+| `npm run produce -- status` | Read-only state report (+ consumed/available photo ledger) |
+| `npm run batch:new` | Scaffold the next intraday batch (`--sync-router` appends router lines) |
+| `npm run preflight` | lint → check-paths → photo-fit `--fix` → verify-contrast (same chain ship runs) |
+| `npm run optimize:assets` | Re-optimize raws (`-- --prune` also removes stale unreferenced optimized copies) |
+| `npm run retire:batch` | Shipped-aware archival of stale dates + router cleanup |
+| `npm run render:daily` | Strict render loop for the active batch |
+
+Full architecture, engine contract (§F/§G), intraday multi-batch runbook (§F.9), and the
+zero-friction factory contract (§H): see **PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md**.

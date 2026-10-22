@@ -1,5 +1,5 @@
 // scripts/check-paths.js
-// Fail-closed relative-path validator for the ACTIVE batch.
+// Fail-closed relative-path + manifest-audit validator for the ACTIVE batch.
 //
 // Why this exists: HyperFrames lint SILENTLY SKIPS an unresolvable
 // `<link rel="stylesheet">` (collectLocalStylesheets `continue`s when the file
@@ -16,16 +16,25 @@
 //     (headless file:// cannot resolve them),
 //   - nothing may resolve outside the project root.
 //
+// MANIFEST AUDIT (§H.4 — zero-waiver contract): the ACTIVE batch manifest must
+// be in 1:1 parity with the compositions actually on disk:
+//   - every manifest post's html exists INSIDE this batch directory,
+//   - every composition html on disk is LISTED in the manifest (a file that is
+//     not listed would be rendered-never / gated-never — a silent orphan),
+//   - slug numbers unique; output unique and contained under THIS batch's
+//     render root (a foreign output path can never overwrite approved PNGs).
+//
 // Usage:
 //   node scripts/check-paths.js                    # active batch of today
 //   node scripts/check-paths.js --date 2026-10-21  # a specific date
 //   node scripts/check-paths.js --batch batch-02   # an explicit batch
-// Exit 0 = every path resolves. Exit 1 = diagnostics printed, nothing skipped.
+// Exit 0 = every path + manifest entry resolves. Exit 1 = diagnostics printed,
+// nothing skipped.
 
 const fs = require('fs');
 const path = require('path');
 const { resolveBatchDate, logResolved } = require('./lib/batch-date');
-const { resolveBatchContext, listBatches } = require('./lib/batch-context');
+const { resolveBatchContext, manifestSchemaError, listBatches } = require('./lib/batch-context');
 
 const ROOT = process.cwd();
 const ENGINE_CSS = path.join(ROOT, 'shared', 'story-system.css');
@@ -54,8 +63,22 @@ const files = fs.readdirSync(ctx.batchDir, { withFileTypes: true })
   .sort();
 
 if (files.length === 0) {
-  console.log(`\u26a0 0 composition HTML files in ${rel(ctx.batchDir)}/ \u2014 nothing to validate (batch not yet populated).`);
-  process.exit(0);
+  // Fail-open-fry guard: an empty batch folder is only benign when the manifest
+  // is also empty/absent. A manifest that LISTS posts but has no files on disk
+  // must still be audited below (each listed post fails "does not exist on disk")
+  // — never early-exit GREEN over a populated manifest.
+  let manifestEmpty = true;
+  if (fs.existsSync(ctx.manifestPath)) {
+    try {
+      const m = JSON.parse(fs.readFileSync(ctx.manifestPath, 'utf8'));
+      manifestEmpty = !Array.isArray(m.posts) || m.posts.length === 0;
+    } catch { manifestEmpty = false; } // corrupt manifest → the audit below reports it
+  }
+  if (manifestEmpty) {
+    console.log(`\u26a0 0 composition HTML files in ${rel(ctx.batchDir)}/ \u2014 nothing to validate (batch not yet populated).`);
+    process.exit(0);
+  }
+  console.log(`\u26a0 0 composition HTML files in ${rel(ctx.batchDir)}/ but the manifest lists posts — auditing the manifest below (fail-closed).`);
 }
 
 // ── Tag/attribute extraction ────────────────────────────────────────────
@@ -160,6 +183,90 @@ for (const name of files) {
     fail(name, `${engineLinks.length} stylesheet links declared`, 'engine contract (§G.8): exactly ONE stylesheet per composition',
       `keep only <link rel="stylesheet" href="${relFrom(dir, ENGINE_CSS)}">`);
   }
+}
+
+// ── MANIFEST AUDIT (fail-closed parity: disk ⇄ manifest) ────────────────
+if (fs.existsSync(ctx.manifestPath)) {
+  const manifest = JSON.parse(fs.readFileSync(ctx.manifestPath, 'utf8'));
+  const schemaErr = manifestSchemaError(ctx, manifest);
+  if (schemaErr) {
+    fail('(manifest)', 'manifest fails schema validation', schemaErr, 'correct manifest date/batch/posts fields before preflight');
+  } else {
+    const manifestTitled = `<manifest ${path.basename(ctx.manifestPath)}>`;
+    const diskHtml = new Set(files.map((f) => path.join(ctx.batchDir, f).toLowerCase()));
+    const listedHtml = new Set();
+    const slugNums = new Map();       // slug number → slug (duplicate detector)
+    const outputs = new Map();        // output → slug (collision detector)
+
+    for (const post of manifest.posts) {
+      const slug = String(post.slug || '');
+      const absHtmlClean = path.resolve(ROOT, String(post.html || ''));
+      const batchDirResolved = path.resolve(ctx.batchDir);
+
+      // html references this batch dir + exists on disk + no duplicates
+      if (path.relative(batchDirResolved, absHtmlClean).startsWith('..')) {
+        fail(manifestTitled, `[${slug}] html "${post.html}" lives outside ${rel(ctx.batchDir)}/`,
+          `resolved: ${rel(absHtmlClean)}`, 'manifest posts must point into the active batch folder');
+      } else if (!fs.existsSync(absHtmlClean) || !fs.statSync(absHtmlClean).isFile()) {
+        fail(manifestTitled, `[${slug}] html "${post.html}" does not exist on disk`,
+          null, 'create the composition (or fix the manifest path) before rendering');
+      } else if (!listedHtml.has(absHtmlClean.toLowerCase())) {
+        listedHtml.add(absHtmlClean.toLowerCase());
+        if (!diskHtml.has(absHtmlClean.toLowerCase())) {
+          // inside batch dir & exists but the dir listing disagrees → nested path mismatch
+          fail(manifestTitled, `[${slug}] html resolves into the batch dir but was not found by the disk scan`, null, null);
+        }
+      } else {
+        fail(manifestTitled, `[${slug}] html "${post.html}" is listed TWICE in the manifest`, null, 'one manifest entry per composition');
+      }
+
+      // slug number uniqueness (router ids derive from slug numbers)
+      const m = /story-(\d+)$/.exec(slug);
+      if (!m) {
+        fail(manifestTitled, `[${slug}] slug does not match story-NN — router ids (post-NN/dk-story-NN) derive from it`, null, 'rename the slug to story-NN');
+      } else if (slugNums.has(m[1])) {
+        fail(manifestTitled, `slug number ${m[1]} is used by both "${slugNums.get(m[1])}" and "${slug}" — intraday ids collide`, null, 'renumber (detectNextSlug rule: max+1, continuous)');
+      } else {
+        slugNums.set(m[1], slug);
+      }
+
+      // output uniqueness + containment under THIS batch's render root
+      const out = String(post.output || '').replace(/\\/g, '/');
+      if (!out) {
+        fail(manifestTitled, `[${slug}] output is empty`, null, `set output under ${ctx.renderRoot}/`);
+      } else {
+        if (outputs.has(out)) {
+          fail(manifestTitled, `output "${out}" is claimed by both "${outputs.get(out)}" and "${slug}" — renders would overwrite each other`, null, 'one distinct output dir per post');
+        } else {
+          outputs.set(out, slug);
+        }
+        const inside = out === ctx.renderRoot || out.startsWith(ctx.renderRoot + '/');
+        const intoNestedFromFlat = ctx.layout === 'flat' && out.startsWith(`${ctx.renderRoot}/batch-`);
+        if (!inside || out.split('/').includes('..') || intoNestedFromFlat) {
+          fail(manifestTitled, `[${slug}] output "${out}" escapes render root "${ctx.renderRoot}/" — approved PNG overwrite risk`,
+            null, `keep output under ${ctx.renderRoot}/<slug>/`);
+        }
+      }
+    }
+
+    // disk parity: every composition html on the disk must be in the manifest
+    for (const f of files) {
+      const abs = path.join(ctx.batchDir, f).toLowerCase();
+      if (!listedHtml.has(abs)) {
+        fail(manifestTitled, `composition "${f}" exists on disk but is NOT listed in the manifest — it would never be gated or rendered (silent orphan)`,
+          null, `add { slug, html: "${rel(path.join(ctx.batchDir, f))}", output: "${ctx.renderRoot}/<slug>" } to the manifest`);
+      }
+    }
+
+    if (manifest.posts.length === 0 && files.length === 0) {
+      console.log('◇ manifest audit: manifest + batch dir are both empty (fresh scaffold) — consistent.');
+    } else if (!problems.length) {
+      console.log(`◇ manifest audit: ${manifest.posts.length} post(s) ⇄ ${files.length} composition file(s) in 1:1 parity; outputs contained under ${ctx.renderRoot}/.`);
+    }
+  }
+} else if (files.length > 0) {
+  fail('(manifest)', `compositions exist in ${rel(ctx.batchDir)}/ but ${rel(ctx.manifestPath)} is missing — no post would ever be routed, gated, or rendered`,
+    null, `create the manifest (npm run batch:new scaffolds it) with an entry per composition`);
 }
 
 // ── Report ──────────────────────────────────────────────────────────────

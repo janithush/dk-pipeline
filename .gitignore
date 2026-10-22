@@ -7,6 +7,9 @@ node_modules/
 # Render output directory
 renders/
 
+# Playwright MCP scratch (probe sessions)
+.playwright-mcp/
+
 # OS artifacts
 .DS_Store
 Thumbs.db

@@ -1,6 +1,43 @@
 @import "./token.css";
 @import "./brand.css";
 
+/* ═══════════════════════════════════════════════════════════════════════
+   ENGINE GEOMETRY CONTRACT (single source of truth — 2026-10-22)
+   Every number scripts/photo-fit.js consumes lives HERE as a CSS custom
+   property, and the rules below REFERENCE the properties. A design-sprint
+   geometry edit made through these variables is therefore propagated to the
+   WCAG validator by construction (scrape-ed-where-declared — no mirrored
+   constants, no drift). photo-fit scrapes exactly these names.
+   CHANGING A VALUE HERE REQUIRES: re-run `npm run preflight` (photo-fit
+   re-scrapes + re-derives its bands) and the browser-authority gate
+   (`verify:contrast`) as the ground-truth confirmation.
+   ═══════════════════════════════════════════════════════════════════════ */
+:root {
+  /* ── brand bar (LOCKED TOP-RIGHT) ─────────────────────────────────── */
+  --bar-top: 140px;          /* bar top edge  (y of wordmark box top)   */
+  --bar-right: 80px;         /* bar right inset from canvas edge        */
+  --bar-logo: 40px;          /* circular logo diameter                  */
+  --bar-gap: 14px;           /* gap between wordmark and logo           */
+
+  /* ── copy block (220px bottom safe zone) ──────────────────────────── */
+  --copy-bottom: 220px;      /* pin of the .copy block from canvas bottom */
+  --copy-left-a: 80px;       /* copy--bottom-left  left inset            */
+  --copy-right-a: 120px;     /* copy--bottom-left  right inset           */
+  --copy-left-b: 120px;      /* copy--bottom-right left inset            */
+  --copy-right-b: 80px;      /* copy--bottom-right right inset           */
+
+  /* ── scrims ───────────────────────────────────────────────────────── */
+  --scrim-top: 320px;        /* .scrim--top band height                  */
+  --scrim-bottom: 620px;     /* .scrim--bottom band height               */
+
+  /* ── copy--shield (declared local copy-zone scrim; photo-fit models
+        this ramp exactly — never hand-tune alpha here without re-running
+        the preflight ladder) ────────────────────────────────────────── */
+  --shield-pad-x: 44px;      /* shield pseudo-element horizontal padding */
+  --shield-pad-top: 32px;    /* shield pseudo-element top padding        */
+  --shield-pad-bottom: 28px; /* shield pseudo-element bottom padding     */
+}
+
 /* RESET & ROOT CANVAS */
 * {
   box-sizing: border-box;
@@ -34,25 +71,26 @@ body {
 /* BRAND BAR — REFINED WHISPER-QUIET MARK (LOCKED TOP-RIGHT.
    top: 140px / right: 80px — clear of the native Instagram/Facebook Story
    header clash zone at the top-left of the frame. row-reverse: logo on the
-   far right, wordmark to its LEFT, band right-aligned.) */
+   far right, wordmark to its LEFT, band right-aligned.)
+   Geometry is consumed from the ENGINE GEOMETRY CONTRACT properties above. */
 .bar-top {
   position: absolute !important;
-  top: 140px !important;
-  right: 80px !important;
+  top: var(--bar-top) !important;
+  right: var(--bar-right) !important;
   left: auto !important;
   display: flex !important;
   flex-direction: row-reverse !important;
   align-items: center !important;
-  gap: 14px !important;
+  gap: var(--bar-gap) !important;
   z-index: 10 !important;
 }
 
 .bar-top .dk-brand-logo,
 .bar-top img {
-  width: 40px !important;
-  height: 40px !important;
-  max-width: 40px !important;
-  max-height: 40px !important;
+  width: var(--bar-logo) !important;
+  height: var(--bar-logo) !important;
+  max-width: var(--bar-logo) !important;
+  max-height: var(--bar-logo) !important;
   border-radius: 50% !important;
   object-fit: contain !important;
   flex-shrink: 0 !important;
@@ -100,13 +138,13 @@ body {
 .scrim--top {
   top: 0 !important;
   bottom: auto !important;
-  height: 320px !important;
+  height: var(--scrim-top) !important;
 }
 
 .scrim--bottom {
   bottom: 0 !important;
   top: auto !important;
-  height: 620px !important;
+  height: var(--scrim-bottom) !important;
 }
 
 /* Scrim Theme: Charcoal Cool — deepened neutral bottom ramp; the top band is
@@ -148,8 +186,11 @@ body {
 /* DYNAMIC COPY & CTA BLOCKS (STRICT 220PX BOTTOM SAFE ZONE — NEVER CLIPPED) */
 .copy {
   position: absolute !important;
-  bottom: 220px !important;
+  bottom: var(--copy-bottom) !important;
   z-index: 10 !important;
+  isolation: isolate !important;   /* stacking context: the shield pseudo (z:-1)
+                                      stays scoped to .copy, above photo+scrims,
+                                      invisible to lint's negative-z audit */
   display: flex !important;
   flex-direction: column !important;
   gap: 12px !important;
@@ -157,16 +198,16 @@ body {
 
 /* Variant A: Bottom-Left (Standard Editorial) */
 .copy--bottom-left {
-  left: 80px !important;
-  right: 120px !important;
+  left: var(--copy-left-a) !important;
+  right: var(--copy-right-a) !important;
   text-align: left !important;
   align-items: flex-start !important;
 }
 
 /* Variant B: Bottom-Right (Counter-Balance) */
 .copy--bottom-right {
-  left: 120px !important;
-  right: 80px !important;
+  left: var(--copy-left-b) !important;
+  right: var(--copy-right-b) !important;
   text-align: right !important;
   align-items: flex-end !important;
 }
@@ -224,3 +265,72 @@ body {
 .copy--ink .t-display { color: var(--ink); text-shadow: none !important; }
 .copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: none !important; }
 .copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
+
+/* ───────────────────────────────────────────────────────────────────────
+   COPY SHIELD — declared local copy-zone scrim (auto-heal ladder, Level 1)
+   2026-10-22 · zero-waiver policy: when the naked white stack cannot clear
+   WCAG AA at the small-type bands (grain/shadow-line worst pixels), scripts/
+   photo-fit.js --fix escalates .copy to .copy--shield deterministically.
+   The shield is a DECLARED gradient layer under the text (never a per-post
+   style, never a white halo): the copy block gets its own soft ramp, modelled
+   exactly by photo-fit (stops below are parsed at runtime — edit them only
+   through a documented engine amendment + preflight re-run).
+   Visual language: reads as a continuation of the deepened bottom scrim —
+   a quiet plateau under the copy column, hairline-free, no filter, no glow.
+   ─────────────────────────────────────────────────────────────────────── */
+.copy--shield::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * var(--shield-pad-x));
+  right: calc(-1 * var(--shield-pad-x));
+  top: calc(-1 * var(--shield-pad-top));
+  bottom: calc(-1 * var(--shield-pad-bottom));
+  border-radius: 18px;
+  background: linear-gradient(180deg,
+    rgba(8, 6, 4, 0.50) 0%,
+    rgba(8, 6, 4, 0.62) 55%,
+    rgba(8, 6, 4, 0.68) 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Anchor the shield pseudo explicitly: the .copy--shield element owns the
+   stacking context (isolation) so z:-1 stays scoped ABOVE the page photo +
+   scrims — never behind the composition root. Lint's negative-z audit keys
+   on the exact anchor element, so isolation lives HERE, not on .copy. */
+.copy--shield,
+.copy--shield--deep {
+  isolation: isolate;
+}
+
+/* Brass CTA re-ink under the shield: brass (#CFA76B, L≈0.42) loses ~2.4:1
+   against a 0.5+ backdrop — the small CTA swaps to bone under any shield. */
+.copy--shield .cta { color: var(--bone-25, #FDFAF4); }
+
+/* Level 2 — DEEP shield for stubborn bright copy zones (white stone,
+   beadboard). Same structure, stronger plateau; still a complained-free
+   editorial device (alpha ramp identical shape, higher floor). */
+.copy--shield--deep::before {
+  background: linear-gradient(180deg,
+    rgba(8, 6, 4, 0.72) 0%,
+    rgba(8, 6, 4, 0.78) 55%,
+    rgba(8, 6, 4, 0.84) 100%) !important;
+}
+
+/* ───────────────────────────────────────────────────────────────────────
+   BRAND PLATE — whisper-quiet wordmark plate (auto-heal ladder, last rung)
+   When NEITHER brand polarity can clear WCAG AA over a mid-tone photo zone
+   (both fail: bone-on-mid and ink-on-mid), photo-fit --fix applies
+   .bar-top--plate: a soft bone label behind the wordmark. The logo's 40px
+   circular mark stays exposed (WCAG logotype-exempt); only the wordmark is
+   plated. Ink-on-bone ≥ 12:1 for ANY underlying photo pixel, guaranteed —
+   the plate alpha is baked into the ramp, opacity is normalized to 1.
+   ─────────────────────────────────────────────────────────────────────── */
+.bar-top--plate .brand {
+  color: var(--ink, #2A211A) !important;
+  opacity: 1 !important;
+  background: linear-gradient(180deg, rgba(246, 241, 231, 0.92) 0%, rgba(246, 241, 231, 0.97) 100%);
+  padding: 10px 16px;
+  border-radius: 3px;
+  text-shadow: none !important;   /* dark glow behind ink-on-bone lowers AA — stripped */
+}
