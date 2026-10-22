@@ -31,12 +31,17 @@ body {
   object-fit: cover;
 }
 
-/* BRAND BAR — REFINED WHISPER-QUIET MARK (LOCKED AT TOP SAFE ZONE) */
+/* BRAND BAR — REFINED WHISPER-QUIET MARK (LOCKED TOP-RIGHT.
+   top: 140px / right: 80px — clear of the native Instagram/Facebook Story
+   header clash zone at the top-left of the frame. row-reverse: logo on the
+   far right, wordmark to its LEFT, band right-aligned.) */
 .bar-top {
   position: absolute !important;
   top: 140px !important;
-  left: 80px !important;
+  right: 80px !important;
+  left: auto !important;
   display: flex !important;
+  flex-direction: row-reverse !important;
   align-items: center !important;
   gap: 14px !important;
   z-index: 10 !important;
@@ -58,6 +63,7 @@ body {
   font-size: 13px !important;
   font-weight: 500 !important;
   letter-spacing: 0.28em !important;
+  text-align: right !important;
   text-transform: uppercase !important;
   color: #ffffff !important;
   line-height: 1 !important;
@@ -74,13 +80,15 @@ body {
 }
 
 /* DYNAMIC SCRIM VARIANTS (COLOR-ADAPTIVE) */
-/* Airy architectural scrims — translucent vignettes, NO blackouts. Max alpha
-   stays ≤0.70 so the photography keeps its editorial luminance and detail;
-   text legibility is carried by the cinematic text-shadow layer below.
-   Edge resets are explicit: the router also loads legacy shared.css whose
-   `.scrim { inset: 0 }` would otherwise pin `top: 0` on BOTH spans, which
-   CSS then honours over `bottom` (over-constrained) and flips the bottom
-   scrim to the top of the frame. */
+/* Top: an ARCHITECTURAL VIGNETTE anchored TOP-RIGHT (ellipse at 100% 0%),
+   mirroring the top-right brand bar; stays airy (≤0.45 linear + 0.50 radial
+   cap) so the header zone keeps editorial luminance. Bottom: DEEPENED
+   (620px, alpha peak 0.85) — the primary legibility floor for crisp white
+   typography over bright material detail; cinematic text shadows remain as
+   depth garnish. Edge resets are explicit: the router also loads legacy
+   shared.css whose `.scrim { inset: 0 }` would otherwise pin `top: 0` on
+   BOTH spans, which CSS then honours over `bottom` (over-constrained) and
+   flips the bottom scrim to the top of the frame. */
 .scrim {
   position: absolute;
   left: 0;
@@ -98,23 +106,25 @@ body {
 .scrim--bottom {
   bottom: 0 !important;
   top: auto !important;
-  height: 520px !important;
+  height: 620px !important;
 }
 
-/* Scrim Theme: Charcoal Cool — Soft Neutral Vignette */
+/* Scrim Theme: Charcoal Cool — deepened neutral bottom ramp; the top band is
+   the shared TOP-RIGHT architectural vignette (identical for both themes). */
 .scrim--charcoal .scrim--top {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.40) 0%, rgba(0, 0, 0, 0.15) 50%, rgba(0, 0, 0, 0) 100%) !important;
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
 }
 .scrim--charcoal .scrim--bottom {
-  background: linear-gradient(0deg, rgba(12, 12, 14, 0.65) 0%, rgba(12, 12, 14, 0.35) 50%, rgba(0, 0, 0, 0) 100%) !important;
+  background: linear-gradient(0deg, rgba(12, 12, 14, 0.85) 0%, rgba(12, 12, 14, 0.48) 50%, rgba(12, 12, 14, 0) 100%) !important;
 }
 
-/* Scrim Theme: Warm Amber — Soft Amber-Toned Vignette */
+/* Scrim Theme: Warm Amber — deepened warm bottom ramp; the top band is the
+   shared TOP-RIGHT architectural vignette (identical for both themes). */
 .scrim--warm .scrim--top {
-  background: linear-gradient(180deg, rgba(20, 14, 8, 0.45) 0%, rgba(20, 14, 8, 0.18) 50%, rgba(0, 0, 0, 0) 100%) !important;
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
 }
 .scrim--warm .scrim--bottom {
-  background: linear-gradient(0deg, rgba(24, 16, 10, 0.70) 0%, rgba(24, 16, 10, 0.40) 50%, rgba(0, 0, 0, 0) 100%) !important;
+  background: linear-gradient(0deg, rgba(24, 16, 10, 0.85) 0%, rgba(24, 16, 10, 0.52) 50%, rgba(24, 16, 10, 0) 100%) !important;
 }
 
 /* CINEMATIC TEXT SHADOWS — multi-layered typography depth.
@@ -161,14 +171,6 @@ body {
   align-items: flex-end !important;
 }
 
-/* Variant C: Symmetrical Center (Architectural Feature) */
-.copy--centered {
-  left: 80px !important;
-  right: 80px !important;
-  text-align: center !important;
-  align-items: center !important;
-}
-
 /* EDITORIAL TYPOGRAPHY */
 .t-eyebrow {
   font-family: var(--sans);
@@ -207,14 +209,18 @@ body {
 }
 
 /* ───────────────────────────────────────────────────────────────────────
-   INK-ON-LIGHT COPY TREATMENT (additive, 2026-10-21)
+   INK-ON-LIGHT COPY TREATMENT (additive, 2026-10-21 · halos stripped 2026-10-22)
    For bright photography surfaces (white stone, beadboard) where the
    white/bone copy stack cannot clear WCAG AA. Opt-in via .copy--ink on the
    <section class="copy"> element. Geometry, positioning, and every existing
-   class above remain byte-functional — these rules only recolor + add a
-   light-halo text-shadow so dark ink stays legible over highlights.
+   class above remain byte-functional — these rules ONLY recolor. Every halo
+   text-shadow is stripped: white glows produced muddy halos over highlights,
+   and `text-shadow: none !important` also overrides the base classes' dark
+   cinematic stacks, so dark ink never renders inside any glow. Legibility
+   over bright surfaces is carried by composition + the deepened bottom
+   scrim, never by shadows.
    ─────────────────────────────────────────────────────────────────────── */
-.copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: 0 1px 8px rgba(255,255,255,.6), 0 2px 16px rgba(255,255,255,.45); }
-.copy--ink .t-display { color: var(--ink); text-shadow: 0 2px 12px rgba(255,255,255,.55), 0 4px 24px rgba(255,255,255,.4); }
-.copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: 0 1px 8px rgba(255,255,255,.7); }
+.copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: none !important; }
+.copy--ink .t-display { color: var(--ink); text-shadow: none !important; }
+.copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: none !important; }
 .copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }

@@ -3,7 +3,7 @@
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
 **Engine:** HyperFrames `v0.8.163` (devDependency)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
-**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21
+**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 
 ---
@@ -70,7 +70,7 @@ dk-pipeline/
 | **Fonts** | Local `@font-face` in `shared/fonts.css` → `assets/fonts/*.woff2`; no external CDN at render time. Headless-safe by design (verified 2026-10-21). |
 | **Design tokens** | `token.css` is a clean single source of truth (semantic colors, type scale, spacing, shadow, motion); the engine consumes only token-declared aliases. |
 | **Engine vocabulary** | `.frame`, `.scrim`, `.copy` variants, `.t-eyebrow`/`.t-display`/`.cta`, `bar-top--ink` live in `shared/story-system.css` — one stylesheet drives every story (§F.2). Legacy `.rule-*`/`.plus`/`.diamond` primitives are frozen (hairline budget = 0). |
-| **Logo sizing** | Clamped by the engine: 40×40px circular mask at `top:140px / left:80px` (§G.2); logo markup is byte-identical across posts — no per-post CSS. |
+| **Logo sizing** | Clamped by the engine: 40×40px circular mask at `top:140px / right:80px` — brand bar anchored TOP-RIGHT (§G.2); logo markup is byte-identical across posts — no per-post CSS. |
 | **CLI works** | `hyperframes lint`, `check`, `render`, `snapshot` present and functional at v0.8.163 (`validate` deprecated in favor of `check`). |
 | **Output dir wired** | `hyperframes.json` `"paths": { "assets": "assets" }` and `.hyperframes/render-outputs.json` `["renders"]`. |
 | **Single-engine isolation** | Every composition links exactly one stylesheet (the engine), so there is no cross-post bleed; the router loads only `data-composition-src` documents. |
@@ -499,7 +499,7 @@ You are acting as my Creative Technologist / Frontend Architect for today's dail
 ## STEP 3 — DESIGN DISCUSSION (interactive) + GROUNDING VERIFICATION
 Before writing code, discuss with me:
 - Visual elements from the reference: photo treatment, masking, background/scrim, keylines, ornaments.
-- Layout: photo placement, copy block position, brand bar position, safe areas.
+- Layout: photo placement, copy block position, safe areas — and the BRAND BAR IS LOCKED TOP-RIGHT: positioned `top: 140px / right: 80px`, logo on the far right, wordmark to its LEFT (flex row-reverse). Never top-left: that zone collides with the native Instagram/Facebook Story header. The bar is engine-owned (`.bar-top`) — never reposition it per post.
 - Copy placement and actual headline/eyebrow/body text for each post.
 - Brand logo: which mark (SVG preferred). Check whether assets/logos/logo.svg exists; if it does not, cleanly fall back to assets/logos/logo.png. Logo sizing is centralized in shared/brand.css — never discuss per-post logo sizing.
 - Format/ratio: **DEFAULT = Story (9:16 - 1080×1920).** The engine (`shared/story-system.css`) hard-codes `.frame`/`.photo--full` to 1080×1920, so Story is the ONLY ratio that renders without a design-sprint engine change (§F.2). Only ask me **"What format/ratio are we creating today for this post/batch?"** if I previously requested another ratio; options are:
@@ -534,10 +534,10 @@ Confirm each post's design with me before composing.
 For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-post .css files are FORBIDDEN — see §F): INTRADAY, when today's folder already contains a batch, the file goes into compositions/YYYY-MM-DD/batch-XX/ instead — run `npm run batch:new` FIRST (it creates the folder + Schema-v2 manifest and prints the first CONTINUOUS slug); §F.9 governs intraday runs:
 - Root: data-composition-id="dk-<slug>", data-duration="0.033", data-no-timeline, data-width="1080" data-height="1920" (Story 9:16 — the default and only engine-supported ratio; see §F.2). **Composition root dimensions must exactly match the index.html root canvas.**
 - Imports: ../../shared/story-system.css ONLY (it @imports token.css + brand.css internally). Do NOT link shared.css, token.css, or any per-post stylesheet. INSIDE a batch-XX/ folder the SAME links are DEPTH 3: ../../../shared/story-system.css and ../../../assets/... (../../ there is one level short and silently unstyles the render — `npm run check:paths` fails closed on it); root-absolute "/shared/..." is forbidden (headless file:// cannot resolve it). See §F.9.
-- Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps it to a 40×40px circle anchored at top 140px / left 80px. **No per-post logo CSS.**
-- **Brand contrast rule:** if the photo's top-left region is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
+- Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps the logo to a 40×40px circle and anchors the bar STRICTLY TOP-RIGHT at top 140px / right 80px (flex row-reverse — logo on the far right, wordmark to its LEFT). Never top-left, where it collides with the native Instagram/Facebook Story header. **No per-post logo CSS.**
+- **Brand contrast rule:** if the photo's TOP-RIGHT region behind the bar is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
 - **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
-- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of the three variants (`copy--bottom-left`, `copy--bottom-right`, `copy--centered`). The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
+- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of EXACTLY TWO variants: `copy--bottom-left` or `copy--bottom-right`. ~~`copy--centered`~~ is permanently ELIMINATED from the engine — never emit it. The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
 - Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`. INTRADAY: add it to the ACTIVE batch's own manifest at compositions/YYYY-MM-DD/batch-XX/batch-manifest.json — Schema v2 `{"date":"YYYY-MM-DD","batch":"batch-XX","posts":[{"slug":"story-04",...}]}` with output renders/YYYY-MM-DD/batch-XX/<slug> (§F.9).
@@ -656,13 +656,16 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 - Composition imports: `../../shared/story-system.css` ONLY (it @imports token.css, fonts.css,
   brand.css). No per-post CSS. No inline styles except data-* timing attributes.
 - Classes: `.frame`; `.photo.photo--full` + `.scrim.scrim--top|bottom`; scrim themes
-  `.scrim--charcoal` (cool/neutral undertone photos) or `.scrim--warm` (amber/warm undertone);
-  `.bar-top` (locked top:140/left:80, logo clamp 40×40) always = `<img class="dk-brand-logo">`
-  + `<p class="brand">Direct Kitchens</p>`; `.copy.copy--bottom-left|--bottom-right|--centered`
-  (pinned bottom:220px) plus the ADDITIVE `.copy--ink` color variant for bright surfaces (§G.9);
+  `.scrim--charcoal` (cool/neutral undertone photos) or `.scrim--warm` (amber/warm undertone) —
+  themes differ ONLY in the deepened bottom ramp; the top band is a shared TOP-RIGHT vignette;
+  `.bar-top` (LOCKED TOP-RIGHT: top:140/right:80, logo far right + wordmark to its LEFT;
+  logo clamp 40×40) always = `<img class="dk-brand-logo">`
+  + `<p class="brand">Direct Kitchens</p>`; `.copy.copy--bottom-left|--bottom-right` — EXACTLY
+  TWO variants (`.copy--centered` PERMANENTLY ELIMINATED), pinned bottom:220px, plus the
+  ADDITIVE `.copy--ink` color variant for bright surfaces, halo text-shadows stripped (§G.9);
   `.t-eyebrow`, `.t-display` (+`<span class="serif-accent">` italic),
   `.cta`.
-- BRAND-ON-PHOTO RULE: if the photo's top-left region is bright (white/cream), the header MUST
+- BRAND-ON-PHOTO RULE: if the photo's TOP-RIGHT region behind the bar is bright (white/cream), the header MUST
   be `class="bar-top bar-top--ink"` (dark ink variant `var(--ink, #1a1a1a)`; WCAG AA ≥4.5:1).
   White brand text is for dark-topped photos only. This is not optional — `check` fails otherwise,
   and `npm run photo-fit`'s brand band row verifies it per post (§F.4).
@@ -765,6 +768,16 @@ the daily run where they overlap §D — they are carried WITH §D exactly like 
 - **Exit criteria (§D end of run):** slug map persisted (`assets/raw/optimized/slug-map.json`);
   every grounding table carries its Contrast pre-check row; photo-fit green (0 FAIL bands,
   exit 0) before renders are approved.
+- **2026-10-22 engine amendment (design-sprint, RATIFIED — authoritative):** `.bar-top` is
+  LOCKED TOP-RIGHT (`top: 140px / right: 80px`, flex `row-reverse` — logo on the far right,
+  wordmark to its LEFT; the top-left native Instagram/Facebook Story header clash zone is
+  abandoned permanently); `.copy--centered` is ELIMINATED — exactly two copy variants exist
+  (`copy--bottom-left`, `copy--bottom-right`); `.scrim--bottom` is DEEPENED (620px, 0.85 peak)
+  as the primary legibility floor for crisp white typography and `.copy--ink` renders clean
+  ink with every halo text-shadow stripped (`text-shadow: none`). TOP-RIGHT anchoring moves
+  the `bar-top--ink` inspection region from the photo's top-LEFT to its top-RIGHT. §D Steps
+  3–4 were updated in the same ratification — that supersedes the byte-identical §D sanctuary
+  for these steps only.
 
 ### F.9 INTRADAY MULTI-BATCH RUNBOOK (Model A — added 2026-10-21)
 
@@ -874,7 +887,10 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 ### G.2 Brand safety — logo clamp (LOCKED)
 
 ```css
-.bar-top { top: 140px; left: 80px; display: flex; align-items: center; gap: 14px; z-index: 10; }
+/* Brand bar LOCKED TOP-RIGHT (clear of the native IG/FB Story header zone): */
+.bar-top { top: 140px; right: 80px; left: auto; display: flex; flex-direction: row-reverse;
+           align-items: center; gap: 14px; z-index: 10; }
+.bar-top .brand { text-align: right; }   /* wordmark right-aligned against the logo */
 .bar-top .dk-brand-logo,
 .bar-top img { width: 40px; height: 40px; max-width: 40px; max-height: 40px;
                border-radius: 50%; object-fit: contain; flex-shrink: 0; }
@@ -884,7 +900,7 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 .bar-top--ink .brand { color: var(--ink, #1a1a1a) !important; }
 ```
 
-- **40×40px circular clamp**, anchored at `top: 140px / left: 80px` — inside the 9:16 top safe zone, never obstructing central photography.
+- **40×40px circular clamp**, anchored at `top: 140px / right: 80px` — TOP-RIGHT of the 9:16 frame, well clear of the native Instagram/Facebook Story header zone at top-left, and never obstructing central photography. The logo sits flush right; `row-reverse` places the wordmark to its LEFT.
 - Header markup on every post (logo + wordmark pairing is invariant; only the wrapper class varies):
   ```html
   <!-- dark-topped photo (default) -->
@@ -899,7 +915,7 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
     <p class="brand">Direct Kitchens</p>
   </header>
   ```
-- **Selection rule (§F.2):** white brand text over a bright top-left region fails WCAG AA (measured 2.3–2.7:1) — use `bar-top--ink` whenever the region behind the bar is high-key. Apply by INSPECTION, verified per post by `npm run photo-fit`'s brand band row (the `check` sampler only measures story-01 inside the router — §F.4).
+- **Selection rule (§F.2):** white brand text over a bright TOP-RIGHT region (behind the anchored bar) fails WCAG AA — use `bar-top--ink` whenever that region is high-key. Apply by INSPECTION, verified per post by `npm run photo-fit`'s brand band row (the `check` sampler only measures story-01 inside the router — §F.4).
 
 ### G.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
 
@@ -909,39 +925,39 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 ```
 
 - Every `.copy` block is pinned **220px** from the bottom edge — above the platform reply-bar/sticker band. Copy and CTA are **never clipped**.
-- Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`, `copy--centered` → `left: 80px; right: 80px`.
+- Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`. `.copy--centered` is PERMANENTLY ELIMINATED — exactly these two variants exist.
 
 ### G.4 Controlled editorial dynamism — layout variants
 
-Determinism at the system level, variety at the selection level. Each post picks **one** copy variant; the engine renders it identically every time.
+Determinism at the system level, variety at the selection level. Each post picks **one** of EXACTLY TWO copy variants; the engine renders it identically every time.
 
 | Variant | Class | Behaviour | Use when |
 |---|---|---|---|
 | **A — Bottom-Left** | `.copy--bottom-left` | Left-aligned, standard editorial anchor | Default; hero left of frame |
 | **B — Bottom-Right** | `.copy--bottom-right` | Right-aligned counter-balance | Visual mass sits left of frame |
-| **C — Centered** | `.copy--centered` | Symmetrical, architectural | Single strong central feature |
+
+> **PERMANENTLY ELIMINATED (ratified 2026-10-22):** the former **Variant C — Centered** (`.copy--centered`) is struck from the engine and the contract. Only Variants A and B exist — never emit `copy--centered` in a composition, manifest, or prompt.
 
 ### G.5 Controlled editorial dynamism — scrim themes (color-adaptive)
 
-Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **520px**) and differ only in undertone, so contrast behaviour is predictable.
+Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **620px** — height deepened 2026-10-22) and now differ ONLY in the bottom undertone ramp. The `.scrim--top` band is a unified **TOP-RIGHT architectural vignette** — anchored at `100% 0%` to mirror the top-right brand bar — shared identically by both themes: `radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)`.
 
 | Theme | Class | Undertone | Apply to |
 |---|---|---|---|
-| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black (`rgba(0,0,0,·)` top / `rgba(12,12,14,·)` bottom) | Marble, white stone, cool utilities, greige |
-| **Warm Amber** | `scrim--warm` | Warm brown-black (`rgba(20,14,8,·)` top / `rgba(24,16,10,·)` bottom) | Spotted gum, warm joinery, amber lighting, timber floors |
+| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black bottom ramp (`rgba(12,12,14,·)`); top vignette shared & neutral | Marble, white stone, cool utilities, greige |
+| **Warm Amber** | `scrim--warm` | Warm brown-black bottom ramp (`rgba(24,16,10,·)`); top vignette shared & neutral | Spotted gum, warm joinery, amber lighting, timber floors |
 
-**Actual alpha ramps (as implemented — intentionally AIRY, max alpha ≤0.70).** Scrims deliberately keep editorial luminance and material detail; they are NOT the primary legibility mechanism. Text legibility is carried by the engine's multi-layer `text-shadow` depth on `.t-eyebrow`/`.t-display`/`.cta`, and brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha. Ramps are linear across the stated stops:
+**Actual alpha ramps (as implemented — top vignette AIRY, bottom DEEPENED 2026-10-22, max alpha 0.85).** The deepened 620px bottom scrim is now the primary legibility floor — it guarantees crisp white typography over bright material detail at the copy zone. The top vignette stays airy (≤0.50 radial cap + ≤0.45 linear) so the header zone keeps editorial luminance; brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha; the cinematic text-shadow stacks on `.t-eyebrow`/`.t-display`/`.cta` remain as depth garnish — and `.copy--ink` renders with NO halos at all (§G.9). Bottom ramps are linear across the stated stops:
 
 | Ramp | Stops (position % → alpha) |
 |---|---|
-| `.scrim--charcoal .scrim--top` (180deg) | `0%→0.40, 50%→0.15, 100%→0` |
-| `.scrim--charcoal .scrim--bottom` (0deg) | `0%→0.65, 50%→0.35, 100%→0` |
-| `.scrim--warm .scrim--top` (180deg) | `0%→0.45, 50%→0.18, 100%→0` |
-| `.scrim--warm .scrim--bottom` (0deg) | `0%→0.70, 50%→0.40, 100%→0` |
+| `.scrim--{charcoal\|warm} .scrim--top` (shared, 0deg anchor `100% 0%`) | radial ellipse: peak `0.50` at `0%` fading to `transparent` by `65%` of the axis • linear 180deg: `0%→0.45, 50%→0.18, 100%→0` |
+| `.scrim--charcoal .scrim--bottom` (0deg) | `0%→0.85, 50%→0.48, 100%→0` |
+| `.scrim--warm .scrim--bottom` (0deg) | `0%→0.85, 50%→0.52, 100%→0` |
 
 **Edge-reset invariant.** The router also loads legacy `shared/shared.css`, whose `.scrim { inset: 0 }` pins `top: 0` on both scrim spans — CSS then honours `top` over `bottom` (over-constrained) and flips the bottom scrim to the top of the frame. `story-system.css` therefore resets `top: auto; bottom: auto` on `.scrim` and sets one explicit edge per variant. Do not remove these resets.
 
-**Verification (2026-10-21 — authoritative command).** `hyperframes check`'s contrast sampler only measures text inside the router canvas, which contains story-01 alone. The all-posts contrast authority is **`npm run photo-fit`** (`node scripts/photo-fit.js`): gate mode reads `compositions/YYYY-MM-DD/batch-manifest.json` and evaluates every text band of every post (eyebrow / h1 / cta / brand) against WCAG AA — 4.5:1 small, 3.0:1 large — at the worst-case pixel, composited with these scrim ramps **scraped live from `story-system.css`** (no copied constants), and exits 0 only when every band passes. Use `npm run photo-fit -- assets/raw/optimized/<file>` (design mode) to read a photo's feasible variant × theme matrix before composing, and `DK_PHOTOFIT_DEBUG=1` to print worst-pixel coordinates. **`scripts/verify-contrast.ps1` is a tombstone (stale alphas, hardcoded old batch) — do not run it.** Both gates — `npm run photo-fit` and `hyperframes check` — must be green before any commit (§F.4).
+**Verification (2026-10-21 — authoritative command).** `hyperframes check`'s contrast sampler only measures text inside the router canvas, which contains story-01 alone. The all-posts contrast authority is **`npm run photo-fit`** (`node scripts/photo-fit.js`): gate mode reads `compositions/YYYY-MM-DD/batch-manifest.json` and evaluates every text band of every post (eyebrow / h1 / cta / brand) against WCAG AA — 4.5:1 small, 3.0:1 large — at the worst-case pixel, composited with these scrim ramps **scraped live from `story-system.css`** (no copied constants), and exits 0 only when every band passes. Use `npm run photo-fit -- assets/raw/optimized/<file>` (design mode) to read a photo's feasible variant × theme matrix before composing, and `DK_PHOTOFIT_DEBUG=1` to print worst-pixel coordinates. **`scripts/verify-contrast.ps1` is a tombstone (stale alphas, hardcoded old batch) — do not run it.** Both gates — `npm run photo-fit` and `hyperframes check` — must be green before any commit (§F.4). **Model note (2026-10-22):** photo-fit parses a SINGLE linear rgba ramp per band (`linear-gradient(180deg/0deg, …)`) — the top vignette's radial-at-`100% 0%` layer and its `transparent` stop sit beyond the model, so re-run the gate (and quote brand-band numbers fresh) after this re-anchor rather than trusting pre-2026-10-22 brand figures.
 
 ### G.6 Editorial typography roles (engine-owned)
 
@@ -987,7 +1003,7 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
         <p class="brand">Direct Kitchens</p>
       </header>
 
-      <section class="copy copy--{bottom-left|bottom-right|centered}">
+      <section class="copy copy--{bottom-left|bottom-right}">
         <p class="t-eyebrow">…</p>
         <h1 class="t-display">…<span class="serif-accent">…</span></h1>
         <p class="cta">Visit our showroom</p>
@@ -1006,19 +1022,20 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
 5. Root `data-width="1080" data-height="1920"` matches the router canvas exactly.
 6. Copy anchored at 220px; logo clamped at 40px.
 
-### G.9 `.copy--ink` — additive copy variant for bright surfaces (added 2026-10-21)
+### G.9 `.copy--ink` — additive copy variant for bright surfaces (added 2026-10-21 · halos stripped 2026-10-22)
 
-For high-key photography (white stone, beadboard, pale cabinetry) where the white/bone copy stack cannot clear WCAG AA even with the engine's dark text-shadows, the engine ships an **opt-in, purely additive** variant:
+For high-key photography (white stone, beadboard, pale cabinetry) where the white/bone copy stack cannot clear WCAG AA, the engine ships an **opt-in recolor** variant — now with EVERY halo glow stripped so it never produces muddy shadows:
 
 ```css
 /* Applied on the copy section: <section class="copy copy--bottom-right copy--ink"> */
-.copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: 0 1px 8px rgba(255,255,255,.6), 0 2px 16px rgba(255,255,255,.45); }
-.copy--ink .t-display { color: var(--ink); text-shadow: 0 2px 12px rgba(255,255,255,.55), 0 4px 24px rgba(255,255,255,.4); }
-.copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: 0 1px 8px rgba(255,255,255,.7); }
+.copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: none !important; }
+.copy--ink .t-display { color: var(--ink); text-shadow: none !important; }
+.copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: none !important; }
 .copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
 ```
 
-- **What it changes:** recolors the copy stack to dark ink (`var(--ink)` / espresso) and adds a light-halo `text-shadow` so dark type stays legible over highlights. Eyebrow uses `--bone`→ink inversion, CTA stays warm-dark espresso rather than brass for legibility.
-- **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only adds rules; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside any layout variant (`copy--bottom-left|bottom-right|centered`).
+- **What it changes:** recolors the copy stack to dark ink (`var(--ink)` / espresso) and strips all text-shadows: the former white light-halos are gone (they produced muddy glows over highlights), and `text-shadow: none !important` also overrides the base classes' dark cinematic stacks (same-specificity `!important` cascade, higher selector specificity), so dark ink renders dead-clean with no glow of either polarity. The deepened bottom scrim (§G.5) is now the legibility floor. Eyebrow uses `--bone`→ink inversion; CTA stays warm-dark espresso rather than brass for legibility.
+- **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
 - **When to use it:** whenever the Step-3 **Contrast pre-check** (`npm run photo-fit -- <file>`, §F.8) reports the default white/bone stack infeasible over a bright surface and a scrim/variant change isn't enough. It is one of the four sanctioned remediations (variant/theme, shorten copy, `.copy--ink`, swap photo) — never a substitute for re-running the gate.
 - **Usage:** `<section class="copy copy--bottom-right copy--ink">` — no per-post CSS, no inline styles.
+- ⚠ **Gate-model note:** photo-fit still credits ink bands with white-shadow lifts calibrated for the REMOVED halos (ink h1 s=0.5, small text s=0.2 toward white) — treat its `copy--ink` verdicts as generous until that model is re-calibrated, and confirm ink posts against the rendered `check` sampler or a browser spot-check.
