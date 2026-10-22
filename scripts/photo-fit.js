@@ -9,18 +9,26 @@
 // runtime (anti-drift: no copied engine constants).
 // Geometry constants mirror the APPROVED 1080x1920 Story engine (story-system.css).
 //
-// Calibration notes (2026-10-21 audit follow-up):
+// Calibration notes (2026-10-21 audit follow-up · re-calibrated 2026-10-22):
 //   - bands() measures the TRUE glyph footprint: .copy is bottom-anchored at
 //     bottom:220px (content extends UPWARD from y = CANVAS_H - COPY_BOTTOM),
-//     small-text roles are inset to their cap-height zone, and eyebrow/cta/
-//     brand run widths are derived from the parsed copy text + scraped engine
-//     tracking. Worst-case pixels are sampled ONLY where glyph ink lands.
+//     small-text roles are inset to their cap-height zone, and eyebrow/cta
+//     run widths are derived from the parsed copy text + scraped engine
+//     tracking. The brand bbox is the calibrated TOP-RIGHT wordmark box
+//     (x780-946, y140-180) after the 2026-10-22 bar-top re-anchor. Worst-case
+//     pixels are sampled ONLY where glyph ink lands.
 //   - Shadow credits: the engine's declared text-shadow stacks are part of the
 //     rendered output (§CINEMATIC TEXT SHADOWS). The h1 earns a 0.7 backdrop
 //     credit (12-24px stack over 52px strokes; browser-verified pass over
 //     bright stone); small text earns a weak 0.2 (run-A cta reproduced as
-//     2.43 vs browser-measured 2.52 on the same photo — fitted, not guessed);
-//     ink bars get zero credit (their shadow is BLACK — no lift for dark text).
+//     2.43 vs browser-measured 2.52 on the same photo — fitted, not guessed).
+//     2026-10-22: the old WHITE halo lifts for .copy--ink (h1 0.5, small 0.2)
+//     are REMOVED — the engine strips every ink halo via text-shadow: none,
+//     so ink copy/bars earn ZERO shadow credit of any polarity.
+//   - Model note: the shared top vignette's radial-at-100%-0% layer (which
+//     deepens the top-right brand zone) is beyond the single-ramp linear
+//     model. Its omission is white-brand-conservative; ink-brand verdicts at
+//     the new anchor are therefore optimistic — confirm with rendered check.
 //   - No false PASSes by design: every verdict is a worst-case pixel within a
 //     real glyph footprint. A FAIL here means "move copy to a feasible
 //     variant/photo or use copy--ink", never "ship on luck".
@@ -73,8 +81,6 @@ const EYEBROW_LS = num(new RegExp(`--track-eyebrow:\\s*(-?[\\d.]+)em`), num(/\.t
 const CTA_FS = num(/\.cta\s*{[^}]*font-size:\s*([\d.]+)px/, 12);
 const CTA_LS = num(/\.cta\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
 const BRAND_FS = num(/\.bar-top \.brand\s*{[^}]*font-size:\s*([\d.]+)px/, 13);
-const BRAND_LS = num(/\.bar-top \.brand\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.28);
-const BRAND_TEXT = 'Direct Kitchens';      // engine-fixed wordmark (uppercase via CSS)
 
 // ── 2. WCAG MATH ────────────────────────────────────────────────────────
 const lin = (c) => { c /= 255; return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
@@ -109,7 +115,7 @@ function samplePixels(file) {
 }
 
 // ── 4. COMPOSITION PARSING ──────────────────────────────────────────────
-const VARIANTS = { 'copy--bottom-left': [80, 960], 'copy--bottom-right': [120, 1000], 'copy--centered': [80, 1000] };
+const VARIANTS = { 'copy--bottom-left': [80, 960], 'copy--bottom-right': [120, 1000] };
 function parseComposition(htmlPath) {
   const h = fs.readFileSync(htmlPath, 'utf8');
   const src = h.match(/photo photo--full\s+scrim--(charcoal|warm)[^>]*>\s*<img src="([^"]+)"/s);
@@ -136,22 +142,29 @@ function parseComposition(htmlPath) {
 // Horizontal: h1 spans the copy column (display text fills it); eyebrow/cta
 // run widths are DERIVED FROM THE PARSED COPY TEXT using the scraped engine
 // font-size + letter-spacing (uppercase advance ≈ fs*(0.70+ls) per char, +20px
-// margin); the brand wordmark sits at left:80px after the 40px logo + gap.
+// margin). The brand wordmark sits TOP-RIGHT after the 2026-10-22 re-anchor:
+// right edge x946 (= 1080 − 80 right margin − 40 logo − 14 engine gap), a
+// ≈166px upper-case run reaching leftward to x780; the circular logo itself
+// (x960-1000) is a logotype — WCAG 1.4.3 exempt, so the bbox spans the
+// wordmark text only (x780-946 at y140-180).
 // Worst-case pixel is taken ONLY where glyph ink actually lands — scanning
 // empty line-box remainder is the false-FAIL class the browser sampler never
 // sees (ground truth B: all sampled rendered pixels of story-01 passed).
 //
-// Shadow credits (toward black for light text, toward white for copy--ink
-// halos), calibrated against the engine's declared stacks (§CINEMATIC TEXT
+// Shadow credits (toward black for light text ONLY — 2026-10-22: ink bands
+// earn ZERO credit; the engine strips every .copy--ink shadow via
+// text-shadow: none and the old white lifts h1 0.5 / small 0.2 are removed),
+// calibrated against the engine's declared stacks (§CINEMATIC TEXT
 // SHADOWS: eyebrow 0.7/0.5, display 0.65/0.45/0.40, cta 0.8/0.6, brand 0.7)
 // and the browser-sampler ground truth A: over bright stone, rendered h1
 // PASSED (heavy 12-24px stack over 52px strokes saturates the backdrop →
 // credit 0.7) while rendered eyebrow/cta FAILED at 2.95/2.52 (8/16px blur on
 // thin strokes does NOT rescue → weak 0.2). The 0.2 reproduces run A's
 // measured cta 2.52 as model 2.43 on the same photo — the credit is fitted,
-// not invented. Ink bars keep a BLACK shadow (engine) → no credit: dark-on-
-// light gets no luminance lift from a dark glow, so ink-brand verdicts are
-// pure color math (worst-case, honest).
+// not invented. Ink bars carry a BLACK shadow (engine) and ink copy carries
+// NO shadow at all → zero credit either way: dark-on-light gets no
+// luminance lift from a dark glow, so ink verdicts are pure color math
+// (worst-case, honest).
 function bands(c) {
   const GAP = 12, LH = 52 * 1.08;
   const [cxs, cxe] = VARIANTS[c.variant];
@@ -160,17 +173,17 @@ function bands(c) {
   const parts = [];
   if (c.hasEyebrow) parts.push({
     role: 'eyebrow', boxH: 16, fs: EYEBROW_FS, ls: EYEBROW_LS, text: c.eyebrowText,
-    col: c.inkCopy ? INK : BONE, tau: 0.9, s: 0.2, sc: c.inkCopy ? [255, 255, 255] : [0, 0, 0],
+    col: c.inkCopy ? INK : BONE, tau: 0.9, s: c.inkCopy ? 0 : 0.2, sc: [0, 0, 0],
     need: 4.5, label: `eyebrow ${EYEBROW_FS}px`,
   });
   parts.push({
     role: 'h1', boxH: c.h1Lines * LH,
-    col: c.inkCopy ? INK : [255, 255, 255], tau: 1, s: c.inkCopy ? 0.5 : 0.7, sc: c.inkCopy ? [255, 255, 255] : [0, 0, 0],
+    col: c.inkCopy ? INK : [255, 255, 255], tau: 1, s: c.inkCopy ? 0 : 0.7, sc: [0, 0, 0],
     need: 3.0, label: `h1 52px x${c.h1Lines}`,
   });
   if (c.hasCta) parts.push({
     role: 'cta', boxH: 15, fs: CTA_FS, ls: CTA_LS, text: c.ctaText,
-    col: c.inkCopy ? INK : BRASS, tau: 1, s: 0.2, sc: c.inkCopy ? [255, 255, 255] : [0, 0, 0],
+    col: c.inkCopy ? INK : BRASS, tau: 1, s: c.inkCopy ? 0 : 0.2, sc: [0, 0, 0],
     need: 4.5, label: `cta ${CTA_FS}px`,
   });
 
@@ -188,9 +201,12 @@ function bands(c) {
   const brandInset = Math.round((40 - BRAND_FS * 0.72) / 2);   // 40px logo row; wordmark caps centered
   out.push({
     y0: 140 + brandInset, y1: 180 - brandInset,
-    // wordmark TEXT only (x132 onward): the 40px logo mark at x80-120 is a
-    // logotype — WCAG 1.4.3 exempt ("Logotypes: no contrast requirement")
-    xs: 80 + 40 + 12, xe: 80 + 40 + 12 + runW(BRAND_TEXT, BRAND_FS, BRAND_LS),
+    // TOP-RIGHT wordmark TEXT only (2026-10-22 re-anchor): the 40px circular
+    // logo at x960-1000 is a logotype — WCAG 1.4.3 exempt ("Logotypes: no
+    // contrast requirement"). Right chain: 1080 − 80 right-margin − 40 logo
+    // = 960; − 14 engine gap = 946; the ≈166px upper-case run for "DIRECT
+    // KITCHENS" reaches leftward to x780. Calibrated bbox: x780-946.
+    xs: 780, xe: 946,
     col: c.inkBar ? INK : [255, 255, 255], tau: 0.9,
     s: c.inkBar ? 0 : 0.2, sc: [0, 0, 0],
     need: 4.5, label: `brand ${BRAND_FS}px`,
