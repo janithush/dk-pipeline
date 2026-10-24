@@ -7,6 +7,7 @@
     "lint:verbose": "hyperframes lint --lint-verbose",
     "check": "hyperframes check",
     "check:paths": "node scripts/check-paths.js",
+    "check:zones": "hyperframes check --samples 5 --json --caption-zone \"x0=0;y0=0.72;x1=1;y1=1;severity=warning\"",
     "photo-fit": "node scripts/photo-fit.js",
     "photo-fit:fix": "node scripts/photo-fit.js --fix",
     "verify:contrast": "node scripts/verify-contrast.js",

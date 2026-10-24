@@ -17,7 +17,8 @@
 //   (DK_BATCH / DK_BATCH_ID env: same override — see lib/batch-context.js)
 //
 // Requires: every composition must pass `npx hyperframes lint` first.
-// Renders with --strict so any lint error aborts that post.
+// Renders with --strict + --no-best-effort so bad posts never ship silently
+// and render-time best-effort fallbacks can never mask a failing frame.
 
 const fs = require('fs');
 const path = require('path');
@@ -118,9 +119,13 @@ for (const post of manifest.posts) {
   fs.mkdirSync(outputPath, { recursive: true });
 
   // Static composition (single frame, data-no-timeline) → png-sequence.
-  // --strict aborts on lint errors so bad posts never ship silently.
+  // --strict aborts on lint errors so bad posts never ship silently;
+  // --no-best-effort (2026-10-24, Phase 1) forbids the renderer from
+  // silently degrading unrenderable frames — a render that needed
+  // best-effort recovery is a RED, not a quiet artifact (§F.4 gate
+  // semantics: what ships must be exactly what was gated).
   const cmd = `npx hyperframes render --composition "${post.html}" ` +
-              `--format png-sequence --output "${post.output}" --strict`;
+              `--format png-sequence --output "${post.output}" --strict --no-best-effort`;
 
   try {
     execSync(cmd, { cwd: ROOT, stdio: 'inherit' });

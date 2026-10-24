@@ -1004,10 +1004,19 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   post; check = rendered-pixel confirmation plus the full runtime/layout/motion suite.
 - `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js`.
   The chain is SELF-HEALING: photo-fit's `--fix` applies the minimal declared escalation ladder
-  (copy: as-authored → ink → shield → shield-deep · brand: as-authored → ink → plate) per post;
+  (copy: as-authored → ink → shield → shield-deep · brand: PLATE-STANDARD invariant — no rung,
+  2026-10-24) per post;
   verify-contrast then certifies every post against the REAL browser sampler with the same
   ladder as its reconcile mechanism. Neither gate asks a question, prints a prompt, or accepts a
   waiver — a TRUE defect (ladder exhausted) fails the chain and demands a copy/variant/photo change.
+- RENDER STRICTNESS (2026-10-24, Phase 1): `render-batch.js` renders with `--strict --no-best-effort`
+  — a frame the renderer would have silently degraded via best-effort recovery is now a RED.
+  What ships must be exactly what was gated.
+- SAFE-ZONE PREFLIGHT (2026-10-24, Phase 1, ADVISORY): `npm run check:zones` runs
+  `hyperframes check --samples 5 --json --caption-zone "x0=0;y0=0.72;x1=1;y1=1;severity=warning"`
+  — samples the routed post over the bottom 28% (the copy-platform + future swatch territory) as
+  a WARNING-severity zone. It is an advisory sweep (exit behavior tracks the severity model), run
+  manually before ship when copy density is unusual; it never replaces the fail-closed preflight chain.
   NEVER run `npm run preflight` manually when using `npm run render:daily` — the batch script
   executes it internally (or has already run it via `produce ship --no-preflight`). One batch = one
   check session. `validate` is deprecated; the old standalone `hyperframes check` pre-render rung is
