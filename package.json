@@ -16,6 +16,7 @@
     "ship": "node scripts/produce.js ship",
     "batch:new": "node scripts/new-batch.js",
     "preflight": "hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js",
+    "qa:vision": "node scripts/qa-vision.js",
     "optimize:assets": "node scripts/downscale-assets.js",
     "retire:batch": "node scripts/retire-batch.js",
     "render:daily": "node scripts/render-batch.js",

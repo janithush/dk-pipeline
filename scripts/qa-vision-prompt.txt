@@ -1,0 +1,22 @@
+# qa-vision technical-QA prompt — v1 (2026-10-24, Phase 1 · item #10)
+# This file is read verbatim by scripts/qa-vision.js and passed to
+# `hyperframes snapshot --describe`. Keep the question phrased against the
+# ZERO video fluff house style: this is a TECHNICAL QA lens, never a taste
+# critique — creative direction authority belongs to the model-context audit
+# (lens 2, blueprint §H.10). Edit the version line whenever the prompt changes.
+Answer about this single static Instagram/Facebook Story frame (1080x1920), strictly and tersely:
+1. BRAND MARK: is the circular logo + DIRECT KITCHENS wordmark visible in the
+   TOP-RIGHT quadrant on its bone label plate, not clipped by any edge and not
+   overlapped by anything else?
+2. CAPTURE-READINESS: name any obviously broken, missing, still-loading or
+   watermarked media inside the frame (flash of unstyled content, missing
+   image, placeholder glyph, attribute-franchise watermark).
+3. COPY INTEGRITY: is any text cut off by the frame edge, overlapping the
+   brand bar, doubled/ghosted, or otherwise unreadable against its backdrop?
+   (The bottom-safe-zone geometry itself is gated elsewhere — report only
+   visible defects, not proximity.)
+4. PHOTO HEALTH: call out only obvious defects inside the crop — blown-out
+   highlights destroying the subject, a severed subject at a crop edge,
+   compression banding, or a half-finished AI-artifact.
+For each numbered item reply OK plus one short clause, or a one-sentence defect
+report. No styling advice, no praise, no alternatives.

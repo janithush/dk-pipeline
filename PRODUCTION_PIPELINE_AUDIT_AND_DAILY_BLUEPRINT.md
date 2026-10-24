@@ -1382,6 +1382,11 @@ confirmation prompts, waivers, or TUI stalls anywhere in the chain.
 
 ### H.2 `produce` modes (the only commands an operator needs)
 
+> **Advisory hooks around ship (2026-10-24):** `npm run check:zones` (safe-zone sweep,
+> §F.4) and `npm run qa:vision` (dual-lens lens-1 snapshot QA, §H.10) are OPTIONAL
+> advisory hooks run manually before/around ship — they exit 0 in every state and can
+> never gate or stall the deterministic ship chain below.
+
 | Command | What it does | Writes |
 |---|---|---|
 | `npm run produce` (prepare) | 1. `retire-batch.js` — non-target dates archive SHIPPED-AWARE (§H.3). 2. `downscale-assets.js` — raws → optimized (idempotent, slug-map history-safe). 3. Scaffolds `batch-01` ONLY when the day has no batch (mid-day prepares never fork a batch silently). 4. Kickoff report: context, manifest state, **photo ledger** (§H.4), next slug. | nothing else |
@@ -1467,7 +1472,32 @@ truth. Operational hard rules for the composing session:
 | `verify-contrast` RED | browser sampler disagrees post-reconcile | same as photo-fit RED — change copy/variant/photo; NEVER tune the gate |
 | render RED | hyperframes render `--strict` abort | inspect `.hyperframes/` diagnostics; re-ship |
 | `photo-fit` grade advisory line | data-color-grading budget outside Phase-1 ceilings, or JSON unreadable | advisory only — does not block ship; tighten the profile values or leave as declared intent |
+| `qa:vision` reports findings | LENS-1 technical defects the dry gates cannot see (broken media, clipped copy, photo artifacts) | advisory only — address in the composition step if legitimate, or justify against the inspection log; a missing `GEMINI_API_KEY` is a clean SKIPPED, not a failure |
 | ship receipt RED-suffix | some posts did not render | re-ship (git archival only fires on a full pass) |
+
+### H.10 Dual-lens AI vision preflight (Phase-1 advisory, established 2026-10-24)
+
+The dry gates (`photo-fit` / `verify-contrast` / `check`) certify geometry, contrast and
+grounding-by-log — they cannot SEE a rendered frame. Two lenses close that gap, both
+ADVISORY (fail-open, exit 0, no waiver-prompt, never gate verdicts):
+
+- **Lens 1 — `npm run qa:vision` (`scripts/qa-vision.js`).** Per ACTIVE-batch post:
+  swaps the router to the sole route (byte-exact restore guaranteed in `finally`,
+  self-verified swap — same discipline as verify-contrast), captures the exact frame
+  with `hyperframes snapshot --at 0 --no-end --json --composition dk-<slug>`, and asks
+  Gemini (via `--describe`) the versioned technical-QA prompt
+  (`scripts/qa-vision-prompt.txt`, v1): brand-mark integrity on its plate, capture
+  readiness, copy-integrity defects, photo-health defects. No `GEMINI_API_KEY` → clean
+  `SKIPPED_NO_KEY` digest + one warning. Artifacts + per-post rollup:
+  `.hyperframes/artifacts/qa-vision/<date>/<batch>/` (gitignored by design).
+- **Lens 2 — the model-context creative audit (NOT scripted).** Before client export,
+  the authoring session re-reads the final alt text + manifest copy against its per-image
+  inspection log and certifies semantic truth (every claim grounded in the actual
+  photograph, DK anti-hype tone intact). This is the §H.7 duty made explicit as lens 2;
+  it lives in the session's reasoning, not in a script.
+
+Placement: after a GREEN preflight, before render (`pre-preflight → qa-vision → render`);
+because it exits 0 in every state, wiring it into automation can never stall the factory.
 
 ### H.9 Anti-regression invariants (protected by this section)
 
