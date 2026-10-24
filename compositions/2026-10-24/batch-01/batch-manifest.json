@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-24",
+  "batch": "batch-01",
+  "posts": [
+    {
+      "slug": "story-01",
+      "html": "compositions/2026-10-24/batch-01/story-01.html",
+      "output": "renders/2026-10-24/batch-01/story-01",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Greige shaker joinery under morning sun — the timber floor warms the whole room. Config: Photo DSC09173 · PHASE-1 TEST POST — scrim--greige (new 2026-10-24 theme, warm stone bottom ramp over greige cabinetry + warm timber floor) · serif-accent 'details' inside .t-display (1-word italic garnish, rides fresh f/light on the <br> line structure) · bar-top--plate (permanent bone plate standard — ink-on-bone wordmark, marker class explicit) · copy--bottom-left white stack (eyebrow/cta small bands expected to auto-escalate copy→copy--shield per the deterministic ladder at ship; h1 worst 14.3 and plate brand 12.8 from the photo-fit feasibility matrix 2026-10-24). · · SHIP-CERT 2026-10-24-batch-01 2026-10-24T20:34:18.133Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left · shipped frame frame_000001.png (880976 bytes)"
+    }
+  ]
+}

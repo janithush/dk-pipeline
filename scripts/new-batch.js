@@ -174,7 +174,7 @@ console.log(`  router:          index.html validated — ${appended} line(s) app
 console.log(overrideNoted);
 console.log('');
 console.log('  OPTIONAL per-post "grade" field (DK Signature Grade, 2026-10-24): a JSON');
-console.log('  finishing profile emitted as the composition <img data-color-grading=\\'...\\'>');
+console.log("  finishing profile emitted as the composition <img data-color-grading=\\'...\\'>");
 console.log('  attribute. Phase-1 ceilings (photo-fit advisory): vignette <= 0.10,');
 console.log('  grain <= 0.12, adjust.exposure/contrast <= +/-0.05. Finishing is applied');
 console.log('  at render; verify:contrast remains the graded-truth verdict.');

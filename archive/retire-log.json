@@ -18,5 +18,15 @@
     "moved": 1,
     "skipped": 0,
     "trigger": "retire-batch (target date 2026-10-22)"
+  },
+  {
+    "at": "2026-10-24T17:58:38.745Z",
+    "date": "2026-10-23",
+    "kind": "unshipped",
+    "from": "compositions/2026-10-23/",
+    "to": "archive/unshipped/2026-10-23/",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-24)"
   }
 ]
