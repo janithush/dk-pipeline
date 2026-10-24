@@ -1,0 +1,22 @@
+[
+  {
+    "at": "2026-10-22T22:31:52.431Z",
+    "date": "2026-10-22",
+    "kind": "stale-drafts",
+    "from": "compositions/2026-10-22/",
+    "to": "archive/stale-drafts/2026-10-22/",
+    "moved": 2,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-23)"
+  },
+  {
+    "at": "2026-10-22T22:37:43.518Z",
+    "date": "2026-10-23",
+    "kind": "unshipped",
+    "from": "compositions/2026-10-23/",
+    "to": "archive/unshipped/2026-10-23/",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-22)"
+  }
+]
