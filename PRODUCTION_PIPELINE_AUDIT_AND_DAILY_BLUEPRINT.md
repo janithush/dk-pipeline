@@ -1,11 +1,12 @@
 # HyperFrames Production Pipeline Audit & Daily Automation Blueprint
 
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
-**Engine:** HyperFrames `v0.8.163` (devDependency)
+**Engine:** HyperFrames `v0.8.191` (devDependency, EXACT pin — never `^`)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
 **Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22
 **Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
+**Status (2026-10-24 · PHASE 1 of the capability expansion, tag `phase1-green`):** six zero-risk engine amendments shipped — ① BRAND PLATE STANDARD (ink-on-bone by default; brand polarity retired, §F.2/§G.2) ② `scrim--greige` theme (§G.5) ③ serif-accent modelled as ESP700 under `copy--ink` (§G.6/§G.9) ④ DK Signature Grade constrained finishing profile + advisory (§F.2/§H.8) ⑤ `--strict --no-best-effort` renders + `check:zones` advisory sweep (§F.4) ⑥ dual-lens AI vision preflight (`npm run qa:vision`, fail-open, §H.10). Zero layout geometry changes.
 
 ---
 
@@ -286,7 +287,7 @@ a config file — §F.8) and resolves everything by evidence:
 ```
 dk-pipeline/
 ├── index.html                      # lightweight ROUTER only — one data-composition-src line per post today (root 1080×1920)
-├── package.json                    # hyperframes ^0.8.163; scripts: lint, check, photo-fit, preflight, optimize:assets, retire:batch, render:daily, render:post, snapshot (§C.5)
+├── package.json                    # hyperframes 0.8.191 (exact); scripts: lint, check, check:paths, check:zones, photo-fit, preflight, qa:vision, optimize:assets, retire:batch, batch:new, produce, ship, render:daily, render:post, snapshot (§C.5)
 ├── package-lock.json
 ├── hyperframes.json                # paths: blocks=compositions, components=compositions/components, assets=assets; media.autoProxy=true
 ├── .hyperframes/                   # HyperFrames internal state + artifacts/checks/<uuid>.json (gitignored)
@@ -342,7 +343,7 @@ dk-pipeline/
 | **Design tokens** | `token.css` is a clean single source of truth (semantic colors, type scale, spacing, shadow, motion); the engine consumes only token-declared aliases. |
 | **Engine vocabulary** | `.frame`, `.scrim`, `.copy` variants, `.t-eyebrow`/`.t-display`/`.cta`, `bar-top--ink` live in `shared/story-system.css` — one stylesheet drives every story (§F.2). Legacy `.rule-*`/`.plus`/`.diamond` primitives are frozen (hairline budget = 0). |
 | **Logo sizing** | Clamped by the engine: 40×40px circular mask at `top:140px / right:80px` — brand bar anchored TOP-RIGHT (§G.2); logo markup is byte-identical across posts — no per-post CSS. |
-| **CLI works** | `hyperframes lint`, `check`, `render`, `snapshot` present and functional at v0.8.163 (`validate` deprecated in favor of `check`). |
+| **CLI works** | `hyperframes lint`, `check`, `render`, `snapshot` present and functional at v0.8.191 (`validate` deprecated in favor of `check`). |
 | **Output dir wired** | `hyperframes.json` `"paths": { "assets": "assets" }` and `.hyperframes/render-outputs.json` `["renders"]`. |
 | **Single-engine isolation** | Every composition links exactly one stylesheet (the engine), so there is no cross-post bleed; the router loads only `data-composition-src` documents. |
 
@@ -456,7 +457,7 @@ Consequences at the time (all now closed):
 ```
 dk-pipeline/
 ├── index.html                      # LIGHTWEIGHT ROUTER/MANIFEST ONLY (no creative markup; 1080×1920 root)
-├── package.json                    # hyperframes ^0.8.163 + scripts: lint, check, photo-fit, preflight, optimize:assets, retire:batch, render:daily (§C.5)
+├── package.json                    # hyperframes 0.8.191 (exact) + scripts: lint, check, photo-fit, preflight, optimize:assets, retire:batch, render:daily (§C.5)
 ├── package-lock.json
 ├── hyperframes.json                # unchanged (paths + autoProxy)
 ├── .hyperframes/                   # HF internal state (gitignored)
@@ -616,7 +617,7 @@ Rule: `index.html` may only grow by adding/removing `data-composition-src` lines
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
-    "hyperframes": "^0.8.163"
+    "hyperframes": "0.8.191"
   }
 }
 ```
@@ -734,7 +735,7 @@ Copy and paste this entire block into OpenCode at the start of each production d
 
 ```
 # DAILY HYPERFRAMES PRODUCTION OPERATOR PROMPT
-# Project: dk-pipeline (D:\Projects\dk-pipeline) | Engine: HyperFrames v0.8.163
+# Project: dk-pipeline (D:\Projects\dk-pipeline) | Engine: HyperFrames v0.8.191
 # Target: 10–15 static marketing creatives today | Gate: every batch passes `npx hyperframes lint`
 
 You are acting as my Creative Technologist / Frontend Architect for today's daily production run.
@@ -930,7 +931,7 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   not describe real assets. Copy referencing a room/material/appliance not present in the
   Step-1 vision log for THAT photo is forbidden and will be rejected at grounding sign-off.
 
-### F.2 Engine capability matrix (HyperFrames v0.8.163, this repo)
+### F.2 Engine capability matrix (HyperFrames v0.8.191, this repo)
 - Ratios: ONLY Story 9:16 (1080×1920) works without editing shared/story-system.css.
   `.frame` and `.photo--full` are hard-coded 1080×1920. DEFAULT RATIO = STORY; do not ask.
   Portrait/Square require a pre-approved engine change (root-filling rules), never per-post CSS.

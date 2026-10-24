@@ -6,7 +6,7 @@ runtime, fully local font and asset pipeline, zero-friction automated production
 
 ## Tech stack
 
-- **[HyperFrames](https://hyperframes.heygen.com)** `^0.8.163` — headless composition renderer / linter / validator
+- **[HyperFrames](https://hyperframes.heygen.com)** `0.8.191` (exact pin) — headless composition renderer / linter / validator
 - **Vanilla CSS engine** — `shared/story-system.css` is the single source of layout truth (geometry lives in CSS custom properties that the validation scripts scrape live — scripts and styles are synchronized *by construction*)
 - **Self-hosted fonts** — `.woff2` binaries in `assets/fonts/`, `@font-face` declared in `shared/fonts.css` (no Google Fonts CDN, `font-display: swap` for headless-safe rendering)
 - **Node.js scripts** — `scripts/produce.js` drives the entire day; deterministic gates in `scripts/photo-fit.js` (WCAG oracle + self-heal ladder) and `scripts/verify-contrast.js` (browser-authority certification)
@@ -25,7 +25,8 @@ dk-pipeline/
 │   ├── verify-contrast.js          # gate: per-post browser-authority contrast certification
 │   ├── check-paths.js              # gate: fail-closed path + manifest-parity validation
 │   ├── new-batch.js                # intraday batch scaffolder + surgical router sync
-│   ├── render-batch.js             # strict render loop over the ACTIVE batch manifest
+│   ├── render-batch.js             # strict render loop over the ACTIVE batch manifest (--strict --no-best-effort)
+│   ├── qa-vision.js                # advisory lens-1 vision QA (snapshot + Gemini describe; fail-open) · qa-vision-prompt.txt (v1)
 │   ├── retire-batch.js             # shipped-aware stale-batch archivist + router cleanup
 │   ├── downscale-assets.js         # ffmpeg optimizer: raw → optimized (≤2048px, ≤2MB, slug-mapped)
 │   └── lib/                        # batch-date.js (local-calendar date truth) · batch-context.js (batch identity)
@@ -66,6 +67,8 @@ day are never overwritten.
 | `npm run produce -- status` | Read-only state report (+ consumed/available photo ledger) |
 | `npm run batch:new` | Scaffold the next intraday batch (`--sync-router` appends router lines) |
 | `npm run preflight` | lint → check-paths → photo-fit `--fix` → verify-contrast (same chain ship runs) |
+| `npm run qa:vision` | advisory dual-lens vision QA (lens 1): per-post snapshot + Gemini describe; needs `GEMINI_API_KEY`, otherwise a clean SKIP — never gates |
+| `npm run check:zones` | advisory safe-zone sweep: samples the bottom 28% copy platform as a warning-severity zone |
 | `npm run optimize:assets` | Re-optimize raws (`-- --prune` also removes stale unreferenced optimized copies) |
 | `npm run retire:batch` | Shipped-aware archival of stale dates + router cleanup |
 | `npm run render:daily` | Strict render loop for the active batch |
