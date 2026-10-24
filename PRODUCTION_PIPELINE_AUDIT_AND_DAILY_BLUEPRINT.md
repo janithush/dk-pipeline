@@ -946,10 +946,13 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   ADDITIVE `.copy--ink` color variant for bright surfaces, halo text-shadows stripped (§G.9);
   `.t-eyebrow`, `.t-display` (+`<span class="serif-accent">` italic),
   `.cta`.
-- BRAND-ON-PHOTO RULE: if the photo's TOP-RIGHT region behind the bar is bright (white/cream), the header MUST
-  be `class="bar-top bar-top--ink"` (dark ink variant `var(--ink, #1a1a1a)`; WCAG AA ≥4.5:1).
-  White brand text is for dark-topped photos only. This is not optional — `check` fails otherwise,
-  and `npm run photo-fit`'s brand band row verifies it per post (§F.4).
+- BRAND PLATE STANDARD (2026-10-24, supersedes the former BRAND-ON-PHOTO RULE): the wordmark
+  carries the bone label plate **by DEFAULT** — `.bar-top .brand` renders ink-on-bone
+  (≥ 12:1 over ANY photo zone), so brand polarity is retired. `.bar-top--plate` remains the
+  explicit marker class (idempotent duplicate — an invariant, not an escalation rung, and
+  never stripped by FORCE_AUTHOR). `.bar-top--ink` is DEPRECATED (kept byte-functional for
+  archived compositions). photo-fit's brand ladder collapses to a single invariant 'author'
+  rung; heal output reports `bar-top--plate·invariant`.
 - Hairline budget = 0: `.rule-v/.rule-h/.plus/.diamond/.tick` never appear.
 - Token aliases: `.cta` renders via `--brass` and `.t-eyebrow` via `--bone`; both are formally
   declared in token.css (`--brass: var(--brass-400, #c6a77d)`, `--bone: var(--bone-50, #f5f2eb)`).
@@ -1183,28 +1186,25 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 .bar-top .dk-brand-logo,
 .bar-top img { width: 40px; height: 40px; max-width: 40px; max-height: 40px;
                border-radius: 50%; object-fit: contain; flex-shrink: 0; }
+/* PLATE STANDARD (2026-10-24): the wordmark is ink-on-bone by DEFAULT —
+   the bone label plate lives on the `.bar-top .brand` base rule, guaranteeing
+   ≥ 12:1 over ANY photo. `.bar-top--plate` is the explicit (idempotent)
+   marker class; `.bar-top--ink` is DEPRECATED polarity (archived posts only). */
 .bar-top .brand { font: 500 13px/1 var(--sans); letter-spacing: .28em;
-                  text-transform: uppercase; color: #fff; opacity: .9; }
-/* Light-photo variant (WCAG AA over white/cream upper zones): */
-.bar-top--ink .brand { color: var(--ink, #1a1a1a) !important; }
+                  text-transform: uppercase; color: var(--ink, #2A211A); opacity: 1;
+                  background: linear-gradient(180deg, rgba(246,241,231,.92) 0%, rgba(246,241,231,.97) 100%);
+                  padding: 10px 16px; border-radius: 3px; text-shadow: none; }
 ```
 
 - **40×40px circular clamp**, anchored at `top: 140px / right: 80px` — TOP-RIGHT of the 9:16 frame, well clear of the native Instagram/Facebook Story header zone at top-left, and never obstructing central photography. The logo sits flush right; `row-reverse` places the wordmark to its LEFT.
-- Header markup on every post (logo + wordmark pairing is invariant; only the wrapper class varies):
+- Header markup on every post (logo + plated-wordmark pairing is invariant; the wrapper default is `bar-top bar-top--plate`):
   ```html
-  <!-- dark-topped photo (default) -->
-  <header class="bar-top">
-    <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
-    <p class="brand">Direct Kitchens</p>
-  </header>
-
-  <!-- bright-topped photo (white/cream ceiling or cabinetry behind the bar) -->
-  <header class="bar-top bar-top--ink">
+  <header class="bar-top bar-top--plate">
     <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
     <p class="brand">Direct Kitchens</p>
   </header>
   ```
-- **Selection rule (§F.2):** white brand text over a bright TOP-RIGHT region (behind the anchored bar) fails WCAG AA — use `bar-top--ink` whenever that region is high-key. Apply by INSPECTION, verified per post by `npm run photo-fit`'s brand band row (the `check` sampler only measures story-01 inside the router — §F.4).
+- **Plate standard (2026-10-24):** ink-on-bone ≥ 12:1 over ANY backing photo, so NO per-photo brand selection remains — the former `bar-top--ink` inspection rule is retired. photo-fit composites the declared plate ramp (scraped from `story-system.css`, conservative floor alpha 0.92) before every brand sample; a brand band can therefore no longer fail the gate, and the brand self-heal ladder is a single invariant rung. Legacy archived compositions that still carry `bar-top--ink` or bare `bar-top` render identically to the standard (the CSS base rule plates unconditionally); the marker class is normalized on the next `--fix` pass.
 
 ### G.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
 
@@ -1411,7 +1411,7 @@ next-day retirement can only archive committed work.
 |---|---|
 | "Ask me to confirm which photos to use" | Photo ledger lists the available inventory; the agent designs for exactly that list |
 | "Ask me which reference post" | Reference anchors live in `assets/references/`; plural-sufficiency is a §D craft rule, not a gate |
-| Interactive polar/contrast waivers | `photo-fit --fix` + `verify-contrast` reconcile through the declared engine ladder (`copy--ink` → `copy--shield` → `copy--shield--deep`; `bar-top--ink` → `bar-top--plate`) with NO prompts, NO waivers: worst-case is a RED ship demanding a copy/variant/photo change |
+| Interactive polar/contrast waivers | `photo-fit --fix` + `verify-contrast` reconcile through the declared engine ladder (`copy--ink` → `copy--shield` → `copy--shield--deep`; brand = PLATE STANDARD invariant since 2026-10-24) with NO prompts, NO waivers: worst-case is a RED ship demanding a copy/variant/photo change |
 | Grain/shadow-line false FAILs | p98 (2%-worst) verdict + 1.35 hard floor — single pixels of noise can no longer block a clean band; uniform dimness still fails deterministically |
 | "Confirm before triggering renders" | ship IS the confirmation: its preflight chain must be green or nothing renders |
 | Engine-vs-script geometry drift | photo-fit scrapes ALL consumed numbers live from `shared/*.css` (geometry custom properties, ramps, typography) — a design-sprint edit propagates by scrape, never by mirrored constants |

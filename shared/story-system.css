@@ -103,16 +103,21 @@ body {
   letter-spacing: 0.28em !important;
   text-align: right !important;
   text-transform: uppercase !important;
-  color: #ffffff !important;
+  /* PLATE STANDARD (2026-10-24): ink-on-bone by DEFAULT. The bone wordmark
+     plate guarantees ≥ 12:1 over ANY photo, so brand polarity (authored-white
+     vs bar-top--ink) is retired at the model level — no per-photo selection. */
+  color: var(--ink, #2A211A) !important;
   line-height: 1 !important;
-  opacity: 0.9 !important;
+  opacity: 1 !important;
+  background: linear-gradient(180deg, rgba(246, 241, 231, 0.92) 0%, rgba(246, 241, 231, 0.97) 100%);
+  padding: 10px 16px;
+  border-radius: 3px;
+  text-shadow: none !important;   /* dark glow behind ink-on-bone lowers AA — stripped */
 }
 
-/* LIGHT-PHOTO VARIANT — dark brand ink for bright-topped photography.
-   The white brand text fails WCAG AA (4.5:1) over white/cream upper zones;
-   the reference posts themselves ground the mark dark-on-light. Apply via
-   header.bar-top.bar-top--ink. The logo + <p class="brand"> pairing is
-   unchanged; the dark text-shadow glow below still applies. */
+/* DEPRECATED brand polarity (kept byte-functional for archived compositions;
+   the plate standard above now dominates both variants — plain white/ink
+   wordmarks are no longer emitted by the engine, its gates, or its heals). */
 .bar-top--ink .brand {
   color: var(--ink, #1a1a1a) !important;
 }
@@ -318,13 +323,15 @@ body {
 }
 
 /* ───────────────────────────────────────────────────────────────────────
-   BRAND PLATE — whisper-quiet wordmark plate (auto-heal ladder, last rung)
-   When NEITHER brand polarity can clear WCAG AA over a mid-tone photo zone
-   (both fail: bone-on-mid and ink-on-mid), photo-fit --fix applies
-   .bar-top--plate: a soft bone label behind the wordmark. The logo's 40px
-   circular mark stays exposed (WCAG logotype-exempt); only the wordmark is
-   plated. Ink-on-bone ≥ 12:1 for ANY underlying photo pixel, guaranteed —
-   the plate alpha is baked into the ramp, opacity is normalized to 1.
+   BRAND PLATE — PERMANENT STANDARD (2026-10-24; formerly the auto-heal
+   last rung). Ink-on-bone ≥ 12:1 for ANY underlying photo pixel, guaranteed
+   — the plate alpha is baked into the ramp, opacity is normalized to 1.
+   The identical rules now live on the `.bar-top .brand` BASE rule (the
+   plate is the default brand state); `.bar-top--plate` is retained as the
+   explicit marker class — an idempotent duplicate that keeps photo-fit's
+   BRAND_PLATE / platePad scrape anchors stable and archived compositions
+   byte-compatible. The logo's 40px circular mark stays exposed (WCAG
+   logotype-exempt); only the wordmark is plated.
    ─────────────────────────────────────────────────────────────────────── */
 .bar-top--plate .brand {
   color: var(--ink, #2A211A) !important;

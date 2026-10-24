@@ -43,7 +43,9 @@
 // composition in place (class attributes only — geometry, copy text,
 // markup structure are never touched):
 //   copy  : as-authored → copy--ink → copy--shield → copy--shield--deep
-//   brand : as-authored → bar-top--ink → bar-top--plate
+//   brand : plate is INVARIANT (2026-10-24 plate standard) — ink-on-bone
+//           ≥ 12:1 over any photo, so the brand ladder no longer runs; the
+//           ladder keeps a single 'author' rung for machinery compatibility.
 // Every escalation is a DECLARED engine layer (story-system.css), so the
 // model reproduces it exactly — no waiver prompts, no human in the loop.
 
@@ -407,27 +409,37 @@ function compositedBackdrop(px, c, x, y) {
 // fg color + shadow credit per role + state
 function fgState(c, band) {
   const INK_family = c.inkCopy;
-  const plate = c.plate && band.role === 'brand';
   const shield = c.shield;
   switch (band.role) {
     case 'eyebrow':
       return { col: INK_family ? INK : BONE, tau: 0.9, s: INK_family ? 0 : 0.2, sc: [0, 0, 0] };
     case 'h1':
       return { col: INK_family ? INK : [255, 255, 255], tau: 1, s: INK_family ? 0 : 0.7, sc: [0, 0, 0] };
+    case 'h1-accent':
+      // Serif-accent sub-band — PLATE-STANDARD-ERA model fix (2026-10-24):
+      // under .copy--ink the accent span recolors to espresso-700 (#3E3027),
+      // NOT the band's --ink. Modelled conservatively (see §G.9): the whole
+      // sub-band is evaluated at the accent colour; worst-of wins in gate.
+      return { col: ESP700, tau: 1, s: 0, sc: [0, 0, 0] };
     case 'cta':
       return { col: shield ? BONE25 : (INK_family ? ESP800 : BRASS), tau: 1, s: INK_family ? 0 : 0.2, sc: [0, 0, 0] };
     case 'brand':
-      if (plate) return { col: INK, tau: 1, s: 0, sc: [0, 0, 0] };
-      return { col: c.inkBar ? INK : [255, 255, 255], tau: 0.9, s: c.inkBar ? 0 : 0.2, sc: [0, 0, 0] };
+      // PLATE STANDARD (2026-10-24): .bar-top .brand carries the bone plate
+      // by default — ink-on-bone ≥ 12:1 over ANY photo. Brand polarity
+      // (authored-white / bar-top--ink) is retired at the model level.
+      return { col: INK, tau: 1, s: 0, sc: [0, 0, 0] };
   }
   throw new Error('unknown band role ' + band.role);
 }
 
 // Evaluate one band of one post config; returns { p98, worst, need, label }.
 function evaluateBand(px, c, band) {
-  const needMap = { eyebrow: 4.5, h1: 3.0, cta: 4.5, brand: 4.5 };
+  const needMap = { eyebrow: 4.5, h1: 3.0, 'h1-accent': 3.0, cta: 4.5, brand: 4.5 };
   const fg = fgState(c, band);
-  const plateAAA = c.plate && band.role === 'brand';
+  // Plate is an INVARIANT for the brand band (2026-10-24 plate standard):
+  // the bone plate ramp is composited over the backdrop before every brand
+  // sample — independent of any marker class state.
+  const plateAAA = band.role === 'brand';
   const samples = [];
   for (let y = band.y0; y <= band.y1; y += 2) {
     for (let x = band.xs; x <= band.xe; x += 8) {
@@ -449,7 +461,7 @@ function evaluateBand(px, c, band) {
   // / shadow-line pixels (<2% of area) can never block, uniform dimness can.
   const p98 = samples[Math.max(0, Math.ceil(samples.length * 0.02) - 1)];
   const need = needMap[band.role];
-  const label = `${band.role} ${band.role === 'h1' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px'))}`;
+  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px'))}`;
   const pass = p98 >= need && worst >= HARD_FLOOR;
   const marginPass = p98 >= need + MARGIN && worst >= HARD_FLOOR;
   return { label, need, worst: +worst.toFixed(2), p98: +p98.toFixed(2), pass, marginPass, samples: samples.length };
@@ -466,7 +478,12 @@ function evaluate(px, c) {
 
 // ── 6. SELF-HEAL LADDER ─────────────────────────────────────────────────
 const COPY_STATE_LADDER = ['author', 'ink', 'shield', 'shieldDeep'];
-const BRAND_STATE_LADDER = ['author', 'inkFlip', 'plate'];
+// PLATE STANDARD (2026-10-24): the brand band is invariant (ink-on-bone ≥
+// 12:1 — see evaluateBand plateAAA), so the ladder collapses to a single
+// 'author' rung. candidateConfig's inkFlip/plate setters are retained as a
+// compatibility surface for verify-contrast reconcile (their flags no
+// longer affect the model — plate compositing is unconditional).
+const BRAND_STATE_LADDER = ['author'];
 const litter = (c) => ({ ...c, _shieldY1: undefined, _shieldY2: undefined });
 
 // ABSOLUTE state setters — every rung is a fully-specified composition
@@ -496,11 +513,7 @@ function classStrings(html, c, copyState, brandState) {
     if (c.inkCopy) copyParts.push('copy--ink');
     if (c.shield) copyParts.push(c.shield === 'L2' ? 'copy--shield--deep' : 'copy--shield');
   }
-  const barParts = ['bar-top'];
-  if (brandState === 'plate') barParts.push('bar-top--plate');
-  else if (brandState === 'inkFlip') barParts.push('bar-top--ink');   // ABSOLUTE: forces the ink rung even on an authored-white bar (it is a *flip*)
-  else if (c.inkBar && !c.plate) barParts.push('bar-top--ink');
-  else if (c.plate) barParts.push('bar-top--plate');
+  const barParts = ['bar-top', 'bar-top--plate'];   // plate = invariant default; marker always materialized (byte-normalized by heal)
   const curCopy = html.match(/<section class="(copy[^"\n]*)"/)?.[1] ?? null;
   const curBar = html.match(/<header class="(bar-top[^"\n]*)"/)?.[1] ?? null;
   const nextCopy = copyParts.join(' ');
@@ -520,7 +533,10 @@ function classStrings(html, c, copyState, brandState) {
 // FORCE_AUTHOR recovery: strip every escalation token from a composition so
 // the ladder re-runs from the naked authored state (colour/geometry source
 // of truth is the engine — compositions only carry rung markers).
-const ESCALATION_TOKEN = /^(copy--ink|copy--shield--deep|copy--shield|bar-top--ink|bar-top--plate)$/;
+// bar-top--plate is NEVER stripped: it is the permanent standard marker
+// (2026-10-24), not an escalation rung. bar-top--ink is a deprecated
+// polarity kept on the strip list so FORCE_AUTHOR normalizes legacy posts.
+const ESCALATION_TOKEN = /^(copy--ink|copy--shield--deep|copy--shield|bar-top--ink)$/;
 function stripEscalationClasses(html) {
   const scrub = (whole, tokens) => whole.replace(/class="[^"\n]*"/, `class="${tokens}"`);
   const filter = (tokens) => tokens.split(/\s+/).filter((t) => !ESCALATION_TOKEN.test(t)).join(' ');
@@ -664,7 +680,7 @@ if (photoArg) {
     }
     const bad = results.filter((r) => !r.pass);
     const markers = [
-      cf.plate ? 'bar-top--plate' : (cf.inkBar ? 'bar-top--ink' : null),
+      cf.plate ? 'bar-top--plate·invariant' : 'bar-top--plate·invariant (marker pending heal)',
       `copy ${cf.variant}`,
       cf.inkCopy ? 'copy--ink' : null,
       cf.shield ? (cf.shield === 'L2' ? 'copy--shield--deep' : 'copy--shield') : null,
