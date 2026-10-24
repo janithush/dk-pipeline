@@ -107,16 +107,27 @@ say so; never fabricate observations.
   Logo: <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
   paired with <p class="brand">Direct Kitchens</p>. If inspection shows the top-RIGHT region
   bright (white/cream), use bar-top--ink. (If the ship gate still disagrees, it will
-  auto-escalate to bar-top--plate — do not preempt it.)
+  auto-flip to the opposite polarity via bar-top--ink — do not preempt it.)
+- Brand polarity partner (2026-10-25 knockout standard): the chosen polarity travels with
+  a DECLARED top-scrim intensity. WHITE wordmark (dark-topped photos) → the top scrim span
+  carries scrim--top--deep (deepened corner pool). INK wordmark (bright-topped photos) →
+  the top scrim span stays bare (airy pool). Set both together, always:
+    <header class="bar-top bar-top--white"> + <span class="scrim scrim--top scrim--top--deep">
+    <header class="bar-top bar-top--ink">  + <span class="scrim scrim--top">
 - Copy variants: EXACTLY TWO EXIST. <section class="copy copy--bottom-left"> or
   <section class="copy copy--bottom-right"> (alternate bottom-right every OTHER post for
   rhythm, per §F.7). Any other position — centered included — is PERMANENTLY ELIMINATED
-  from the engine; never emit it.
-- Scrims: <span class="scrim scrim--top"></span> + <span class="scrim scrim--bottom"></span>
-  inside <figure class="photo photo--full scrim--charcoal"> (cool/neutral undertones) or
-  scrim--warm (amber/timber undertone). The deepened 620px bottom scrim is the declared
-  legibility floor — your crisp WHITE typography rides it; author plain white markup and
-  trust the gates (they will auto-escalate shield/plate rungs only if WCAG AA needs it).
+  from the engine; never emit it. The copy block NEVER carries a background box:
+  .copy--shield / .copy--shield--deep are RETIRED (2026-10-25) — legibility is governed
+  exclusively by the full-bleed edge-to-edge scrim gradients and, for bright surfaces,
+  the declared .copy--ink recolor.
+- Scrims: <span class="scrim scrim--top [scrim--top--deep]"></span> + <span class="scrim scrim--bottom"></span>
+  inside <figure class="photo photo--full scrim--charcoal"> (cool/neutral undertones),
+  scrim--warm (amber/timber undertone), or scrim--greige (warm stone undertone). The
+  deepened 620px bottom scrim is the declared legibility floor — your crisp WHITE
+  typography rides it; author plain white markup plus the polarity partner above and
+  trust the gates (the ladder auto-flips bar-top polarity + pool intensity only if the
+  browser sampler disagrees).
 
 == STRICT DOM CONTRACT (per story — no body copy in the DOM) ==
 <!doctype html>
@@ -133,10 +144,10 @@ say so; never fabricate observations.
     <article class="frame" aria-label="<2-line grounded description>">
       <figure class="photo photo--full scrim--{charcoal|warm|greige}">
         <img src="../../../assets/raw/optimized/<slugged file>.jpg" alt="<grounded alt text>">
-        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--top scrim--top--deep" aria-hidden="true"></span>
         <span class="scrim scrim--bottom" aria-hidden="true"></span>
       </figure>
-      <header class="bar-top bar-top--plate">
+      <header class="bar-top bar-top--white">
         <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
         <p class="brand">Direct Kitchens</p>
       </header>
@@ -191,8 +202,11 @@ day is the gate itself:
 - **Optimization refresh:** any photos dropped since prepare enter `slug-map.json`.
 - **`photo-fit` self-heal:** deterministic WCAG AA evaluation of every text band of every post;
   a failing band is auto-escalated along the declared engine ladder
-  (`copy--ink → copy--shield → copy--shield--deep`; `bar-top--ink → bar-top--plate`) —
-  **no interactive questions, no waivers, no TUI stalls.**
+  (copy: `author → copy--ink`; brand: `author → bar-top--ink` polarity flip + its declared
+  pool-intensity partner, 2026-10-25 knockout standard) — **no interactive questions, no
+  waivers, no TUI stalls.** When the ladder exhausts, the post DEFERS to the browser
+  authority rather than pre-emptively dying (the box-model proxy is measured ~1.3–1.5×
+  conservative at the small-type rows; §H.6 keeps fail-closed at the verify gate).
 - **Chromium headless `verify-contrast` authority:** a real rendered-pixel WCAG AA session per
   post (same reconcile ladder, fail-closed on any disagreement).
 - **Render:** every post through `hyperframes render --strict` → PNG frames in
@@ -950,13 +964,20 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   ADDITIVE `.copy--ink` color variant for bright surfaces, halo text-shadows stripped (§G.9);
   `.t-eyebrow`, `.t-display` (+`<span class="serif-accent">` italic),
   `.cta`.
-- BRAND PLATE STANDARD (2026-10-24, supersedes the former BRAND-ON-PHOTO RULE): the wordmark
-  carries the bone label plate **by DEFAULT** — `.bar-top .brand` renders ink-on-bone
-  (≥ 12:1 over ANY photo zone), so brand polarity is retired. `.bar-top--plate` remains the
-  explicit marker class (idempotent duplicate — an invariant, not an escalation rung, and
-  never stripped by FORCE_AUTHOR). `.bar-top--ink` is DEPRECATED (kept byte-functional for
-  archived compositions). photo-fit's brand ladder collapses to a single invariant 'author'
-  rung; heal output reports `bar-top--plate·invariant`.
+- EDITORIAL KNOCKOUT BRAND — polarity RESTORED (2026-10-25, supersedes the 2026-10-24
+  PLATE STANDARD, which superseded the former BRAND-ON-PHOTO RULE): the wordmark is a
+  clean transparent knockout again — NO pill, no plate, no padding, no radius. Polarity
+  is DYNAMIC: `.bar-top .brand` (and explicit `.bar-top--white`) = bone-25 white wordmark
+  (opacity 0.9 + cinematic glow) for dark-topped photos; `.bar-top--ink` = ink wordmark
+  with the glow stripped, for bright upper walls — exactly reference stories 18/21.
+  The polarity travels with a DECLARED top-scrim pool intensity as one set: WHITE ↔
+  `scrim--top--deep` (corner pool peak 0.68), INK ↔ bare `scrim--top` (peak 0.50).
+  A single fixed pool dial cannot serve both poles (a mid-tone wall corner is limbo for
+  EITHER polarity — sweep-verified 2026-10-25 on the full asset pool); the declared
+  partner makes both poles deterministic. photo-fit's brand ladder = `author → inkFlip`
+  and flips BOTH markers together. Legacy `bar-top--plate` is a retired marker (stripped
+  on the next --fix pass); the bar-top--ink glow suppression beat via
+  `.bar-top.bar-top--ink .brand`.
 - DK SIGNATURE GRADE (2026-10-24, optional): a post may declare
   `data-color-grading='{"vignette":x,"grain":y,"adjust":{"exposure":a,"contrast":b}}'` on the
   photo `<img>` (Attribute order free; JSON matching `photo-fit`'s parse). Constrained
@@ -1005,11 +1026,14 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   post; check = rendered-pixel confirmation plus the full runtime/layout/motion suite.
 - `npm run preflight` = `hyperframes lint && node scripts/check-paths.js && node scripts/photo-fit.js --fix && node scripts/verify-contrast.js`.
   The chain is SELF-HEALING: photo-fit's `--fix` applies the minimal declared escalation ladder
-  (copy: as-authored → ink → shield → shield-deep · brand: PLATE-STANDARD invariant — no rung,
-  2026-10-24) per post;
+  (copy: as-authored → ink · brand: as-authored polarity → bar-top--ink polarity flip with
+  its declared pool partner — one consistent set, no rungs retired into invariance)
+  per post;
   verify-contrast then certifies every post against the REAL browser sampler with the same
   ladder as its reconcile mechanism. Neither gate asks a question, prints a prompt, or accepts a
-  waiver — a TRUE defect (ladder exhausted) fails the chain and demands a copy/variant/photo change.
+  waiver — when the declaration ladder exhausts, photo-fit DEFERS to the browser authority
+  (§H.6; the box-model proxy is measured conservative at the small-type rows), and the
+  browser gate fail-closes any real defect, demanding a copy/variant/photo change.
 - RENDER STRICTNESS (2026-10-24, Phase 1): `render-batch.js` renders with `--strict --no-best-effort`
   — a frame the renderer would have silently degraded via best-effort recovery is now a RED.
   What ships must be exactly what was gated.
@@ -1207,25 +1231,28 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 .bar-top .dk-brand-logo,
 .bar-top img { width: 40px; height: 40px; max-width: 40px; max-height: 40px;
                border-radius: 50%; object-fit: contain; flex-shrink: 0; }
-/* PLATE STANDARD (2026-10-24): the wordmark is ink-on-bone by DEFAULT —
-   the bone label plate lives on the `.bar-top .brand` base rule, guaranteeing
-   ≥ 12:1 over ANY photo. `.bar-top--plate` is the explicit (idempotent)
-   marker class; `.bar-top--ink` is DEPRECATED polarity (archived posts only). */
+/* EDITORIAL KNOCKOUT (2026-10-25, restores the stories 18–21 canon): the word-
+   mark sits DIRECTLY on the photo — no pill, no plate, no padding, no radius.
+   Polarity is dynamic: default white (bone-25, opacity .9 + cinematic glow);
+   .bar-top--ink flips to ink and strips the glow. The polarity travels with its
+   declared top-scrim pool partner (WHITE ↔ scrim--top--deep, INK ↔ bare). */
 .bar-top .brand { font: 500 13px/1 var(--sans); letter-spacing: .28em;
-                  text-transform: uppercase; color: var(--ink, #2A211A); opacity: 1;
-                  background: linear-gradient(180deg, rgba(246,241,231,.92) 0%, rgba(246,241,231,.97) 100%);
-                  padding: 10px 16px; border-radius: 3px; text-shadow: none; }
+                  text-transform: uppercase; color: var(--bone-25, #FDFAF4);
+                  line-height: 1; opacity: .9; }
+.bar-top--white .brand { color: var(--bone-25, #FDFAF4); }
+.bar-top--ink .brand { color: var(--ink, #2A211A); }
+.bar-top.bar-top--ink .brand { text-shadow: none; }  /* beats the later glow rule */
 ```
 
 - **40×40px circular clamp**, anchored at `top: 140px / right: 80px` — TOP-RIGHT of the 9:16 frame, well clear of the native Instagram/Facebook Story header zone at top-left, and never obstructing central photography. The logo sits flush right; `row-reverse` places the wordmark to its LEFT.
-- Header markup on every post (logo + plated-wordmark pairing is invariant; the wrapper default is `bar-top bar-top--plate`):
+- Header markup on every post (logo + knockout-wordmark pairing is invariant; the wrapper default is `bar-top bar-top--white` over dark tops, `bar-top bar-top--ink` over bright tops):
   ```html
-  <header class="bar-top bar-top--plate">
+  <header class="bar-top bar-top--white">
     <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
     <p class="brand">Direct Kitchens</p>
   </header>
   ```
-- **Plate standard (2026-10-24):** ink-on-bone ≥ 12:1 over ANY backing photo, so NO per-photo brand selection remains — the former `bar-top--ink` inspection rule is retired. photo-fit composites the declared plate ramp (scraped from `story-system.css`, conservative floor alpha 0.92) before every brand sample; a brand band can therefore no longer fail the gate, and the brand self-heal ladder is a single invariant rung. Legacy archived compositions that still carry `bar-top--ink` or bare `bar-top` render identically to the standard (the CSS base rule plates unconditionally); the marker class is normalized on the next `--fix` pass.
+- **Knockout polarity standard (2026-10-25, supersedes the 2026-10-24 plate):** the brand is a transparent knockout with DYNAMIC polarity — white (bone-25) on dark-topped photos, ink on bright upper walls, exactly reference stories 18/21. The polarity travels with a DECLARED top-scrim pool intensity as one set (WHITE ↔ `scrim--top--deep` deep-pool corner, INK ↔ bare airy pool) because a single fixed pool dial provably cannot serve both poles on mid-tone corners. photo-fit models both states with the declared ramps; its brand ladder is `author → inkFlip` and flips BOTH markers together; the reconcile ladder in `verify-contrast.js` mirrors it. Legacy `bar-top--plate` markers are stripped on the next `--fix` pass.
 
 ### G.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
 
@@ -1354,7 +1381,7 @@ For high-key photography (white stone, beadboard, pale cabinetry) where the whit
 - **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
 - **When to use it:** whenever the Step-3 **Contrast pre-check** (`npm run photo-fit -- <file>`, §F.8) reports the default white/bone stack infeasible over a bright surface and a scrim/variant change isn't enough. It is one of the four sanctioned remediations (variant/theme, shorten copy, `.copy--ink`, swap photo) — never a substitute for re-running the gate.
 - **Usage:** `<section class="copy copy--bottom-right copy--ink">` - no per-post CSS, no inline styles.
-- ⚠ **Gate-model note (aligned 2026-10-24):** photo-fit's ink-mode model is now exact to the CSS — ink bands carry ZERO shadow credit (the halos are stripped, so `s=0` for every ink role: h1, eyebrow, cta, accent) and the plate is composed unconditionally for the brand band. The former "generous lift" warning is RETIRED. The one true cross-band delta — the `.serif-accent` span rendering `--espresso-700` under `copy--ink` instead of the band's `--ink` — is modelled as a virtual `h1-accent` band: the FULL h1 band geometry re-evaluated at ESP700, verdicts merged worst-of (conservative by design; a 1–3 word accent can never silently pass on an optimistic whole-band average). Ink posts are still confirmed by the browser-authority gate as always.
+- ⚠ **Gate-model notes (aligned 2026-10-25):** photo-fit's ink-mode model is exact to the CSS — ink bands carry ZERO shadow credit (the halos are stripped, so `s=0` for every ink role: h1, eyebrow, cta, accent). The brand band models the knockout polarity (white bone-25 with the glow's `s=0.2` credit / ink with `s=0`), composited over the DECLARED top-pool intensity (bare = 0.50 deep-pool peak 0.68) — the 2026-10-24 unconditional plate composite is RETIRED with the plate. The one cross-band delta — the `.serif-accent` span rendering `--espresso-700` under `copy--ink` — is modelled as a virtual `h1-accent` band merged worst-of (conservative by design). Band sampling is Chromium-calibrated (2026-10-25): run-widths use the measured Inter advance `0.60×fs + tracking` (the former `0.70×fs + 20px` over-widened bands ~24% and manufactured brand-row failures the real sampler did not show). Scrim ramps `!important` suffixes do not defeat the layer parser (the pre-2026-10-25 parser silently dropped every engine scrim and composited over raw pixels). When the declaration ladder exhausts, the model DEFERS to the browser authority (§H.6) instead of pre-emptively failing the chain.
 
 ---
 
@@ -1443,7 +1470,7 @@ next-day retirement can only archive committed work.
 |---|---|
 | "Ask me to confirm which photos to use" | Photo ledger lists the available inventory; the agent designs for exactly that list |
 | "Ask me which reference post" | Reference anchors live in `assets/references/`; plural-sufficiency is a §D craft rule, not a gate |
-| Interactive polar/contrast waivers | `photo-fit --fix` + `verify-contrast` reconcile through the declared engine ladder (`copy--ink` → `copy--shield` → `copy--shield--deep`; brand = PLATE STANDARD invariant since 2026-10-24) with NO prompts, NO waivers: worst-case is a RED ship demanding a copy/variant/photo change |
+| Interactive polar/contrast waivers | `photo-fit --fix` + `verify-contrast` reconcile through the declared engine ladder (copy: `author → copy--ink`; brand: `author → bar-top--ink` polarity flip with its declared pool partner — 2026-10-25 knockout standard) with NO prompts, NO waivers: worst-case is a RED ship demanding a copy/variant/photo change (the model defers to browser authority at ladder exhaustion, still fail-closed) |
 | Grain/shadow-line false FAILs | p98 (2%-worst) verdict + 1.35 hard floor — single pixels of noise can no longer block a clean band; uniform dimness still fails deterministically |
 | "Confirm before triggering renders" | ship IS the confirmation: its preflight chain must be green or nothing renders |
 | Engine-vs-script geometry drift | photo-fit scrapes ALL consumed numbers live from `shared/*.css` (geometry custom properties, ramps, typography) — a design-sprint edit propagates by scrape, never by mirrored constants |
@@ -1487,7 +1514,7 @@ ADVISORY (fail-open, exit 0, no waiver-prompt, never gate verdicts):
   self-verified swap — same discipline as verify-contrast), captures the exact frame
   with `hyperframes snapshot --at 0 --no-end --json --composition dk-<slug>`, and asks
   Gemini (via `--describe`) the versioned technical-QA prompt
-  (`scripts/qa-vision-prompt.txt`, v1): brand-mark integrity on its plate, capture
+  (`scripts/qa-vision-prompt.txt`, v2): brand-mark integrity as a clean transparent knockout
   readiness, copy-integrity defects, photo-health defects. No `GEMINI_API_KEY` → clean
   `SKIPPED_NO_KEY` digest + one warning. Artifacts + per-post rollup:
   `.hyperframes/artifacts/qa-vision/<date>/<batch>/` (gitignored by design).

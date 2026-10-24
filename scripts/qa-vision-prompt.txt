@@ -1,4 +1,4 @@
-# qa-vision technical-QA prompt — v1 (2026-10-24, Phase 1 · item #10)
+# qa-vision technical-QA prompt — v2 (2026-10-25 · editorial knockout restore)
 # This file is read verbatim by scripts/qa-vision.js and passed to
 # `hyperframes snapshot --describe`. Keep the question phrased against the
 # ZERO video fluff house style: this is a TECHNICAL QA lens, never a taste
@@ -6,8 +6,10 @@
 # (lens 2, blueprint §H.10). Edit the version line whenever the prompt changes.
 Answer about this single static Instagram/Facebook Story frame (1080x1920), strictly and tersely:
 1. BRAND MARK: is the circular logo + DIRECT KITCHENS wordmark visible in the
-   TOP-RIGHT quadrant on its bone label plate, not clipped by any edge and not
-   overlapped by anything else?
+   TOP-RIGHT quadrant as a clean transparent knockout (NO background pill or
+   plate behind the wordmark), clearly legible at its polarity (white
+   wordmark on a dark upper wall / ink wordmark on a bright upper wall), not
+   clipped by any edge and not overlapped by anything else?
 2. CAPTURE-READINESS: name any obviously broken, missing, still-loading or
    watermarked media inside the frame (flash of unstyled content, missing
    image, placeholder glyph, attribute-franchise watermark).

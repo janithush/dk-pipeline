@@ -29,13 +29,9 @@
   /* ── scrims ───────────────────────────────────────────────────────── */
   --scrim-top: 320px;        /* .scrim--top band height                  */
   --scrim-bottom: 620px;     /* .scrim--bottom band height               */
-
-  /* ── copy--shield (declared local copy-zone scrim; photo-fit models
-        this ramp exactly — never hand-tune alpha here without re-running
-        the preflight ladder) ────────────────────────────────────────── */
-  --shield-pad-x: 44px;      /* shield pseudo-element horizontal padding */
-  --shield-pad-top: 32px;    /* shield pseudo-element top padding        */
-  --shield-pad-bottom: 28px; /* shield pseudo-element bottom padding     */
+  /* NOTE (2026-10-25): the copy--shield local-copy-scrim device is RETIRED —
+     its --shield-pad-* geometry properties were removed. Legibility is
+     governed exclusively by the full-bleed edge-to-edge scrim gradients. */
 }
 
 /* RESET & ROOT CANVAS */
@@ -103,23 +99,35 @@ body {
   letter-spacing: 0.28em !important;
   text-align: right !important;
   text-transform: uppercase !important;
-  /* PLATE STANDARD (2026-10-24): ink-on-bone by DEFAULT. The bone wordmark
-     plate guarantees ≥ 12:1 over ANY photo, so brand polarity (authored-white
-     vs bar-top--ink) is retired at the model level — no per-photo selection. */
-  color: var(--ink, #2A211A) !important;
+  /* EDITORIAL KNOCKOUT — RESTORED (2026-10-25, per reference stories 18–21).
+     Zero background patch: no pill, no plate, no padding, no border-radius.
+     The wordmark sits DIRECTLY on the photo. Polarity is DYNAMIC per the
+     upper-wall luminance: default = WHITE (`.bar-top` / explicit
+     `.bar-top--white`, over dark-topped photos); `.bar-top--ink` flips the
+     wordmark to ink for bright upper walls. photo-fit models both states. */
+  color: var(--bone-25, #FDFAF4) !important;
   line-height: 1 !important;
-  opacity: 1 !important;
-  background: linear-gradient(180deg, rgba(246, 241, 231, 0.92) 0%, rgba(246, 241, 231, 0.97) 100%);
-  padding: 10px 16px;
-  border-radius: 3px;
-  text-shadow: none !important;   /* dark glow behind ink-on-bone lowers AA — stripped */
+  opacity: 0.9 !important;
 }
 
-/* DEPRECATED brand polarity (kept byte-functional for archived compositions;
-   the plate standard above now dominates both variants — plain white/ink
-   wordmarks are no longer emitted by the engine, its gates, or its heals). */
+/* BRAND POLARITY (active, 2026-10-25 — un-retired from the 2026-10-24 plate
+   standard). White is the base rule above; `.bar-top--white` is its explicit
+   marker (stable scrape anchor). `.bar-top--ink` flips to ink for bright
+   upper walls AND strips the dark cinematic glow — a dark shadow behind an
+   ink wordmark lowers AA and muddies the knockout. */
+.bar-top--white .brand {
+  color: var(--bone-25, #FDFAF4) !important;
+}
+
 .bar-top--ink .brand {
-  color: var(--ink, #1a1a1a) !important;
+  color: var(--ink, #2A211A) !important;
+}
+
+/* text-shadow suppression lives on a HIGHER-specificity compound selector so
+   it also beats the later cinematic glow rule (`.bar-top .brand`, equal
+   specificity, greater source depth) on the ink variant. */
+.bar-top.bar-top--ink .brand {
+  text-shadow: none !important;
 }
 
 /* DYNAMIC SCRIM VARIANTS (COLOR-ADAPTIVE) */
@@ -152,32 +160,56 @@ body {
   height: var(--scrim-bottom) !important;
 }
 
-/* Scrim Theme: Charcoal Cool — deepened neutral bottom ramp; the top band is
-   the shared TOP-RIGHT architectural vignette (identical for both themes). */
+/* Scrim Theme: Charcoal Cool — deepened neutral bottom ramp. The top band is
+   the shared TOP-RIGHT architectural vignette — reshaped 2026-10-25 to the
+   era-proven proportion (stories 18–21): a THIN shadow hugging the top edge
+   (0.45 → gone by ~34% of the band) with the top-right radial pool keeping
+   its calibrated corner anchor. TRUE wall luminance at the brand row is what
+   lets the knockout wordmark's DYNAMIC polarity work — but one fixed pool
+   dial cannot serve BOTH poles (a mid-tone wall corner is limbo for ink AND
+   white; sweep-verified 2026-10-25), so the pool intensity is a DECLARED
+   per-post partner of the brand polarity: `.scrim--top--deep` deepens the
+   corner pool (for WHITE wordmarks on dark-wish walls — story-21 pole),
+   the bare `.scrim--top` keeps the airy pool (for INK wordmarks on bright
+   walls — story-18 pole). The ladder flips BOTH markers together
+   (bar-top--ink ↔ bar-top--white × deep ↔ airy) so the declaration set is
+   always internally consistent. Values stay LITERAL rgba (photo-fit scrapes
+   engine ramps; RADIAL_CONST calibration unchanged — same 100% 0% anchor). */
 .scrim--charcoal .scrim--top {
-  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
+}
+/* Deep pool — same thin edge band, corner pool tuned for WHITE brand rows:
+   peak 0.68 covers the wordmark's glyph box (t≈0.35–0.41 at the calibrated
+   anchor) with ~0.27–0.30 alpha where the bare pool gives ~0.19–0.22. */
+.scrim--charcoal .scrim--top--deep {
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.68) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
 }
 .scrim--charcoal .scrim--bottom {
   background: linear-gradient(0deg, rgba(12, 12, 14, 0.85) 0%, rgba(12, 12, 14, 0.48) 50%, rgba(12, 12, 14, 0) 100%) !important;
 }
 
-/* Scrim Theme: Warm Amber — deepened warm bottom ramp; the top band is the
-   shared TOP-RIGHT architectural vignette (identical for both themes). */
+/* Scrim Theme: Warm Amber — deepened warm bottom ramp; the top band pair
+   (bare = airy pool / --deep = deep pool) mirrors the charcoal theme above. */
 .scrim--warm .scrim--top {
-  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
+}
+.scrim--warm .scrim--top--deep {
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.68) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
 }
 .scrim--warm .scrim--bottom {
   background: linear-gradient(0deg, rgba(24, 16, 10, 0.85) 0%, rgba(24, 16, 10, 0.52) 50%, rgba(24, 16, 10, 0) 100%) !important;
 }
 
 /* Scrim Theme: Warm Greige (2026-10-24) — warm stone undertone ramp, tint
-   = --greige-900 #3A322A (token.css). The top band is the SAME shared
-   TOP-RIGHT architectural vignette (identical for every theme — the
-   100% 0% radial anchor needs no recalibration, RADIAL_CONST holds); only
-   the bottom ramp's tint differs. Values stay LITERAL rgba() (not var())
-   because photo-fit scrapes engine ramps as literal strings. */
+   = --greige-900 #3A322A (token.css). The top band pair mirrors the other
+   themes (bare = airy pool / --deep = deep pool, 2026-10-25). Values stay
+   LITERAL rgba() (not var()) because photo-fit scrapes engine ramps as
+   literal strings. */
 .scrim--greige .scrim--top {
-  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
+}
+.scrim--greige .scrim--top--deep {
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.68) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.20) 16%, rgba(0, 0, 0, 0) 34%) !important;
 }
 .scrim--greige .scrim--bottom {
   background: linear-gradient(0deg, rgba(58, 50, 42, 0.85) 0%, rgba(58, 50, 42, 0.52) 50%, rgba(58, 50, 42, 0) 100%) !important;
@@ -206,9 +238,8 @@ body {
   position: absolute !important;
   bottom: var(--copy-bottom) !important;
   z-index: 10 !important;
-  isolation: isolate !important;   /* stacking context: the shield pseudo (z:-1)
-                                      stays scoped to .copy, above photo+scrims,
-                                      invisible to lint's negative-z audit */
+  isolation: isolate !important;   /* stable stacking context for the copy
+                                      column above photo + scrims */
   display: flex !important;
   flex-direction: column !important;
   gap: 12px !important;
@@ -285,72 +316,23 @@ body {
 .copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
 
 /* ───────────────────────────────────────────────────────────────────────
-   COPY SHIELD — declared local copy-zone scrim (auto-heal ladder, Level 1)
-   2026-10-22 · zero-waiver policy: when the naked white stack cannot clear
-   WCAG AA at the small-type bands (grain/shadow-line worst pixels), scripts/
-   photo-fit.js --fix escalates .copy to .copy--shield deterministically.
-   The shield is a DECLARED gradient layer under the text (never a per-post
-   style, never a white halo): the copy block gets its own soft ramp, modelled
-   exactly by photo-fit (stops below are parsed at runtime — edit them only
-   through a documented engine amendment + preflight re-run).
-   Visual language: reads as a continuation of the deepened bottom scrim —
-   a quiet plateau under the copy column, hairline-free, no filter, no glow.
+   COPY SHIELD — RETIRED (2026-10-25, operator directive). The isolated
+   floating card styles (.copy--shield / .copy--shield--deep pseudo boxes —
+   background plate, rounded corners, floating patch) are REMOVED. No copy
+   block may ever spawn a background box: all legibility is governed
+   strictly by the full-bleed edge-to-edge natural scrim gradients
+   (.scrim--top architectural vignette + .scrim--bottom ramp), the
+   composition variant, and .copy--ink recoloring for bright surfaces.
+   photo-fit's ladder no longer carries shield rungs; the brass CTA keeps
+   its signature accent in every state (the bone swap died with the shield).
    ─────────────────────────────────────────────────────────────────────── */
-.copy--shield::before {
-  content: "";
-  position: absolute;
-  left: calc(-1 * var(--shield-pad-x));
-  right: calc(-1 * var(--shield-pad-x));
-  top: calc(-1 * var(--shield-pad-top));
-  bottom: calc(-1 * var(--shield-pad-bottom));
-  border-radius: 18px;
-  background: linear-gradient(180deg,
-    rgba(8, 6, 4, 0.50) 0%,
-    rgba(8, 6, 4, 0.62) 55%,
-    rgba(8, 6, 4, 0.68) 100%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Anchor the shield pseudo explicitly: the .copy--shield element owns the
-   stacking context (isolation) so z:-1 stays scoped ABOVE the page photo +
-   scrims — never behind the composition root. Lint's negative-z audit keys
-   on the exact anchor element, so isolation lives HERE, not on .copy. */
-.copy--shield,
-.copy--shield--deep {
-  isolation: isolate;
-}
-
-/* Brass CTA re-ink under the shield: brass (#CFA76B, L≈0.42) loses ~2.4:1
-   against a 0.5+ backdrop — the small CTA swaps to bone under any shield. */
-.copy--shield .cta { color: var(--bone-25, #FDFAF4); }
-
-/* Level 2 — DEEP shield for stubborn bright copy zones (white stone,
-   beadboard). Same structure, stronger plateau; still a complained-free
-   editorial device (alpha ramp identical shape, higher floor). */
-.copy--shield--deep::before {
-  background: linear-gradient(180deg,
-    rgba(8, 6, 4, 0.72) 0%,
-    rgba(8, 6, 4, 0.78) 55%,
-    rgba(8, 6, 4, 0.84) 100%) !important;
-}
 
 /* ───────────────────────────────────────────────────────────────────────
-   BRAND PLATE — PERMANENT STANDARD (2026-10-24; formerly the auto-heal
-   last rung). Ink-on-bone ≥ 12:1 for ANY underlying photo pixel, guaranteed
-   — the plate alpha is baked into the ramp, opacity is normalized to 1.
-   The identical rules now live on the `.bar-top .brand` BASE rule (the
-   plate is the default brand state); `.bar-top--plate` is retained as the
-   explicit marker class — an idempotent duplicate that keeps photo-fit's
-   BRAND_PLATE / platePad scrape anchors stable and archived compositions
-   byte-compatible. The logo's 40px circular mark stays exposed (WCAG
-   logotype-exempt); only the wordmark is plated.
+   BRAND PLATE — RETIRED (2026-10-25, operator directive). The bone label
+   plate is removed from the wordmark: the brand renders as a clean
+   transparent knockout with dynamic polarity (`.bar-top` / bar-top--white
+   = bone-25 wordmark · bar-top--ink = ink wordmark on bright upper walls),
+   exactly as reference stories 18–21. The circular logo mark stays
+   exposed and WCAG logotype-exempt. photo-fit's BRAND_PLATE composite and
+   platePad scrape were removed with it.
    ─────────────────────────────────────────────────────────────────────── */
-.bar-top--plate .brand {
-  color: var(--ink, #2A211A) !important;
-  opacity: 1 !important;
-  background: linear-gradient(180deg, rgba(246, 241, 231, 0.92) 0%, rgba(246, 241, 231, 0.97) 100%);
-  padding: 10px 16px;
-  border-radius: 3px;
-  text-shadow: none !important;   /* dark glow behind ink-on-bone lowers AA — stripped */
-}

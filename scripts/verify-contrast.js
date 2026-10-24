@@ -13,10 +13,14 @@
 //     2. run `npx hyperframes check --json` (real Chromium sampler),
 //     3. HARD FAIL (vacuous-green) unless ≥1 text element was checked,
 //     4. on AA failures → RECONCILE: escalate the declared engine rung
-//          · copy bands fail  → copy--shield → copy--shield--deep
-//          · brand band fails → bar-top--plate (ink-on-bone ≥ 12:1)
+//          · copy bands fail  → copy--ink (bright-surface recolor)
+//          · brand band fails → bar-top--ink (wordmark polarity flip)
 //        then re-check that post (bounded, no waivers, no prompts),
 //     5. verdict per post = PASS / FAIL — aggregated to the gate exit code.
+//
+// (2026-10-25: the shield/plate rungs are retired with their devices — the
+// reconcile ladder is the knockout-polarity model; a post that still fails
+// at ink has a TRUE defect.)
 //
 // Reconciliation applies class attributes ONLY via scripts/photo-fit.js's
 // exported class machinery (single source of heal logic — no drift, and
@@ -160,21 +164,19 @@ function reconcileClasses(htmlPath, failedZones) {
   const c = pf.parseComposition(htmlPath);          // throws when the composition is unparseable
   const wantCopy = failedZones.includes('copy');
   const wantBrand = failedZones.includes('brand');
-  const copyState = wantCopy
-    ? (c.shield === 'L1' ? 'shieldDeep' : c.shield === 'L2' ? null : 'shield')
-    : 'author';
-  const brandState = wantBrand && !c.plate ? 'plate' : 'author';
-  if (copyState === null && brandState === 'author') {
+  const copyState = wantCopy ? (c.inkCopy ? null : 'ink') : 'author';
+  const brandState = wantBrand ? (c.inkBar ? null : 'inkFlip') : 'author';
+  if (copyState === null && brandState === null) {
     return { repairs: null, exhausted: true };
   }
   const next = pf.classStrings(html, c, copyState, brandState);
-  if (!(next.copyChanged || next.barChanged)) {
+  if (!(next.copyChanged || next.barChanged || next.spanChanged)) {
     return { repairs: null, exhausted: true };
   }
   fs.writeFileSync(htmlPath, next.html);
   const repairs = [
     next.copyChanged ? `copy→${copyState}` : null,
-    next.barChanged ? `brand→${brandState}` : null,
+    (next.barChanged || next.spanChanged) ? `brand→${brandState}` : null,
   ].filter(Boolean);
   return { repairs, exhausted: false };
 }
