@@ -300,7 +300,7 @@ function samplePixels(file) {
 const COPY_VARIANTS = { 'copy--bottom-left': [GEO.copyLeftA, GEO.copyRightA], 'copy--bottom-right': [GEO.copyLeftB, GEO.copyRightB] };
 function parseComposition(htmlPath) {
   const h = fs.readFileSync(htmlPath, 'utf8');
-  const src = h.match(/photo photo--full\s+scrim--(charcoal|warm)[^>]*>\s*<img src="([^"]+)"/s);
+  const src = h.match(/photo photo--full\s+scrim--(charcoal|warm|greige)[^>]*>\s*<img src="([^"]+)"/s);
   const copyClass = h.match(/<section class="(copy[^"\n]*)"/)?.[1] ?? '';
   const headerClass = h.match(/<header class="(bar-top[^"\n]*)"/)?.[1] ?? '';
   const variant = Object.keys(COPY_VARIANTS).find((v) => copyClass.includes(v));
@@ -377,6 +377,7 @@ const SCRIMS = (() => {
   return {
     charcoal: { top: grab('.scrim--charcoal .scrim--top'), bottom: grab('.scrim--charcoal .scrim--bottom') },
     warm:     { top: grab('.scrim--warm .scrim--top'),     bottom: grab('.scrim--warm .scrim--bottom') },
+    greige:   { top: grab('.scrim--greige .scrim--top'),   bottom: grab('.scrim--greige .scrim--bottom') }, // 2026-10-24
   };
 })();
 
@@ -611,7 +612,7 @@ if (photoArg) {
   console.log(`◆ Photo feasibility: ${photoArg}  (advisory only — nothing is modified)`);
   const px = samplePixels(abs);   // decode ONCE — the matrix reuses the same pixel map
   for (const variant of Object.keys(COPY_VARIANTS)) {
-    for (const theme of ['charcoal', 'warm']) {
+    for (const theme of ['charcoal', 'warm', 'greige']) {
       const c = {
         theme, imgAbs: abs, variant, hasEyebrow: true, h1Lines: 2, hasCta: true,
         inkBar: false, inkCopy: false, shield: null, plate: false, _htmlPath: null,

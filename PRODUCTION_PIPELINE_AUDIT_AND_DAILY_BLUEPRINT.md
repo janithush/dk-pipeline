@@ -130,12 +130,12 @@ say so; never fabricate observations.
   <main id="root" data-composition-id="dk-story-NN" data-duration="0.033" data-no-timeline
         data-width="1080" data-height="1920">
     <article class="frame" aria-label="<2-line grounded description>">
-      <figure class="photo photo--full scrim--{charcoal|warm}">
+      <figure class="photo photo--full scrim--{charcoal|warm|greige}">
         <img src="../../../assets/raw/optimized/<slugged file>.jpg" alt="<grounded alt text>">
         <span class="scrim scrim--top" aria-hidden="true"></span>
         <span class="scrim scrim--bottom" aria-hidden="true"></span>
       </figure>
-      <header class="bar-top[ bar-top--ink]">
+      <header class="bar-top bar-top--plate">
         <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
         <p class="brand">Direct Kitchens</p>
       </header>
@@ -819,7 +819,7 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 - **Brand contrast rule:** if the photo's TOP-RIGHT region behind the bar is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
 - **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
 - Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of EXACTLY TWO variants: `copy--bottom-left` or `copy--bottom-right`. ~~`copy--centered`~~ is permanently ELIMINATED from the engine — never emit it. The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
-- Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm}">`. Pick the theme matching the photo's undertone (§F).
+- Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm|greige}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`. INTRADAY: add it to the ACTIVE batch's own manifest at compositions/YYYY-MM-DD/batch-XX/batch-manifest.json — Schema v2 `{"date":"YYYY-MM-DD","batch":"batch-XX","posts":[{"slug":"story-04",...}]}` with output renders/YYYY-MM-DD/batch-XX/<slug> (§F.9).
 - Do not touch index.html except to add/remove a data-composition-src line for today's date. Prefer `node scripts/new-batch.js --sync-router`, which appends the ACTIVE batch's lines surgically inside #root (root attributes, comments and EOL untouched), is idempotent, and hard-fails on duplicate post ids or manifest entries whose HTML file does not exist yet (§F.9).
@@ -937,7 +937,8 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 - Composition imports: `../../shared/story-system.css` ONLY (it @imports token.css, fonts.css,
   brand.css). No per-post CSS. No inline styles except data-* timing attributes.
 - Classes: `.frame`; `.photo.photo--full` + `.scrim.scrim--top|bottom`; scrim themes
-  `.scrim--charcoal` (cool/neutral undertone photos) or `.scrim--warm` (amber/warm undertone) —
+  `.scrim--charcoal` (cool/neutral undertone photos), `.scrim--warm` (amber/warm undertone), or
+  `.scrim--greige` (warm stone, added 2026-10-24) —
   themes differ ONLY in the deepened bottom ramp; the top band is a shared TOP-RIGHT vignette;
   `.bar-top` (LOCKED TOP-RIGHT: top:140/right:80, logo far right + wordmark to its LEFT;
   logo clamp 40×40) always = `<img class="dk-brand-logo">`
@@ -1229,20 +1230,24 @@ Determinism at the system level, variety at the selection level. Each post picks
 
 ### G.5 Controlled editorial dynamism — scrim themes (color-adaptive)
 
-Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm}">`. Both themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **620px** — height deepened 2026-10-22) and now differ ONLY in the bottom undertone ramp. The `.scrim--top` band is a unified **TOP-RIGHT architectural vignette** — anchored at `100% 0%` to mirror the top-right brand bar — shared identically by both themes: `radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)`.
+Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm|greige}">`. All three themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **620px** — height deepened 2026-10-22) and differ ONLY in the bottom undertone ramp. The `.scrim--top` band is a unified **TOP-RIGHT architectural vignette** — anchored at `100% 0%` to mirror the top-right brand bar — shared identically by every theme: `radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)`.
 
 | Theme | Class | Undertone | Apply to |
 |---|---|---|---|
-| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black bottom ramp (`rgba(12,12,14,·)`); top vignette shared & neutral | Marble, white stone, cool utilities, greige |
+| **Charcoal Cool** | `scrim--charcoal` | Neutral near-black bottom ramp (`rgba(12,12,14,·)`); top vignette shared & neutral | Marble, white stone, cool utilities |
 | **Warm Amber** | `scrim--warm` | Warm brown-black bottom ramp (`rgba(24,16,10,·)`); top vignette shared & neutral | Spotted gum, warm joinery, amber lighting, timber floors |
+| **Warm Greige** | `scrim--greige` | Warm stone bottom ramp (`rgba(58,50,42,·)` — tint `--greige-900 #3A322A`, token.css); top vignette shared & neutral (added 2026-10-24) | Greige cabinetry, taupe stone, blended warm/neutral scenes where neither charcoal nor amber reads right |
 
 **Actual alpha ramps (as implemented — top vignette AIRY, bottom DEEPENED 2026-10-22, max alpha 0.85).** The deepened 620px bottom scrim is now the primary legibility floor — it guarantees crisp white typography over bright material detail at the copy zone. The top vignette stays airy (≤0.50 radial cap + ≤0.45 linear) so the header zone keeps editorial luminance; brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha; the cinematic text-shadow stacks on `.t-eyebrow`/`.t-display`/`.cta` remain as depth garnish — and `.copy--ink` renders with NO halos at all (§G.9). Bottom ramps are linear across the stated stops:
 
 | Ramp | Stops (position % → alpha) |
 |---|---|
-| `.scrim--{charcoal\|warm} .scrim--top` (shared, 0deg anchor `100% 0%`) | radial ellipse: peak `0.50` at `0%` fading to `transparent` by `65%` of the axis • linear 180deg: `0%→0.45, 50%→0.18, 100%→0` |
+| `.scrim--{charcoal\|warm\|greige} .scrim--top` (shared, 0deg anchor `100% 0%`) | radial ellipse: peak `0.50` at `0%` fading to `transparent` by `65%` of the axis • linear 180deg: `0%→0.45, 50%→0.18, 100%→0` |
 | `.scrim--charcoal .scrim--bottom` (0deg) | `0%→0.85, 50%→0.48, 100%→0` |
 | `.scrim--warm .scrim--bottom` (0deg) | `0%→0.85, 50%→0.52, 100%→0` |
+| `.scrim--greige .scrim--bottom` (0deg, added 2026-10-24) | `0%→0.85, 50%→0.52, 100%→0` — tint `rgba(58,50,42,·)` = `--greige-900` |
+
+> **Theme-tint rule (anti-drift):** scrim ramp values stay LITERAL `rgba()` inside `story-system.css` — photo-fit scrapes ramps by parsing those strings (the anti-drift contract, photo-fit header v3); token indirection there would break the gate scrape. The tint of record is declared once in token.css (`--greige-500/700/900`, added 2026-10-24) and mirrored EXACTLY by the theme block. Any future theme amendment updates both sites in the same commit.
 
 **Edge-reset invariant.** The router also loads legacy `shared/shared.css`, whose `.scrim { inset: 0 }` pins `top: 0` on both scrim spans — CSS then honours `top` over `bottom` (over-constrained) and flips the bottom scrim to the top of the frame. `story-system.css` therefore resets `top: auto; bottom: auto` on `.scrim` and sets one explicit edge per variant. Do not remove these resets.
 
@@ -1281,7 +1286,7 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
   <main id="root" data-composition-id="dk-story-NN" data-duration="0.033" data-no-timeline
         data-width="1080" data-height="1920">
     <article class="frame" aria-label="...">
-      <figure class="photo photo--full scrim--{charcoal|warm}">
+      <figure class="photo photo--full scrim--{charcoal|warm|greige}">
         <img src="../../assets/raw/optimized/N.jpg" alt="...grounded alt text...">
         <span class="scrim scrim--top" aria-hidden="true"></span>
         <span class="scrim scrim--bottom" aria-hidden="true"></span>

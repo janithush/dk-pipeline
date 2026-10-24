@@ -170,6 +170,19 @@ body {
   background: linear-gradient(0deg, rgba(24, 16, 10, 0.85) 0%, rgba(24, 16, 10, 0.52) 50%, rgba(24, 16, 10, 0) 100%) !important;
 }
 
+/* Scrim Theme: Warm Greige (2026-10-24) — warm stone undertone ramp, tint
+   = --greige-900 #3A322A (token.css). The top band is the SAME shared
+   TOP-RIGHT architectural vignette (identical for every theme — the
+   100% 0% radial anchor needs no recalibration, RADIAL_CONST holds); only
+   the bottom ramp's tint differs. Values stay LITERAL rgba() (not var())
+   because photo-fit scrapes engine ramps as literal strings. */
+.scrim--greige .scrim--top {
+  background: radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, 0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.18) 50%, transparent 100%) !important;
+}
+.scrim--greige .scrim--bottom {
+  background: linear-gradient(0deg, rgba(58, 50, 42, 0.85) 0%, rgba(58, 50, 42, 0.52) 50%, rgba(58, 50, 42, 0) 100%) !important;
+}
+
 /* CINEMATIC TEXT SHADOWS — multi-layered typography depth.
    Guarantees legibility over bright stone without heavy black scrims. */
 .t-eyebrow {

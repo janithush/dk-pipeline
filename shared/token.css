@@ -48,6 +48,18 @@
   --espresso-800: #3B3026;
   --espresso-900: #2A211A;
 
+  /* ---- greige · warm stone undertone ramp (2026-10-24) --------------------
+     Declaration-only ramp family for the `scrim--greige` theme
+     (story-system.css §G.5). The scrim ramps themselves must stay LITERAL
+     rgba() values inside story-system.css — photo-fit scrapes engine ramps
+     by parsing `rgba(...)` strings live from that file (anti-drift
+     contract), so var() indirection there would break the gate scrape.
+     These tokens are the tint source of record; the theme block in
+     story-system.css mirrors --greige-900 EXACTLY. */
+  --greige-500: #8C8071;
+  --greige-700: #5A4F42;
+  --greige-900: #3A322A;
+
   /* ---- brass · tapware & accents ---------------------------------------- */
   --brass-300: #E0C394;
   --brass-400: #CFA76B;
