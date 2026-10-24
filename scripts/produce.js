@@ -76,7 +76,11 @@ function commitShip(date, batch, count) {
   const msg = `feat(batch): deliver ${date} ${batch} — ${count} post(s) certified + rendered (zero-waiver preflight GREEN)`;
   try {
     const run = (args) => {
-      const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf8', shell: process.platform === 'win32' });
+      // NO shell: with shell:true on Windows, spawnSync joins args bare — the
+      // multi-word commit message became bare argv words and git parsed
+      // 'deliver' as a pathspec (2026-10-25 ship archival failure). libuv
+      // resolves git on PATH natively (same as ffprobe in photo-fit).
+      const r = spawnSync('git', args, { cwd: ROOT, encoding: 'utf8' });
       return { code: r.status, out: `${r.stdout || ''}${r.stderr || ''}`.trim() };
     };
     const add = run(['add', '-A']);
