@@ -309,6 +309,10 @@ function parseComposition(htmlPath) {
   const strip = (s) => (s ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
   const eyebrowText = strip(copy.match(/class="t-eyebrow"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
   const ctaText = strip(copy.match(/class="cta"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
+  // Serif-accent span (2026-10-24): extracted verbatim (tags stripped) so the
+  // h1-accent sub-band can be modelled (§G.9). Non-ink posts render it white
+  // on white — no separate treatment; only .copy--ink recolors it (ESP700).
+  const accentText = strip(copy.match(/class="serif-accent"[^>]*>([\s\S]*?)<\/span>/)?.[1]);
   const brandText = strip(h.match(/<p class="brand"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? 'Direct Kitchens');
   const hasEyebrow = /class="t-eyebrow"/.test(copy);
   const h1Lines = 1 + ((copy.match(/<br>/g) || []).length);
@@ -320,7 +324,7 @@ function parseComposition(htmlPath) {
   if (!theme || !img || !variant) throw new Error(`unparseable composition: ${htmlPath}`);
   return {
     theme, imgAbs: path.resolve(path.dirname(htmlPath), img), variant,
-    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, shield, plate,
+    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, shield, plate, accentText: accentText || null,
     eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
 }
@@ -362,6 +366,17 @@ function bands(c) {
     role: 'brand', y0: GEO.barTop + brandInset, y1: GEO.barTop + GEO.barLogo - brandInset,
     xs: BRAND_GEOM.xs, xe: BRAND_GEOM.xe, blockTop: null, blockBottom: null, text: c.brandText,
   });
+  // Serif-accent sub-band (2026-10-24 model alignment — §G.9): under
+  // .copy--ink a `.serif-accent` span recolors to --espresso-700 while the
+  // rest of the h1 stays --ink. Per-glyph geometry is unknowable from HTML,
+  // so the model is CONSERVATIVE: the full h1 band is evaluated a second
+  // time at the accent colour (virtual 'h1-accent' band, same geometry, no
+  // block-flow impact) and the gate sees both verdicts — worst governs.
+  // Non-ink posts leave the accent white (no delta → no band).
+  if (c.inkCopy && c.accentText) {
+    const h1b = out.find((b) => b.role === 'h1');
+    if (h1b) out.splice(out.indexOf(h1b) + 1, 0, { ...h1b, role: 'h1-accent', text: c.accentText });
+  }
   return out;
 }
 
@@ -684,6 +699,7 @@ if (photoArg) {
       cf.plate ? 'bar-top--plate·invariant' : 'bar-top--plate·invariant (marker pending heal)',
       `copy ${cf.variant}`,
       cf.inkCopy ? 'copy--ink' : null,
+      cf.accentText ? 'serif-accent (ESP700 modelled)' : null,
       cf.shield ? (cf.shield === 'L2' ? 'copy--shield--deep' : 'copy--shield') : null,
       `scrim--${cf.theme}`,
     ].filter(Boolean).join(' · ');

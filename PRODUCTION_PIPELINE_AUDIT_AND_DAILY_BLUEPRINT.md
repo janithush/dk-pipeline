@@ -1262,6 +1262,8 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 | Serif accent | `.serif-accent` (inside `.t-display`) | Cormorant Garamond italic 400 |
 | CTA | `.cta` | 12px / 600 / `.22em` / uppercase / `--brass` (token-declared) |
 
+**Serif-accent copy contract (2026-10-24, Phase-1 model alignment).** The accent is an **editorial garnish, not a size experiment**: a 1–3 word italic phrase inside `.t-display` at the UNCHANGED 52px display size (never its own line — it rides inside the headline's `<br>` line structure). Device-constraint lineage from the Mission-1 audit: the italic serif reads as refined, never decorative, and — critically — it is the ONLY text whose colour diverges within a band under `.copy--ink` (`--espresso-700` vs the band's `--ink`), which photo-fit now models explicitly (§G.9): the full h1 band is evaluated a second time at ESP700 and the worst verdict governs. Keep accents SHORT (1–3 words, never numbers) so the conservative model never over-escalates the whole headline.
+
 ### G.7 Dual CTA intent (brand copy policy)
 
 Zero prices, zero discounts. Exactly two invitations, cycled by the batch manifest:
@@ -1332,7 +1334,7 @@ For high-key photography (white stone, beadboard, pale cabinetry) where the whit
 - **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
 - **When to use it:** whenever the Step-3 **Contrast pre-check** (`npm run photo-fit -- <file>`, §F.8) reports the default white/bone stack infeasible over a bright surface and a scrim/variant change isn't enough. It is one of the four sanctioned remediations (variant/theme, shorten copy, `.copy--ink`, swap photo) — never a substitute for re-running the gate.
 - **Usage:** `<section class="copy copy--bottom-right copy--ink">` - no per-post CSS, no inline styles.
-- ⚠ **Gate-model note:** photo-fit still credits ink bands with white-shadow lifts calibrated for the REMOVED halos (ink h1 s=0.5, small text s=0.2 toward white) - treat its `copy--ink` verdicts as generous until that model is re-calibrated, and confirm ink posts against the rendered `check` sampler or a browser spot-check.
+- ⚠ **Gate-model note (aligned 2026-10-24):** photo-fit's ink-mode model is now exact to the CSS — ink bands carry ZERO shadow credit (the halos are stripped, so `s=0` for every ink role: h1, eyebrow, cta, accent) and the plate is composed unconditionally for the brand band. The former "generous lift" warning is RETIRED. The one true cross-band delta — the `.serif-accent` span rendering `--espresso-700` under `copy--ink` instead of the band's `--ink` — is modelled as a virtual `h1-accent` band: the FULL h1 band geometry re-evaluated at ESP700, verdicts merged worst-of (conservative by design; a 1–3 word accent can never silently pass on an optimistic whole-band average). Ink posts are still confirmed by the browser-authority gate as always.
 
 ---
 
