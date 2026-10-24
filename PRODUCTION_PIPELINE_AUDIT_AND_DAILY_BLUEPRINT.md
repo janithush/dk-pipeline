@@ -935,7 +935,9 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   `.frame` and `.photo--full` are hard-coded 1080×1920. DEFAULT RATIO = STORY; do not ask.
   Portrait/Square require a pre-approved engine change (root-filling rules), never per-post CSS.
 - Composition imports: `../../shared/story-system.css` ONLY (it @imports token.css, fonts.css,
-  brand.css). No per-post CSS. No inline styles except data-* timing attributes.
+  brand.css). No per-post CSS. No inline styles except data-* timing attributes PLUS the
+  single declared `data-color-grading` attribute (DK Signature Grade finishing profile,
+  2026-10-24 — see below).
 - Classes: `.frame`; `.photo.photo--full` + `.scrim.scrim--top|bottom`; scrim themes
   `.scrim--charcoal` (cool/neutral undertone photos), `.scrim--warm` (amber/warm undertone), or
   `.scrim--greige` (warm stone, added 2026-10-24) —
@@ -954,6 +956,14 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   never stripped by FORCE_AUTHOR). `.bar-top--ink` is DEPRECATED (kept byte-functional for
   archived compositions). photo-fit's brand ladder collapses to a single invariant 'author'
   rung; heal output reports `bar-top--plate·invariant`.
+- DK SIGNATURE GRADE (2026-10-24, optional): a post may declare
+  `data-color-grading='{"vignette":x,"grain":y,"adjust":{"exposure":a,"contrast":b}}'` on the
+  photo `<img>` (Attribute order free; JSON matching `photo-fit`'s parse). Constrained
+  finishing budget — **vignette ≤ 0.10, grain ≤ 0.12, adjust.exposure/contrast ≤ ±0.05** —
+  because `photo-fit` samples RAW pixels and cannot model render-time finishing:
+  `verify:contrast` remains the graded-truth verdict. photo-fit prints a single ADVISORY
+  line per graded post (within/exceeds/unreadable ceilings — never a gate verdict).
+  Applied AT RENDER by the shared engine grade path, never via per-post CSS.
 - Hairline budget = 0: `.rule-v/.rule-h/.plus/.diamond/.tick` never appear.
 - Token aliases: `.cta` renders via `--brass` and `.t-eyebrow` via `--bone`; both are formally
   declared in token.css (`--brass: var(--brass-400, #c6a77d)`, `--bone: var(--bone-50, #f5f2eb)`).
@@ -1447,6 +1457,7 @@ truth. Operational hard rules for the composing session:
 | `photo-fit` RED after `--fix` | TRUE defect — escalation ladder exhausted on ≥1 band | change copy (shorter), variant, theme, or photo for that post; re-ship |
 | `verify-contrast` RED | browser sampler disagrees post-reconcile | same as photo-fit RED — change copy/variant/photo; NEVER tune the gate |
 | render RED | hyperframes render `--strict` abort | inspect `.hyperframes/` diagnostics; re-ship |
+| `photo-fit` grade advisory line | data-color-grading budget outside Phase-1 ceilings, or JSON unreadable | advisory only — does not block ship; tighten the profile values or leave as declared intent |
 | ship receipt RED-suffix | some posts did not render | re-ship (git archival only fires on a full pass) |
 
 ### H.9 Anti-regression invariants (protected by this section)

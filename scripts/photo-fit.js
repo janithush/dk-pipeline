@@ -298,9 +298,42 @@ function samplePixels(file) {
 
 // ── 4. COMPOSITION PARSING ──────────────────────────────────────────────
 const COPY_VARIANTS = { 'copy--bottom-left': [GEO.copyLeftA, GEO.copyRightA], 'copy--bottom-right': [GEO.copyLeftB, GEO.copyRightB] };
+
+// ── GRADE-PROFILE ADVISORY (2026-10-24, Phase 1) ────────────────────────
+// data-color-grading declares the DK Signature Grade finishing profile:
+//   { "vignette": x, "grain": y, "adjust": { "exposure": a, "contrast": b } }
+// photo-fit samples RAW pixels — finishing is applied AT RENDER and cannot
+// be modelled here, so verify:contrast remains the graded truth. This check
+// is ADVISORY-ONLY (exit code is never affected; malformed JSON is caught
+// here but lint will also hard-fail on a malformed attribute). Ceilings are
+// the Phase-1 finishing budget: vignette ≤ 0.10, grain ≤ 0.12,
+// adjust.exposure/contrast ≤ ±0.05 — photography stays photographic.
+const GRADE_CEILINGS = { vignette: 0.10, grain: 0.12, exposure: 0.05, contrast: 0.05 };
+function gradeAudit(h) {
+  if (!/data-color-grading=/.test(h)) return null;
+  const raw = (h.match(/data-color-grading='([^']+)'/) || h.match(/data-color-grading="([^"]+)"/) || [])[1];
+  if (!raw) return '⚠ grade: data-color-grading present but value unreadable — verify:contrast is the graded-truth verdict.';
+  try {
+    const g = JSON.parse(raw);
+    const adj = g.adjust || {};
+    const bad = [];
+    if (typeof g.vignette === 'number' && g.vignette > GRADE_CEILINGS.vignette) bad.push(`vignette=${g.vignette}`);
+    if (typeof g.grain === 'number' && g.grain > GRADE_CEILINGS.grain) bad.push(`grain=${g.grain}`);
+    for (const k of ['exposure', 'contrast']) {
+      if (typeof adj[k] === 'number' && Math.abs(adj[k]) > GRADE_CEILINGS[k]) bad.push(`${k}=${adj[k]}`);
+    }
+    if (bad.length) return `⚠ grade: ${bad.join(', ')} exceeds the Phase-1 finishing ceilings (vignette ≤ ${GRADE_CEILINGS.vignette}, grain ≤ ${GRADE_CEILINGS.grain}, exposure/contrast ≤ ±${GRADE_CEILINGS.exposure}) — consider tightening; verify:contrast is the graded-truth verdict.`;
+    return '◇ grade: DK Signature Grade requested (within Phase-1 ceilings) — photo-fit models RAW pixels; verify:contrast is the graded-truth verdict.';
+  } catch {
+    return '⚠ grade: data-color-grading JSON unparseable — photo-fit models RAW pixels; verify:contrast is the graded-truth verdict.';
+  }
+}
+
 function parseComposition(htmlPath) {
   const h = fs.readFileSync(htmlPath, 'utf8');
-  const src = h.match(/photo photo--full\s+scrim--(charcoal|warm|greige)[^>]*>\s*<img src="([^"]+)"/s);
+  // img src is located regardless of sibling attributes (data-color-grading
+  // may precede it); [^>]* stays single-tag-safe.
+  const src = h.match(/photo photo--full\s+scrim--(charcoal|warm|greige)[^>]*>\s*<img[^>]*\ssrc="([^"]+)"/s);
   const copyClass = h.match(/<section class="(copy[^"\n]*)"/)?.[1] ?? '';
   const headerClass = h.match(/<header class="(bar-top[^"\n]*)"/)?.[1] ?? '';
   const variant = Object.keys(COPY_VARIANTS).find((v) => copyClass.includes(v));
@@ -319,12 +352,14 @@ function parseComposition(htmlPath) {
   const hasCta = /class="cta"/.test(copy);
   const inkBar = /bar-top--ink/.test(headerClass);
   const plate = /bar-top--plate/.test(headerClass);
+  const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
   const shield = /copy--shield--deep/.test(copyClass) ? 'L2' : (/copy--shield/.test(copyClass) ? 'L1' : null);
   if (!theme || !img || !variant) throw new Error(`unparseable composition: ${htmlPath}`);
   return {
     theme, imgAbs: path.resolve(path.dirname(htmlPath), img), variant,
     hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, shield, plate, accentText: accentText || null,
+    grade: gradeLine,
     eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
 }
@@ -704,6 +739,7 @@ if (photoArg) {
       `scrim--${cf.theme}`,
     ].filter(Boolean).join(' · ');
     console.log(`${bad.length ? '✗' : '✓'} [${post.slug}] ${markers}`);
+    if (c.grade) console.log(`    ${c.grade}`);
     for (const r of results) {
       console.log(`    ${r.label.padEnd(14)} need ${r.need}: p98 ${r.p98}:1 worst ${r.worst}:1  ${r.pass ? 'PASS' : 'FAIL'}${DEBUG ? `  (n=${r.samples})` : ''}`);
     }

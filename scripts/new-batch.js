@@ -173,6 +173,11 @@ console.log(`  render root:     ${renderRoot}/   (manifest outputs must stay und
 console.log(`  router:          index.html validated — ${appended} line(s) appended, ${skipped} skipped (posts are routed after you add them)`);
 console.log(overrideNoted);
 console.log('');
+console.log('  OPTIONAL per-post "grade" field (DK Signature Grade, 2026-10-24): a JSON');
+console.log('  finishing profile emitted as the composition <img data-color-grading=\\'...\\'>');
+console.log('  attribute. Phase-1 ceilings (photo-fit advisory): vignette <= 0.10,');
+console.log('  grain <= 0.12, adjust.exposure/contrast <= +/-0.05. Finishing is applied');
+console.log('  at render; verify:contrast remains the graded-truth verdict.');
 console.log(`  Relative imports INSIDE compositions/${date}/${nextBatch}/ — DEPTH 3 ("../../" is one level short here):`);
 console.log('    <link rel="stylesheet" href="../../../shared/story-system.css">');
 console.log('    <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">');
