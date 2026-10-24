@@ -985,6 +985,22 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   because `photo-fit` samples RAW pixels and cannot model render-time finishing:
   `verify:contrast` remains the graded-truth verdict. photo-fit prints a single ADVISORY
   line per graded post (within/exceeds/unreadable ceilings — never a gate verdict).
+- ⛔ PERMANENT BAN — PLATES & SHIELDS (2026-10-25, operator directive; supersedes every
+  prior plate/shield clause in this document): `.bar-top--plate` wordmark stickers and
+  `.copy--shield` / `.copy--shield--deep` floating copy boxes are **PERMANENTLY ELIMINATED
+  from the luxury standard**. No engine, gate, heal ladder, template, or future layout
+  family may re-introduce a background box behind the brand wordmark or the copy column —
+  legibility is governed EXCLUSIVELY by the full-bleed edge-to-edge scrim gradients, the
+  declared `.scrim--top--deep`/bare top-pool polarity partner, the copy variant choice,
+  and (for bright surfaces) the declared `.copy--ink` recolor. The markers are stripped by
+  FORCE_AUTHOR on every `--fix` pass; `classStrings` can never re-materialize them.
+- 🔒 LOCKED COLOR HIERARCHY (proven editorial canon, stories 18–21; do not re-tune):
+  display headlines `.t-display` = crisp pure WHITE with the `.serif-accent` span in
+  Cormorant Garamond italic (espresso recolor under `.copy--ink` only); eyebrows
+  `.t-eyebrow` = muted cream/bone (`var(--bone)`); CTAs `.cta` = strictly warm
+  gold/brass `var(--brass)` (the shield-era bone CTA swap died with the shield — brass is
+  the CTA colour in EVERY state). Brand wordmark = `var(--bone-25)` white / `var(--ink)`
+  ink by declared polarity.
   Applied AT RENDER by the shared engine grade path, never via per-post CSS.
 - Hairline budget = 0: `.rule-v/.rule-h/.plus/.diamond/.tick` never appear.
 - Token aliases: `.cta` renders via `--brass` and `.t-eyebrow` via `--bone`; both are formally
@@ -1253,6 +1269,7 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
   </header>
   ```
 - **Knockout polarity standard (2026-10-25, supersedes the 2026-10-24 plate):** the brand is a transparent knockout with DYNAMIC polarity — white (bone-25) on dark-topped photos, ink on bright upper walls, exactly reference stories 18/21. The polarity travels with a DECLARED top-scrim pool intensity as one set (WHITE ↔ `scrim--top--deep` deep-pool corner, INK ↔ bare airy pool) because a single fixed pool dial provably cannot serve both poles on mid-tone corners. photo-fit models both states with the declared ramps; its brand ladder is `author → inkFlip` and flips BOTH markers together; the reconcile ladder in `verify-contrast.js` mirrors it. Legacy `bar-top--plate` markers are stripped on the next `--fix` pass.
+- ⛔ **PERMANENTLY BANNED (2026-10-25, operator directive):** no `.bar-top--plate` sticker and no `.copy--shield` / `.copy--shield--deep` floating box may ever return — not as a heal rung, not as a template fallback, not as a Phase 2 layout-family device. The brand bar is always the transparent knockout above; every copy column is always bare text over natural scrims. See the §F.2 ban clause and the §H.9 invariant.
 
 ### G.3 Copy & CTA safety — 220px bottom safe zone (LOCKED)
 
@@ -1536,3 +1553,12 @@ because it exits 0 in every state, wiring it into automation can never stall the
 3. `slug-map.json` is append-history (merge, never clobber) — §H.4.
 4. Retirement classification is derived from `renders/` state — §H.3.
 5. Every certified day ends in git — §H.5.
+6. `.bar-top--plate` wordmark stickers and `.copy--shield` / `.copy--shield--deep` floating
+   copy boxes are PERMANENTLY ELIMINATED (2026-10-25, operator directive) — any gate rung,
+   template, heal rung, or Phase 2+ layout family that re-introduces a background box
+   behind the brand wordmark or copy column is a regression against the luxury standard
+   (§F.2 ban clause / §G.2 knockout polarity standard).
+7. The proven color hierarchy is LOCKED: `.t-display` crisp white + Cormorant Garamond
+   italic `.serif-accent`; `.t-eyebrow` muted cream/bone (`var(--bone)`); `.cta` strictly
+   warm gold/brass `var(--brass)` in EVERY state. Re-tuning these four colours outside a
+   documented engine amendment + preflight re-run is a regression.
