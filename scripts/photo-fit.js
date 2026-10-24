@@ -113,6 +113,14 @@ const GEO = {
   copyRightB: scrapeVar('copy-right-b', 'px'),
   scrimTopH:  scrapeVar('scrim-top', 'px'),
   scrimBotH:  scrapeVar('scrim-bottom', 'px'),
+  // Phase 2 family tokens (P2.0 declared defaults — see
+  // story-system.css ENGINE GEOMETRY CONTRACT). Dormant in the mono path:
+  // no rule or band references them yet; scraping proves each anchor is
+  // alive and keeps future family geometry engine-fuelled (§H.9 #2).
+  swatchBottom:      scrapeVar('swatch-bottom', 'px'),
+  swatchStripH:      scrapeVar('swatch-strip-h', 'px'),
+  copyBottomVariant: scrapeVar('copy-bottom-variant', 'px'),
+  duoSplit:          scrapeVar('duo-split', '%'),
 };
 
 // Top/bottom scrim ramp spans
@@ -227,6 +235,16 @@ const stopAt = (stops, pct) => {              // piecewise-linear over parsed st
 };
 const composite = (bg, rgb, a) => bg.map((c, i) => c * (1 - a) + rgb[i] * a);
 
+// ── LAYOUT-SURFACE TILES (family band device, P2.0) ───────────────────
+// A band with band.solid === 'bone' evaluates against the INVARIANT tile
+// fill --bone (#F6F1E7) instead of composited photo pixels — no photo
+// lookups run at all. This is the swatch-strip chip device (Phase 2):
+// solid-bone tiles in an EDGE-TO-EDGE layout strip (a layout surface of
+// the grid, NOT a floating box over the photograph — §F.2/§H.9 ban
+// clause). DORMANT in the mono path: no bands() emitter sets band.solid
+// until the swatch-strip family parser lands (P2.1).
+const SOLID_BG = { bone: BONE };
+
 // Radial farthest-corner ellipse (center at (cx%,cy%), box W×H)
 // CHROMIUM-CALIBRATED 2026-10-22 (empirical fit over a 1080×1920 probe grid,
 // verified to ≤0.63% total-alpha error): for ellipse at (100%,0%) the
@@ -257,22 +275,33 @@ function alphaOfLayer(layer, x, y, bandHeight) {
 }
 
 // ── 3. PHOTO SAMPLING (cover-mapped, via ffmpeg rawvideo) ───────────────
-function samplePixels(file) {
+// P2.0: rect-parametrized cover-crop. `rect` ({x,y,w,h} in CANVAS space)
+// describes the layout box the photo fills with object-fit: cover — the
+// mono-full default is the full canvas, whose math is BYTE-IDENTICAL to
+// the legacy sampler (rect.w/W = 1080/W, box-local = canvas for x=y=0).
+// Multi-photo families (P2.1+) call this once per pane with the pane rect:
+//   scale_r = max(rect.w/W, rect.h/H)          — cover within the pane
+//   off = (W*scale_r − rect.w) / 2            — centered over-crop
+//   source(u,v) = ( (canvasX − rect.x) + offx , (canvasY − rect.y) + offy )
+// clamped into the scaled buffer. Pane-bounded bands therefore sample
+// exactly the pixels a browser crop paints there; negative box-local
+// coordinates clamp along the pane's own edge (bands never leave their pane).
+function samplePixels(file, rect = { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H }) {
   const probe = JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0',
     '-show_entries', 'stream=width,height', '-of', 'json', file], { encoding: 'utf8' })).streams[0];
   const { width: W, height: H } = probe;
-  const scale = Math.max(CANVAS_W / W, CANVAS_H / H);            // object-fit: cover
-  const offx = (W * scale - CANVAS_W) / 2.0, offy = (H * scale - CANVAS_H) / 2.0;
+  const scale = Math.max(rect.w / W, rect.h / H);              // object-fit: cover within rect
+  const offx = (W * scale - rect.w) / 2.0, offy = (H * scale - rect.h) / 2.0;
   const buf = execFileSync('ffmpeg', ['-v', 'error', '-i', file,
     '-vf', `scale=${Math.round(W * scale)}:${Math.round(H * scale)}:flags=area`,
     '-f', 'rawvideo', '-pix_fmt', 'rgb24', '-'], { maxBuffer: 1 << 28 });
   const rw = Math.round(W * scale);
   const px = (x, y) => {
-    const u = Math.min(rw - 1, Math.max(0, Math.round(x + offx)));
-    const v = Math.min(Math.round(H * scale) - 1, Math.max(0, Math.round(y + offy)));
+    const u = Math.min(rw - 1, Math.max(0, Math.round((x - rect.x) + offx)));
+    const v = Math.min(Math.round(H * scale) - 1, Math.max(0, Math.round((y - rect.y) + offy)));
     const o = (v * rw + u) * 3; return [buf[o], buf[o + 1], buf[o + 2]];
   };
-  return { at: px };
+  return { at: px, rect };
 }
 
 // ── 4. COMPOSITION PARSING ──────────────────────────────────────────────
@@ -335,9 +364,28 @@ function parseComposition(htmlPath) {
   const topDeep = /scrim--top--deep/.test(h);
   const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
+  // ── LAYOUT-FAMILY DISPATCHER (P2.0, closed set) ─────────────────────
+  // `data-layout-family` declares the family on the composition root;
+  // MISSING attr transparently means "mono-full" so every legacy/archived
+  // composition parses byte-identically to the pre-P2.0 engine. Unknown
+  // family strings fail CLOSED (the unparseable contract, printed with the
+  // closed set). duo-54-46 / hero-split-1-2 are DECLARED but their
+  // multi-photo parser wiring lands in P2.2/P2.3 — carrying them on a
+  // composition before then is a fail-closed refusal, not a silent misparse.
+  const familyRaw = h.match(/data-layout-family="([a-z0-9-]+)"/)?.[1] ?? '';
+  const family = familyRaw === '' ? 'mono-full' : familyRaw;
+  const FAMILY_SET = ['mono-full', 'duo-54-46', 'hero-split-1-2', 'swatch-strip'];
+  if (!FAMILY_SET.includes(family)) throw new Error(`unknown data-layout-family "${family}" (closed set: ${FAMILY_SET.join(' | ')}) — fix or remove the attribute: ${htmlPath}`);
+  if (family === 'duo-54-46' || family === 'hero-split-1-2') throw new Error(`layout family "${family}" declared but its multi-photo parser wires in Phase 2 (duo P2.2 / hero-split P2.3) — no composition may carry it yet: ${htmlPath}`);
   if (!theme || !img || !variant) throw new Error(`unparseable composition: ${htmlPath}`);
+  // P2.0 photos ledger: the mono parser resolves one full-canvas photo; the
+  // swatch-strip family shares it (its full-bleed hero IS a mono match, and
+  // chips ride the solid-tile band role, not photo rects). Family parsers
+  // (P2.1+) append pane entries { abs, rect } here.
+  const photos = [{ abs: path.resolve(path.dirname(htmlPath), img), rect: { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H } }];
   return {
-    theme, imgAbs: path.resolve(path.dirname(htmlPath), img), variant,
+    theme, family, photos, variant,
+    get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
     hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, accentText: accentText || null,
     grade: gradeLine,
     eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
@@ -473,18 +521,29 @@ function fgState(c, band) {
       return c.inkBar
         ? { col: INK, tau: 0.9, s: 0, sc: [0, 0, 0] }
         : { col: BONE25, tau: 0.9, s: 0.2, sc: [0, 0, 0] };
+    case 'chip-label':
+      // Swatch-strip chip label (P2.0, dormant until the family parser
+      // emits chip bands): 11–13px ink engraving on the SOLID bone tile.
+      // No shadow credit — the tile is the declared layout surface; the
+      // backdrop comes from SOLID_BG via band.solid, not from the photo.
+      return { col: INK, tau: 1, s: 0, sc: [0, 0, 0] };
   }
   throw new Error('unknown band role ' + band.role);
 }
 
 // Evaluate one band of one post config; returns { p98, worst, need, label }.
 function evaluateBand(px, c, band) {
-  const needMap = { eyebrow: 4.5, h1: 3.0, 'h1-accent': 3.0, cta: 4.5, brand: 4.5 };
+  const needMap = { eyebrow: 4.5, h1: 3.0, 'h1-accent': 3.0, cta: 4.5, brand: 4.5, 'chip-label': 4.5 };
   const fg = fgState(c, band);
+  // Layout-surface tiles (P2.0): a solid band bypasses the photo/scrim
+  // compositing entirely — its backdrop is the INVARIANT tile fill. (The
+  // tile fill is never sampled from the photo below it; there is none.)
+  const solidBack = band.solid ? SOLID_BG[band.solid] : null;
+  if (band.solid && !solidBack) throw new Error(`unknown solid-band fill "${band.solid}" (known: ${Object.keys(SOLID_BG).join(', ')})`);
   const samples = [];
   for (let y = band.y0; y <= band.y1; y += 2) {
     for (let x = band.xs; x <= band.xe; x += 8) {
-      const bg = compositedBackdrop(px, c, x, y);
+      const bg = solidBack ?? compositedBackdrop(px, c, x, y);
       const eff = fg.s > 0 ? composite(bg, fg.sc, fg.s) : bg;  // declared shadow credit (toward black, light text only)
       const fgRGB = fg.col.map((ch, i) => ch * fg.tau + eff[i] * (1 - fg.tau));
       const r = ratio(fgRGB, bg);
@@ -712,7 +771,10 @@ if (photoArg) {
     }
     const c = parseComposition(htmlPath);
     c._htmlPath = htmlPath;
-    const px = samplePixels(c.imgAbs);
+    // P2.0: decode with the DECLARED layout rect. Mono-full compositions
+    // carry the full-canvas rect → math is byte-identical to the legacy
+    // sampler (same scale, same offsets, same buffer).
+    const px = samplePixels(c.imgAbs, c.photos[0].rect);
     let results = evaluate(px, c);
     let cf = c;
     const preBad = results.filter((r) => !r.pass).length;

@@ -32,6 +32,20 @@
   /* NOTE (2026-10-25): the copy--shield local-copy-scrim device is RETIRED —
      its --shield-pad-* geometry properties were removed. Legibility is
      governed exclusively by the full-bleed edge-to-edge scrim gradients. */
+
+  /* ── layout-family tokens (Phase 2 — P2.0 declared defaults) ───────
+     Family-scoped geometry scraped by scripts/photo-fit.js (GEO). DORMANT
+     defaults: no rule references these yet — they are declared here ONLY
+     to feed the anti-drift scraper. Changing one still requires a full
+     preflight re-run (header contract above). Values are the feasibility
+     audit's safe-zone derivation (blueprint §F.2 family notes):
+       swatch strip: bottom edge touches the 250px platform belt top
+                     (1920 − 250 = 1670); strip top y = 1582; copy clears
+                     the strip top by the engine 24px gap → 250+88+24.   */
+  --swatch-bottom: 250px;        /* chip strip bottom inset (belt-top touch) */
+  --swatch-strip-h: 88px;        /* chip strip height                        */
+  --copy-bottom-variant: 362px;  /* copy pin for strip families (250+88+24)  */
+  --duo-split: 54%;              /* Architectural Duo top-pane share         */
 }
 
 /* RESET & ROOT CANVAS */
