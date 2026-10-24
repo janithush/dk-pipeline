@@ -44,6 +44,7 @@
                      the strip top by the engine 24px gap → 250+88+24.   */
   --swatch-bottom: 250px;        /* chip strip bottom inset (belt-top touch) */
   --swatch-strip-h: 88px;        /* chip strip height                        */
+  --swatch-label-h: 33px;        /* flush integral label segment of a cell   */
   --copy-bottom-variant: 362px;  /* copy pin for strip families (250+88+24)  */
   --duo-split: 54%;              /* Architectural Duo top-pane share         */
 }
@@ -350,3 +351,99 @@ body {
    exposed and WCAG logotype-exempt. photo-fit's BRAND_PLATE composite and
    platePad scrape were removed with it.
    ─────────────────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LAYOUT FAMILIES — PHASE 2 (P2.1: PALETTE SWATCH STRIP)
+   Full-bleed mono hero (every mono rule above untouched) + an edge-to-edge
+   material chip rail. The rail is a LAYOUT SURFACE of the composition grid
+   — flush edge-to-edge, hairline separators, zero radius, no padding plate
+   — NOT a floating box over the photograph (the §F.2/§H.9 ban targets
+   localized patches OVER the photo interior; this rail REPLACES the photo
+   edge as the bottom of the layout). Each cell's micro-label sits on a
+   FLUSH INTEGRAL bone segment spanning the cell's full bottom edge —
+   part of the cell, never a floating chip. Legibility of the micro-label
+   is the invariant ink-on-bone pair (≈13:1, WCAG AAA); the hero copy
+   still rides the full-bleed bottom scrim, uplifted to
+   --copy-bottom-variant (362px = 250 belt-clear + 88 strip + 24 gap) to
+   clear the strip with the engine's copy gap. All geometry lives in the
+   ENGINE GEOMETRY CONTRACT custom properties above; scripts/photo-fit.js
+   scrapes every number (anti-drift, §H.9 #2).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* Copy platform uplift — rides the SAME full-bleed bottom scrim, 142px
+   higher than the mono pin, so copy never overlaps the material rail. */
+.layout--swatch-strip .copy {
+  bottom: var(--copy-bottom-variant) !important;
+}
+
+/* Material rail — edge-to-edge, 3 equal cells (photo-fit derives the 360px
+   cell width as CANVAS_W/3; the grid below is the engine declaration). */
+.swatch-strip {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: var(--swatch-bottom) !important;     /* 250px — belt-top touch   */
+  height: var(--swatch-strip-h) !important;    /* 88px                     */
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  z-index: 9 !important;                       /* above scrims (2), below copy/bar (10) */
+}
+
+.swatch-cell {
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  background: var(--bone, #F6F1E7) !important; /* declared tile ground     */
+  border-right: 1px solid rgba(246, 241, 231, 0.35) !important;  /* hairline separator */
+}
+
+.swatch-cell:last-child {
+  border-right: 0 !important;
+}
+
+/* Cropped texture tile — object-fit: cover of a real material photograph,
+   declared per-post via <img class="swatch-tile"> (the ONLY per-post
+   family markup; no inline styles, per §F.2). */
+.swatch-tile {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Flush integral micro-label — a 33px bone segment across the FULL width
+   of its cell's bottom edge (no radius, no shadow, no padding plate, no
+   floating). Ink caps on the invariant bone ground: checked by photo-fit's
+   `chip-label` solid-tile band role against SOLID_BG.bone. */
+.swatch-label {
+  position: absolute !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  height: var(--swatch-label-h) !important;    /* 33px — scraped segment   */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--bone, #F6F1E7) !important; /* SOLID_BG.bone by scrape  */
+  font-family: var(--sans) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.22em !important;
+  text-transform: uppercase !important;
+  color: var(--espresso-900, #2A211A) !important;
+  line-height: 1 !important;
+  border-top: 1px solid rgba(42, 33, 26, 0.08) !important;
+  z-index: 2 !important;   /* above the texture tile inside the cell */
+}
+
+/* Crop-anchor utilities (ENGINE-DECLARED, family-scoped — same contract as
+   the copy variants, never per-post CSS). A texture tile shows only a thin
+   ~23%-height cover band of its source photograph; these declared anchors
+   steer the band to the slice that carries the named material. photo-fit
+   does not model tile interiors (the labelled surface is the solid bone
+   segment above the tile; the tile carries no text). */
+.swatch-tile--floor   { object-position: 50% 80% !important; }   /* oak — floorboards / timber grain   */
+.swatch-tile--stone   { object-position: 50% 70% !important; }   /* marble — benchtop / waterfall face */
+.swatch-tile--fixture { object-position: 35% 50% !important; }   /* brass — tapware / fittings         */

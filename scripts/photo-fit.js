@@ -119,6 +119,7 @@ const GEO = {
   // alive and keeps future family geometry engine-fuelled (§H.9 #2).
   swatchBottom:      scrapeVar('swatch-bottom', 'px'),
   swatchStripH:      scrapeVar('swatch-strip-h', 'px'),
+  swatchLabelH:      scrapeVar('swatch-label-h', 'px'),
   copyBottomVariant: scrapeVar('copy-bottom-variant', 'px'),
   duoSplit:          scrapeVar('duo-split', '%'),
 };
@@ -152,6 +153,10 @@ const CTA_FS = num(/\.cta\s*{[^}]*font-size:\s*([\d.]+)px/, 12);
 const CTA_LS = num(/\.cta\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
 const BRAND_FS = num(/\.bar-top \.brand\s*{[^}]*font-size:\s*([\d.]+)px/, 13);
 const BRAND_LS = num(/\.bar-top \.brand\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.28);
+// Swatch-strip micro-label (P2.1 — scrapped from the family block, never
+// mirrored): 11px espresso caps on the invariant bone segment, 0.22em track.
+const SW_LABEL_FS = num(/\.swatch-label\s*{[^}]*font-size:\s*([\d.]+)px/, 11);
+const SW_LABEL_LS = num(/\.swatch-label\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
 // Display role + copy-block rhythm also fuel from the engine (anti-drift: the
 // h1 band geometry and the block's inner gap are scraped, never mirrored —
 // a design-sprint font-size/line-height/gap edit propagates here by scrape).
@@ -364,6 +369,11 @@ function parseComposition(htmlPath) {
   const topDeep = /scrim--top--deep/.test(h);
   const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
+  // P2.1: swatch-strip micro-labels — the flush integral bone segments of
+  // the rail cells (order-true; figcaption per the family template). They
+  // ride the SOLID-tile band role against the invariant bone, NEVER the
+  // photo beneath the strip (the strip is a layout surface, not a plate).
+  const swatchLabels = [...h.matchAll(/class="swatch-label[^>]*>([\s\S]*?)<\/figcaption>/g)].map((m) => strip(m[1]));
   // ── LAYOUT-FAMILY DISPATCHER (P2.0, closed set) ─────────────────────
   // `data-layout-family` declares the family on the composition root;
   // MISSING attr transparently means "mono-full" so every legacy/archived
@@ -387,6 +397,7 @@ function parseComposition(htmlPath) {
     theme, family, photos, variant,
     get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
     hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, accentText: accentText || null,
+    swatchLabels,
     grade: gradeLine,
     eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
@@ -424,8 +435,13 @@ const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * 
   if (c.hasCta) parts.push({ role: 'cta', boxH: 15, fs: CTA_FS, ls: CTA_LS, text: c.ctaText });
 
   const total = parts.reduce((s, p) => s + p.boxH, 0) + GAP * (parts.length - 1);
-  let y = (CANVAS_H - GEO.copyBottom) - total;         // block TOP edge; content flows DOWN to y=1700
-  const blockTop = y, blockBottom = (CANVAS_H - GEO.copyBottom);
+  // P2.1 family uplift: the swatch-strip copy platform pins to the variant
+  // footage (250 belt-clear + 88 strip + 24 gap) declared in the engine
+  // contract and scraped as copyBottomVariant — the model therefore measures
+  // the copy bands exactly where .layout--swatch-strip .copy renders them.
+  const copyBottom = c.family === 'swatch-strip' ? GEO.copyBottomVariant : GEO.copyBottom;
+  let y = (CANVAS_H - copyBottom) - total;             // block TOP edge; content flows DOWN
+  const blockTop = y, blockBottom = (CANVAS_H - copyBottom);
   const out = parts.map((p) => {
     const small = p.role !== 'h1';
     const inset = small ? Math.max(1, Math.round((p.boxH - p.fs * 0.72) / 2)) : 0;
@@ -450,6 +466,34 @@ const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * 
   if (c.inkCopy && c.accentText) {
     const h1b = out.find((b) => b.role === 'h1');
     if (h1b) out.splice(out.indexOf(h1b) + 1, 0, { ...h1b, role: 'h1-accent', text: c.accentText });
+  }
+  // ── SWATCH-STRIP micro-label bands (P2.1) ───────────────────────────
+  // Geometry DERIVED from the scraped engine contract, never mirrored:
+  //   rail bottom edge = CANVAS_H − swatchBottom (250px → y1670, the
+  //   belt-top touch); the flush integral bone segment (swatchLabelH)
+  //   spans each cell's full width at the cell bottom; caps sit centered
+  //   on it. Cells are equal thirds of the canvas (engine grid
+  //   `repeat(3, 1fr)`) — cellW = CANVAS_W / 3, computed not mirrored.
+  // The band carries solid:'bone' → evaluateBand measures against the
+  // INVARIANT tile fill (SOLID_BG.bone); zero photo sampling. No numerals
+  // (labels are layout text on a declared layout surface — right where
+  // the strip sits, inside the belt-clearance math, §F.2 family notes).
+  if (c.family === 'swatch-strip' && Array.isArray(c.swatchLabels) && c.swatchLabels.length) {
+    const cellW = CANVAS_W / 3;
+    const segBottom = CANVAS_H - GEO.swatchBottom;
+    const segTop = segBottom - GEO.swatchLabelH;
+    const inset = Math.max(1, Math.round((GEO.swatchLabelH - SW_LABEL_FS * 0.72) / 2));
+    c.swatchLabels.forEach((rawText, i) => {
+      const text = (rawText || '').trim().toUpperCase();
+      if (!text) return;
+      const w = runW(text, SW_LABEL_FS, SW_LABEL_LS);
+      const xs = Math.round(i * cellW + Math.max(0, (cellW - w) / 2));
+      out.push({
+        role: 'chip-label', solid: 'bone',
+        y0: segTop + inset, y1: segBottom - inset,
+        xs, xe: xs + w, blockTop: null, blockBottom: null, text,
+      });
+    });
   }
   return out;
 }
@@ -558,7 +602,7 @@ function evaluateBand(px, c, band) {
   // / shadow-line pixels (<2% of area) can never block, uniform dimness can.
   const p98 = samples[Math.max(0, Math.ceil(samples.length * 0.02) - 1)];
   const need = needMap[band.role];
-  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px'))}`;
+  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : (band.role === 'chip-label' ? SW_LABEL_FS + 'px' : CTA_FS + 'px')))}`;
   const pass = p98 >= need && worst >= HARD_FLOOR;
   const marginPass = p98 >= need + MARGIN && worst >= HARD_FLOOR;
   return { label, need, worst: +worst.toFixed(2), p98: +p98.toFixed(2), pass, marginPass, samples: samples.length };
