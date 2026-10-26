@@ -9,45 +9,37 @@
 <body>
   <main id="root" data-composition-id="dk-story-02" data-duration="0.033" data-no-timeline
         data-width="1080" data-height="1920">
-    <!-- P2.1 PILOT — PALETTE SWATCH STRIP family (closed-set declared village).
-         Full-bleed mono hero (geometry untouched) + edge-to-edge 88px material
-         rail at --swatch-bottom 250px (belt-top touch); copy platform uplifted
-         to --copy-bottom-variant 362px. The rail is a LAYOUT SURFACE — no
-         plates, no shields, no floating chips (§F.2/§H.9). -->
-    <article class="frame layout--swatch-strip" data-layout-family="swatch-strip"
-             aria-label="Bright timber and marble kitchen in soft daylight with an edge-to-edge material palette rail of natural oak, veined marble and brushed brass chips">
-      <figure class="photo photo--full scrim--warm">
-        <img src="../../../assets/raw/optimized/DSC09644_RZ-Studios.jpg" alt="Bright kitchen interior with warm timber cabinetry, marble benchtop detail and brass fittings in soft daylight">
-        <span class="scrim scrim--top scrim--top--deep" aria-hidden="true"></span>
-        <span class="scrim scrim--bottom" aria-hidden="true"></span>
+    <!-- P2.2 PILOT — STACKED ARCHITECTURAL DUO 54/46 (replaces the rejected
+         swatch-strip pilot; blueprint §G.8.1). TOP pane 54% = WIDE_HERO (full
+         sage-shaker room context); BOTTOM pane 46% = DETAIL_MACRO over the
+         native bottom scrim. 2px bone hairline gutter between panes; copy at
+         the UNCHANGED --copy-bottom 220px pin. No plates, no shields, no
+         floating boxes (§F.2/§H.9). -->
+    <article class="frame layout--duo-stacked" data-layout-family="duo-54-46"
+             aria-label="Stacked architectural duo: a wide view of a sage-green shaker kitchen above a close-up of its chrome cup handles and spice pull-out">
+      <!-- Top pane (54%): WIDE_HERO — hosts the brand knockout (top-right). -->
+      <figure class="photo photo--pane photo--pane--top scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00689-RZ-Studios.jpg" alt="Wide view of a sage-green shaker kitchen with white wall cabinetry, a green herringbone glass splashback, pendant lights and a timber floor">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
       </figure>
 
-      <header class="bar-top bar-top--white">
+      <!-- Bottom pane (46%): DETAIL_MACRO — hosts the copy platform. -->
+      <figure class="photo photo--pane photo--pane--bottom scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00803-RZ-Studios.jpg" alt="Close-up of chrome cup handles on sage shaker drawers with an open spice pull-out and a timber pepper mill">
+        <!-- Declared copy-platform polarity partner (P2.2): deepened ramp for
+             the WHITE copy stack on this bright macro pane (pane-scoped). -->
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+      </figure>
+
+      <header class="bar-top bar-top--ink">
         <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
         <p class="brand">Direct Kitchens</p>
       </header>
 
-      <!-- Material palette rail: 3 equal cells; texture tile + flush integral
-           bone label segment (solid-tile band role — ink-on-bone ≈13:1). -->
-      <aside class="swatch-strip" aria-label="Material palette">
-        <figure class="swatch-cell">
-          <img class="swatch-tile swatch-tile--floor" src="../../../assets/raw/optimized/DSC09622_RZ-Studios.jpg" alt="">
-          <figcaption class="swatch-label">Natural Oak</figcaption>
-        </figure>
-        <figure class="swatch-cell">
-          <img class="swatch-tile swatch-tile--stone" src="../../../assets/raw/optimized/DSC09594_RZ-Studios.jpg" alt="">
-          <figcaption class="swatch-label">Veined Marble</figcaption>
-        </figure>
-        <figure class="swatch-cell">
-          <img class="swatch-tile swatch-tile--fixture" src="../../../assets/raw/optimized/DSC09961_RZ-Studios.jpg" alt="">
-          <figcaption class="swatch-label">Brushed Brass</figcaption>
-        </figure>
-      </aside>
-
       <section class="copy copy--bottom-left">
-        <p class="t-eyebrow">Material Studies</p>
-        <h1 class="t-display">Three materials,<br>one honest <span class="serif-accent">palette</span></h1>
-        <p class="cta">Order your swatch pack</p>
+        <p class="t-eyebrow">Shaker Series</p>
+        <h1 class="t-display">Quiet cabinetry,<br>considered <span class="serif-accent">detail</span></h1>
+        <p class="cta">Visit our showroom</p>
       </section>
     </article>
   </main>

@@ -113,15 +113,13 @@ const GEO = {
   copyRightB: scrapeVar('copy-right-b', 'px'),
   scrimTopH:  scrapeVar('scrim-top', 'px'),
   scrimBotH:  scrapeVar('scrim-bottom', 'px'),
-  // Phase 2 family tokens (P2.0 declared defaults — see
-  // story-system.css ENGINE GEOMETRY CONTRACT). Dormant in the mono path:
-  // no rule or band references them yet; scraping proves each anchor is
-  // alive and keeps future family geometry engine-fuelled (§H.9 #2).
-  swatchBottom:      scrapeVar('swatch-bottom', 'px'),
-  swatchStripH:      scrapeVar('swatch-strip-h', 'px'),
-  swatchLabelH:      scrapeVar('swatch-label-h', 'px'),
-  copyBottomVariant: scrapeVar('copy-bottom-variant', 'px'),
-  duoSplit:          scrapeVar('duo-split', '%'),
+  // Phase 2 family tokens (P2.2 stacked duo — see story-system.css ENGINE
+  // GEOMETRY CONTRACT). Scraped, never mirrored (§H.9 #2). The P2.1
+  // swatch-strip tokens were retired with the family (decommissioned
+  // 2026-10-26; blueprint §G.8.1).
+  duoTopH:    scrapeVar('duo-top-h', 'px'),
+  duoBotH:    scrapeVar('duo-bottom-h', 'px'),
+  duoGutter:  scrapeVar('duo-gutter', 'px'),
 };
 
 // Top/bottom scrim ramp spans
@@ -153,10 +151,6 @@ const CTA_FS = num(/\.cta\s*{[^}]*font-size:\s*([\d.]+)px/, 12);
 const CTA_LS = num(/\.cta\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
 const BRAND_FS = num(/\.bar-top \.brand\s*{[^}]*font-size:\s*([\d.]+)px/, 13);
 const BRAND_LS = num(/\.bar-top \.brand\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.28);
-// Swatch-strip micro-label (P2.1 — scrapped from the family block, never
-// mirrored): 11px espresso caps on the invariant bone segment, 0.22em track.
-const SW_LABEL_FS = num(/\.swatch-label\s*{[^}]*font-size:\s*([\d.]+)px/, 11);
-const SW_LABEL_LS = num(/\.swatch-label\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
 // Display role + copy-block rhythm also fuel from the engine (anti-drift: the
 // h1 band geometry and the block's inner gap are scraped, never mirrored —
 // a design-sprint font-size/line-height/gap edit propagates here by scrape).
@@ -243,11 +237,10 @@ const composite = (bg, rgb, a) => bg.map((c, i) => c * (1 - a) + rgb[i] * a);
 // ── LAYOUT-SURFACE TILES (family band device, P2.0) ───────────────────
 // A band with band.solid === 'bone' evaluates against the INVARIANT tile
 // fill --bone (#F6F1E7) instead of composited photo pixels — no photo
-// lookups run at all. This is the swatch-strip chip device (Phase 2):
-// solid-bone tiles in an EDGE-TO-EDGE layout strip (a layout surface of
-// the grid, NOT a floating box over the photograph — §F.2/§H.9 ban
-// clause). DORMANT in the mono path: no bands() emitter sets band.solid
-// until the swatch-strip family parser lands (P2.1).
+// lookups run at all. Family-agnostic solid-tile band role (P2.0): the
+// swatch-strip chip device that first used it was DECOMMISSIONED (P2.2,
+// blueprint §G.8.1), so no emitter currently sets band.solid — the role
+// remains engine capability for future families. DORMANT.
 const SOLID_BG = { bone: BONE };
 
 // Radial farthest-corner ellipse (center at (cx%,cy%), box W×H)
@@ -309,6 +302,24 @@ function samplePixels(file, rect = { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H }) {
   return { at: px, rect };
 }
 
+// P2.2: ROUTED pixel map for multi-pane families. Each pane is decoded once
+// with its own cover rect; `at(x, y)` routes by rect containment so every
+// band samples exactly the pane the browser paints at that canvas pixel.
+// mono-full = ONE full-canvas pane → byte-identical legacy behaviour. The
+// 2px gutter row between duo panes is never band-sampled (brand y≈140-180,
+// copy block ends ≤ y1700 — both clear it); off-pane queries clamp into the
+// nearest pane's edge, mirroring `overflow: hidden` cover rendering.
+function pixelMapFor(photos) {
+  const panes = photos.map((p) => ({ rect: p.rect, px: samplePixels(p.abs, p.rect) }));
+  const route = (x, y) => {
+    for (const { rect, px } of panes) {
+      if (y >= rect.y && y < rect.y + rect.h && x >= rect.x && x < rect.x + rect.w) return px.at(x, y);
+    }
+    return panes[panes.length - 1].px.at(x, y);
+  };
+  return { at: route, panes };
+}
+
 // ── 4. COMPOSITION PARSING ──────────────────────────────────────────────
 const COPY_VARIANTS = { 'copy--bottom-left': [GEO.copyLeftA, GEO.copyRightA], 'copy--bottom-right': [GEO.copyLeftB, GEO.copyRightB] };
 
@@ -344,13 +355,48 @@ function gradeAudit(h) {
 
 function parseComposition(htmlPath) {
   const h = fs.readFileSync(htmlPath, 'utf8');
-  // img src is located regardless of sibling attributes (data-color-grading
-  // may precede it); [^>]* stays single-tag-safe.
-  const src = h.match(/photo photo--full\s+scrim--(charcoal|warm|greige)[^>]*>\s*<img[^>]*\ssrc="([^"]+)"/s);
   const copyClass = h.match(/<section class="(copy[^"\n]*)"/)?.[1] ?? '';
   const headerClass = h.match(/<header class="(bar-top[^"\n]*)"/)?.[1] ?? '';
   const variant = Object.keys(COPY_VARIANTS).find((v) => copyClass.includes(v));
-  const theme = src?.[1], img = src?.[2];
+  // ── LAYOUT-FAMILY DISPATCHER (P2.0 closed set; P2.2 duo parser) ──────
+  // `data-layout-family` declares the family on the composition root;
+  // MISSING attr transparently means "mono-full" so every legacy/archived
+  // composition parses byte-identically to the pre-P2.0 engine. Unknown
+  // family strings fail CLOSED (the unparseable contract, printed with the
+  // closed set). hero-split-1-2 stays declared-but-unwired (P2.3).
+  const familyRaw = h.match(/data-layout-family="([a-z0-9-]+)"/)?.[1] ?? '';
+  const family = familyRaw === '' ? 'mono-full' : familyRaw;
+  const FAMILY_SET = ['mono-full', 'duo-54-46', 'hero-split-1-2'];
+  if (familyRaw === 'swatch-strip') throw new Error(`layout family "swatch-strip" is DECOMMISSIONED (P2.2 — thin-slit geometry + macro fidelity rejected; blueprint §G.8.1): ${htmlPath}`);
+  if (!FAMILY_SET.includes(family)) throw new Error(`unknown data-layout-family "${family}" (closed set: ${FAMILY_SET.join(' | ')}) — fix or remove the attribute: ${htmlPath}`);
+  // Pane containers: document order = paint order (duo: top pane, bottom pane).
+  const figures = [...h.matchAll(/<figure class="photo[^"]*"[^>]*>[\s\S]*?<\/figure>/g)].map((m) => m[0]);
+  let theme, img, photos;
+  if (family === 'duo-54-46') {
+    // STACKED ARCHITECTURAL DUO 54/46 (blueprint §G.8.1): pane rects derive
+    // from the SCRAPED engine contract (§H.9 #2) — never hand-set. 1037 top
+    // + 2 gutter + 881 bottom = 1920.
+    if (figures.length !== 2) throw new Error(`layout family "duo-54-46" requires exactly two <figure class="photo photo--pane"> containers in document order (found ${figures.length}): ${htmlPath}`);
+    const srcs = figures.map((f) => f.match(/<img[^>]*\ssrc="([^"]+)"/)?.[1]);
+    const themes = figures.map((f) => f.match(/scrim--(charcoal|warm|greige)/)?.[1]);
+    if (srcs.some((s) => !s) || themes.some((t) => !t) || themes[0] !== themes[1]) {
+      throw new Error(`unparseable composition (duo pane img/theme missing, or themes mismatched — both panes must carry the same scrim--{theme} class): ${htmlPath}`);
+    }
+    photos = [
+      { abs: path.resolve(path.dirname(htmlPath), srcs[0]), rect: { x: 0, y: 0, w: CANVAS_W, h: GEO.duoTopH } },
+      { abs: path.resolve(path.dirname(htmlPath), srcs[1]), rect: { x: 0, y: GEO.duoTopH + GEO.duoGutter, w: CANVAS_W, h: GEO.duoBotH } },
+    ];
+    theme = themes[0]; img = srcs[0];   // legacy singular views (imgAbs getter → photos[0])
+  } else {
+    // mono-full: the full-bleed hero IS a mono match (byte-identical legacy).
+    // img src is located regardless of sibling attributes (data-color-grading
+    // may precede it); [^>]* stays single-tag-safe.
+    const src = h.match(/photo photo--full\s+scrim--(charcoal|warm|greige)[^>]*>\s*<img[^>]*\ssrc="([^"]+)"/s);
+    theme = src?.[1]; img = src?.[2];
+    if (!theme || !img) throw new Error(`unparseable composition: ${htmlPath}`);
+    photos = [{ abs: path.resolve(path.dirname(htmlPath), img), rect: { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H } }];
+  }
+  if (!variant) throw new Error(`unparseable composition (copy variant): ${htmlPath}`);
   const copy = h.match(/<section class="copy[^"]*">([\s\S]*?)<\/section>/)?.[1] ?? '';
   const strip = (s) => (s ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
   const eyebrowText = strip(copy.match(/class="t-eyebrow"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
@@ -364,40 +410,23 @@ function parseComposition(htmlPath) {
   const h1Lines = 1 + ((copy.match(/<br>/g) || []).length);
   const hasCta = /class="cta"/.test(copy);
   const inkBar = /bar-top--ink/.test(headerClass);
-  // Declared brand-polarity partner (2026-10-25): the top scrim span may
-  // carry `scrim--top--deep` — the deepened corner pool for WHITE wordmarks.
-  const topDeep = /scrim--top--deep/.test(h);
+  // Declared brand-polarity partner (2026-10-25): the TOP PANE's scrim span
+  // may carry `scrim--top--deep` — the deepened corner pool for WHITE
+  // wordmarks. Pane-scoped (P2.2): the test reads the FIRST photo container
+  // (top pane / mono hero), so a bottom pane's ramps can never flip the
+  // brand polarity. figures[0] always exists past the parse gate above;
+  // the `?? h` fallback keeps the legacy global view for safety.
+  const topDeep = /scrim--top--deep/.test(figures[0] ?? h);
+  // P2.2: the COPY-platform partner is scoped to the BOTTOM pane — the
+  // `scrim--bottom--deep` span must live on the SECOND photo container
+  // (the duo detail pane / mono hero). Opt-in; mono posts unaffected.
+  const deepBottom = /scrim--bottom--deep/.test(figures[1] ?? h);
   const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
-  // P2.1: swatch-strip micro-labels — the flush integral bone segments of
-  // the rail cells (order-true; figcaption per the family template). They
-  // ride the SOLID-tile band role against the invariant bone, NEVER the
-  // photo beneath the strip (the strip is a layout surface, not a plate).
-  const swatchLabels = [...h.matchAll(/class="swatch-label[^>]*>([\s\S]*?)<\/figcaption>/g)].map((m) => strip(m[1]));
-  // ── LAYOUT-FAMILY DISPATCHER (P2.0, closed set) ─────────────────────
-  // `data-layout-family` declares the family on the composition root;
-  // MISSING attr transparently means "mono-full" so every legacy/archived
-  // composition parses byte-identically to the pre-P2.0 engine. Unknown
-  // family strings fail CLOSED (the unparseable contract, printed with the
-  // closed set). duo-54-46 / hero-split-1-2 are DECLARED but their
-  // multi-photo parser wiring lands in P2.2/P2.3 — carrying them on a
-  // composition before then is a fail-closed refusal, not a silent misparse.
-  const familyRaw = h.match(/data-layout-family="([a-z0-9-]+)"/)?.[1] ?? '';
-  const family = familyRaw === '' ? 'mono-full' : familyRaw;
-  const FAMILY_SET = ['mono-full', 'duo-54-46', 'hero-split-1-2', 'swatch-strip'];
-  if (!FAMILY_SET.includes(family)) throw new Error(`unknown data-layout-family "${family}" (closed set: ${FAMILY_SET.join(' | ')}) — fix or remove the attribute: ${htmlPath}`);
-  if (family === 'duo-54-46' || family === 'hero-split-1-2') throw new Error(`layout family "${family}" declared but its multi-photo parser wires in Phase 2 (duo P2.2 / hero-split P2.3) — no composition may carry it yet: ${htmlPath}`);
-  if (!theme || !img || !variant) throw new Error(`unparseable composition: ${htmlPath}`);
-  // P2.0 photos ledger: the mono parser resolves one full-canvas photo; the
-  // swatch-strip family shares it (its full-bleed hero IS a mono match, and
-  // chips ride the solid-tile band role, not photo rects). Family parsers
-  // (P2.1+) append pane entries { abs, rect } here.
-  const photos = [{ abs: path.resolve(path.dirname(htmlPath), img), rect: { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H } }];
   return {
     theme, family, photos, variant,
     get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
-    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, accentText: accentText || null,
-    swatchLabels,
+    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, deepBottom, accentText: accentText || null,
     grade: gradeLine,
     eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
@@ -435,11 +464,11 @@ const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * 
   if (c.hasCta) parts.push({ role: 'cta', boxH: 15, fs: CTA_FS, ls: CTA_LS, text: c.ctaText });
 
   const total = parts.reduce((s, p) => s + p.boxH, 0) + GAP * (parts.length - 1);
-  // P2.1 family uplift: the swatch-strip copy platform pins to the variant
-  // footage (250 belt-clear + 88 strip + 24 gap) declared in the engine
-  // contract and scraped as copyBottomVariant — the model therefore measures
-  // the copy bands exactly where .layout--swatch-strip .copy renders them.
-  const copyBottom = c.family === 'swatch-strip' ? GEO.copyBottomVariant : GEO.copyBottom;
+  // P2.2: the copy pin is the UNCHANGED mono contract (--copy-bottom) for
+  // every family — the duo copy platform rides the same pin over the bottom
+  // pane (blueprint §G.8.1). The swatch-strip variant uplift was retired
+  // with the family.
+  const copyBottom = GEO.copyBottom;
   let y = (CANVAS_H - copyBottom) - total;             // block TOP edge; content flows DOWN
   const blockTop = y, blockBottom = (CANVAS_H - copyBottom);
   const out = parts.map((p) => {
@@ -467,34 +496,6 @@ const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * 
     const h1b = out.find((b) => b.role === 'h1');
     if (h1b) out.splice(out.indexOf(h1b) + 1, 0, { ...h1b, role: 'h1-accent', text: c.accentText });
   }
-  // ── SWATCH-STRIP micro-label bands (P2.1) ───────────────────────────
-  // Geometry DERIVED from the scraped engine contract, never mirrored:
-  //   rail bottom edge = CANVAS_H − swatchBottom (250px → y1670, the
-  //   belt-top touch); the flush integral bone segment (swatchLabelH)
-  //   spans each cell's full width at the cell bottom; caps sit centered
-  //   on it. Cells are equal thirds of the canvas (engine grid
-  //   `repeat(3, 1fr)`) — cellW = CANVAS_W / 3, computed not mirrored.
-  // The band carries solid:'bone' → evaluateBand measures against the
-  // INVARIANT tile fill (SOLID_BG.bone); zero photo sampling. No numerals
-  // (labels are layout text on a declared layout surface — right where
-  // the strip sits, inside the belt-clearance math, §F.2 family notes).
-  if (c.family === 'swatch-strip' && Array.isArray(c.swatchLabels) && c.swatchLabels.length) {
-    const cellW = CANVAS_W / 3;
-    const segBottom = CANVAS_H - GEO.swatchBottom;
-    const segTop = segBottom - GEO.swatchLabelH;
-    const inset = Math.max(1, Math.round((GEO.swatchLabelH - SW_LABEL_FS * 0.72) / 2));
-    c.swatchLabels.forEach((rawText, i) => {
-      const text = (rawText || '').trim().toUpperCase();
-      if (!text) return;
-      const w = runW(text, SW_LABEL_FS, SW_LABEL_LS);
-      const xs = Math.round(i * cellW + Math.max(0, (cellW - w) / 2));
-      out.push({
-        role: 'chip-label', solid: 'bone',
-        y0: segTop + inset, y1: segBottom - inset,
-        xs, xe: xs + w, blockTop: null, blockBottom: null, text,
-      });
-    });
-  }
   return out;
 }
 
@@ -509,11 +510,13 @@ const SCRIMS = (() => {
   };
   // 2026-10-25: each theme declares TWO top-band intensities (bare = airy
   // pool for INK wordmarks, `--top--deep` = deep pool for WHITE wordmarks —
-  // the declared polarity partner; see story-system.css). Bottom ramp one.
+  // the declared polarity partner; see story-system.css). P2.2: the same
+  // partner doctrine for the COPY platform — `--bottom--deep` deepens the
+  // bottom ramp for WHITE copy on bright duo detail panes (opt-in span).
   return {
-    charcoal: { top: grab('.scrim--charcoal .scrim--top'), deepTop: grab('.scrim--charcoal .scrim--top--deep'), bottom: grab('.scrim--charcoal .scrim--bottom') },
-    warm:     { top: grab('.scrim--warm .scrim--top'),     deepTop: grab('.scrim--warm .scrim--top--deep'),     bottom: grab('.scrim--warm .scrim--bottom') },
-    greige:   { top: grab('.scrim--greige .scrim--top'),   deepTop: grab('.scrim--greige .scrim--top--deep'),   bottom: grab('.scrim--greige .scrim--bottom') }, // 2026-10-24
+    charcoal: { top: grab('.scrim--charcoal .scrim--top'), deepTop: grab('.scrim--charcoal .scrim--top--deep'), bottom: grab('.scrim--charcoal .scrim--bottom'), deepBottom: grab('.scrim--charcoal .scrim--bottom--deep') },
+    warm:     { top: grab('.scrim--warm .scrim--top'),     deepTop: grab('.scrim--warm .scrim--top--deep'),     bottom: grab('.scrim--warm .scrim--bottom'),     deepBottom: grab('.scrim--warm .scrim--bottom--deep') },
+    greige:   { top: grab('.scrim--greige .scrim--top'),   deepTop: grab('.scrim--greige .scrim--top--deep'),   bottom: grab('.scrim--greige .scrim--bottom'),   deepBottom: grab('.scrim--greige .scrim--bottom--deep') }, // 2026-10-24
   };
 })();
 
@@ -530,7 +533,11 @@ function compositedBackdrop(px, c, x, y) {
       if (a > 0 && layer.rgb) v = composite(v, layer.rgb, a);
     }
   } else if (y >= CANVAS_H - BOT_H) {
-    const layer = SCRIMS[th].bottom[0];
+    // P2.2: the copy-platform polarity partner — a `scrim--bottom--deep`
+    // span on the photo container deepens the ramp (dominates the bare
+    // curve at every stop); bare when absent. Mono posts never carry it.
+    const ramp = (c.deepBottom && SCRIMS[th].deepBottom?.length) ? SCRIMS[th].deepBottom : SCRIMS[th].bottom;
+    const layer = ramp[0];
     if (layer && layer.rgb) {
       const a = alphaOfLayer(layer, x, y, BOT_H);
       if (a > 0) v = composite(v, layer.rgb, a);
@@ -602,7 +609,7 @@ function evaluateBand(px, c, band) {
   // / shadow-line pixels (<2% of area) can never block, uniform dimness can.
   const p98 = samples[Math.max(0, Math.ceil(samples.length * 0.02) - 1)];
   const need = needMap[band.role];
-  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : (band.role === 'chip-label' ? SW_LABEL_FS + 'px' : CTA_FS + 'px')))}`;
+  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px'))}`;
   const pass = p98 >= need && worst >= HARD_FLOOR;
   const marginPass = p98 >= need + MARGIN && worst >= HARD_FLOOR;
   return { label, need, worst: +worst.toFixed(2), p98: +p98.toFixed(2), pass, marginPass, samples: samples.length };
@@ -762,12 +769,12 @@ if (photoArg) {
   // modified (_htmlPath stays null; healPost skips materialization).
   const abs = path.resolve(ROOT, photoArg);
   console.log(`◆ Photo feasibility: ${photoArg}  (advisory only — nothing is modified)`);
-  const px = samplePixels(abs);   // decode ONCE — the matrix reuses the same pixel map
+  const px = pixelMapFor([{ abs, rect: { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H } }]);   // decode ONCE — routed pane map (design matrix reuses it)
   for (const variant of Object.keys(COPY_VARIANTS)) {
     for (const theme of ['charcoal', 'warm', 'greige']) {
       const c = {
         theme, imgAbs: abs, variant, hasEyebrow: true, h1Lines: 2, hasCta: true,
-        inkBar: false, inkCopy: false, topDeep: true, _htmlPath: null,
+        inkBar: false, inkCopy: false, topDeep: true, deepBottom: false, _htmlPath: null,
         eyebrowText: 'Material & Light', ctaText: 'Book a private design consultation',
         brandText: 'DIRECT KITCHENS',
       };
@@ -818,7 +825,7 @@ if (photoArg) {
     // P2.0: decode with the DECLARED layout rect. Mono-full compositions
     // carry the full-canvas rect → math is byte-identical to the legacy
     // sampler (same scale, same offsets, same buffer).
-    const px = samplePixels(c.imgAbs, c.photos[0].rect);
+    const px = pixelMapFor(c.photos);   // decode ONCE — routed pane map (P2.2; mono = 1 full-canvas pane, byte-identical)
     let results = evaluate(px, c);
     let cf = c;
     const preBad = results.filter((r) => !r.pass).length;
