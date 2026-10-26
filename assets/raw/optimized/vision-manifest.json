@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-26T04:54:47.109Z",
+  "generator": "curate-shoot.js v1 (P3.0)",
+  "model": "GLM-5.3-Flash-Free (OpenCode session executor)",
+  "parity": {
+    "raw": 6,
+    "optimized": 6,
+    "mirror": "1:1-OK"
+  },
+  "pool": {
+    "DSC00689-RZ-Studios.jpg": {
+      "bytes": 292951,
+      "sha256": "95b46b690bb25b6c3ecd8ce0ba34c9ad1e2d0a66236e814156b6791d81d59801",
+      "width": 2048,
+      "height": 1368,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "ff7f7b2b3a383800",
+      "sharpness": 9323,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.304,
+      "detailCropLoss": 0.591,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC00702-Edit-RZ-Studios.jpg": {
+      "bytes": 239499,
+      "sha256": "73b6fe47cc6d95ab14010409549942e461ceff37a1c6e4bc84452dfb87fb776a",
+      "width": 2048,
+      "height": 1368,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "f8c3839f878f8381",
+      "sharpness": 8340.9,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.304,
+      "detailCropLoss": 0.591,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC00716-RZ-Studios.jpg": {
+      "bytes": 198712,
+      "sha256": "4d8588659b6f9ddc409f58928755fad8778c8fb9604b1ed828d90b66c0d2241d",
+      "width": 1368,
+      "height": 2048,
+      "orientation": "portrait",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fffff83838f8fe80",
+      "sharpness": 12224.6,
+      "spatialClass": "DETAIL_MACRO",
+      "heroCropLoss": 0.359,
+      "detailCropLoss": 0.084,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC00791-RZ-Studios.jpg": {
+      "bytes": 86633,
+      "sha256": "d359d8c788923142dcb14c4bf889b5ad2ba6b471e3f6baf7d92f8e4fddf29832",
+      "width": 1368,
+      "height": 2048,
+      "orientation": "portrait",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "ffffe0e0f0f00000",
+      "sharpness": 1949.8,
+      "spatialClass": "DETAIL_MACRO",
+      "heroCropLoss": 0.359,
+      "detailCropLoss": 0.084,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC00797-RZ-Studios.jpg": {
+      "bytes": 127588,
+      "sha256": "c160c78d1ecf8162d415d2a3a318967443aa9fa7eb4a73fdb1ac9442b7c360fd",
+      "width": 1368,
+      "height": 2048,
+      "orientation": "portrait",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fefffcf870313131",
+      "sharpness": 8335.9,
+      "spatialClass": "DETAIL_MACRO",
+      "heroCropLoss": 0.359,
+      "detailCropLoss": 0.084,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC00803-RZ-Studios.jpg": {
+      "bytes": 96192,
+      "sha256": "d09470ffa57483ca1229ba6005ccfc5034062b48041a30b53a177e324b6b6907",
+      "width": 2048,
+      "height": 1368,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "1f73637333333313",
+      "sharpness": 3527.3,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.304,
+      "detailCropLoss": 0.591,
+      "burstCluster": "unique",
+      "burstRep": true
+    }
+  },
+  "vision": {},
+  "pairing": {
+    "recommended": {
+      "hero": "DSC00689-RZ-Studios.jpg",
+      "bl": "DSC00797-RZ-Studios.jpg",
+      "br": "DSC00791-RZ-Studios.jpg",
+      "echoPane": "br",
+      "rationale": "00689 anchors the room (Rule A tie-band candidate, island-forward frame). BL keeps the active spice pull-out (copy pane, browser-certified pixels). BR takes the calm sage door-front junction: different assembly than BL's pull-out (Rule B), ACTIVE↔CALM inversion (Rule C), and the strongest sage echo of the hero island (Rule D). DSC00803 (cup handles + open drawer) is the twin-drawer defect source and stays unpaired this post.",
+      "scores": {
+        "spatial": 0.696,
+        "densityInversion": true,
+        "focalContrast": null,
+        "colorResonance": true
+      },
+      "ruleVerdicts": {
+        "B": "PASS",
+        "C": "PASS",
+        "D": "PASS"
+      }
+    },
+    "alternates": []
+  }
+}

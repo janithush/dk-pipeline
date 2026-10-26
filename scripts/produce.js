@@ -157,12 +157,21 @@ if (RUN === 'status') {
 // ── MODE: PREPARE ───────────────────────────────────────────────────────
 if (RUN === 'prepare') {
   step('node', ['scripts/retire-batch.js', '--date', date], {
-    title: '1/3 · retire stale dates (shipped → stale-drafts · unshipped → archive/unshipped)',
+    title: '1/4 · retire stale dates (shipped → stale-drafts · unshipped → archive/unshipped)',
     failMsg: 'retirement failed — resolve manually, then re-run "npm run produce".',
   });
   step('node', ['scripts/downscale-assets.js'], {
-    title: '2/3 · optimize assets: assets/raw/* → assets/raw/optimized/* (idempotent)',
+    title: '2/4 · optimize assets: assets/raw/* → assets/raw/optimized/* (strict 1:1 mirror, idempotent)',
     failMsg: 'asset optimization failed — check "npm run optimize:assets" output.',
+  });
+  // P3.0: shoot curation runs ONCE per drop and caches vision-manifest.json;
+  // authoring/pairing read the cache — never the render loop. FAIL-CLOSED:
+  // without a valid model intake it halts with its [FATAL] message (no
+  // degraded twin-burst post can pass), and the session model answers
+  // scripts/curate-shoot-prompt.txt then the chain re-runs.
+  step('node', ['scripts/curate-shoot.js'], {
+    title: '3/4 · curate shoot: model-agnostic vision pass → assets/raw/optimized/vision-manifest.json (cached)',
+    failMsg: 'curation halted (see [FATAL] above) — answer scripts/curate-shoot-prompt.txt with the session model, save assets/raw/optimized/vision-intake.json, then re-run "npm run produce".',
   });
   // SCAFFOLD RULE (deterministic, evidence-based — §D.2 of the quick-start runbook):
   //   · fresh day (no batch at all)            → scaffold batch-01
@@ -191,16 +200,16 @@ if (RUN === 'prepare') {
   const allShipped = !dayFresh && batchesBefore.every(batchShipped);
   if (dayFresh) {
     step('node', ['scripts/new-batch.js', '--date', date], {
-      title: '3/3 · scaffold batch-01 (no batch exists for today yet)',
+      title: '4/4 · scaffold batch-01 (no batch exists for today yet)',
       failMsg: 'scaffold failed — create the batch with "npm run batch:new".',
     });
   } else if (allShipped) {
     step('node', ['scripts/new-batch.js', '--date', date], {
-      title: `3/3 · scaffold the NEXT batch (all shipped: ${batchesBefore.join(', ')} — continuous slugs follow)`,
+      title: `4/4 · scaffold the NEXT batch (all shipped: ${batchesBefore.join(', ')} — continuous slugs follow)`,
       failMsg: 'scaffold failed — create the batch with "npm run batch:new".',
     });
   } else {
-    console.log('\n◈ 3/3 · scaffold: SKIPPED — a batch of the day is not fully shipped yet (never forks mid-flight).');
+    console.log('\n◈ 4/4 · scaffold: SKIPPED — a batch of the day is not fully shipped yet (never forks mid-flight).');
   }
   const manifest = loadManifest();
   const batches = listBatches(ctx.dateDir);

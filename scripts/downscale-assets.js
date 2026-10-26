@@ -324,6 +324,13 @@ if (seenSlugs.size > 0 || fs.existsSync(mapPath)) {
 // history IS the audit trail); a pruned file still referenced by an active
 // composition is warned loudly (check-paths will fail that composition —
 // the expected rotation signal).
+//
+// Mirror-exempt JSON ledger class (P3.0): pool-local ledgers that live beside
+// the images but are structurally invisible to the image mirror (the globs
+// below match images only) AND name-listed in MIRROR_EXEMPT for
+// future-proofing — any later edit that widens the globs must still never
+// prune a ledger.
+const MIRROR_EXEMPT = new Set(['slug-map.json', 'vision-manifest.json', 'vision-intake.json']);
 const currentSafe = new Set(seenSlugs.keys());
 const scanRef = (dir) => {
   if (!fs.existsSync(dir)) return;
@@ -339,7 +346,7 @@ const scanRef = (dir) => {
 const referenced = new Set();
 scanRef(COMPOSITIONS_REF_DIR);
 const surplus = fs.existsSync(OUT_DIR)
-  ? fs.readdirSync(OUT_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f) && !currentSafe.has(f))
+  ? fs.readdirSync(OUT_DIR).filter((f) => /\.(jpe?g|png)$/i.test(f) && !MIRROR_EXEMPT.has(f) && !currentSafe.has(f))
   : [];
 let pruned = 0;
 if (surplus.length) {
