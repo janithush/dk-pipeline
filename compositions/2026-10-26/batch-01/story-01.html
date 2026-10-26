@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direct Kitchens — story-01</title>
+  <link rel="stylesheet" href="../../../shared/story-system.css">
+</head>
+<body>
+  <main id="root" data-composition-id="dk-story-01" data-duration="0.033" data-no-timeline
+        data-width="1080" data-height="1920">
+    <!-- P2.3 PILOT — MATERIAL HERO SPLIT (1+2 GRID; blueprint §G.8.1). TOP row
+         54% = WIDE_HERO full-width; BOTTOM rail 46% = two equal 539×881 detail
+         cells (bottom-left hosts the copy platform over the native ramp).
+         2px bone hairline gutters horizontal + vertical; copy at the
+         UNCHANGED --copy-bottom 220px pin narrowed by --copy-right-split.
+         No plates, no shields, no floating boxes (§F.2/§H.9). -->
+    <article class="frame layout--hero-split-1-2" data-layout-family="hero-split-1-2"
+             aria-label="Material hero split: a wide view of a sage-green shaker kitchen above a pair of close-ups of its pantry spice pull-out over oak floorboards and its chrome cup handles">
+      <!-- Top pane (54%): WIDE_HERO — hosts the brand knockout (top-right). -->
+      <figure class="photo photo--pane photo--pane--top scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00689-RZ-Studios.jpg" alt="Wide view of a sage-green shaker kitchen with white wall cabinetry, a green herringbone glass splashback, pendant lights and a timber floor">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+      </figure>
+
+      <!-- Bottom-left pane: DETAIL_MACRO — hosts the copy platform. -->
+      <figure class="photo photo--pane photo--pane--bl scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00797-RZ-Studios.jpg" alt="Close-up of an open pantry spice pull-out with jars and a timber pepper mill over oak floorboards">
+        <!-- Declared copy-platform polarity partner (P2.2/P2.3): deepened
+             ramp for the WHITE copy stack on this pane (pane-scoped). -->
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+      </figure>
+
+      <!-- Bottom-right pane: DETAIL_MACRO — pure photograph, no scrim. -->
+      <figure class="photo photo--pane photo--pane--br scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00803-RZ-Studios.jpg" alt="Close-up of chrome cup handles on sage shaker drawers with an open spice drawer beside a timber pepper mill">
+      </figure>
+
+      <header class="bar-top bar-top--ink">
+        <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+        <p class="brand">Direct Kitchens</p>
+      </header>
+
+      <section class="copy copy--bottom-left">
+        <p class="t-eyebrow">Sage Shaker Series</p>
+        <h1 class="t-display">Considered fronts,<br>quiet <span class="serif-accent">hardware</span></h1>
+        <p class="cta">Book a design visit</p>
+      </section>
+    </article>
+  </main>
+</body>
+</html>

@@ -120,6 +120,9 @@ const GEO = {
   duoTopH:    scrapeVar('duo-top-h', 'px'),
   duoBotH:    scrapeVar('duo-bottom-h', 'px'),
   duoGutter:  scrapeVar('duo-gutter', 'px'),
+  // P2.3 Material Hero Split: rail split + pane-scoped copy right inset.
+  gridGutter: scrapeVar('grid-gutter', 'px'),
+  copyRightSplit: scrapeVar('copy-right-split', 'px'),
 };
 
 // Top/bottom scrim ramp spans
@@ -387,6 +390,25 @@ function parseComposition(htmlPath) {
       { abs: path.resolve(path.dirname(htmlPath), srcs[1]), rect: { x: 0, y: GEO.duoTopH + GEO.duoGutter, w: CANVAS_W, h: GEO.duoBotH } },
     ];
     theme = themes[0]; img = srcs[0];   // legacy singular views (imgAbs getter → photos[0])
+  } else if (family === 'hero-split-1-2') {
+    // MATERIAL HERO SPLIT 1+2 GRID (P2.3, blueprint §G.8.1): top hero row
+    // (full width) + bottom rail split into two equal cells. All rect
+    // numbers derive from the SCRAPED engine contract (§H.9 #2):
+    //   colW = (1080 − gridGutter) / 2 = 539; rowTop = duoTopH + gutter = 1039.
+    if (figures.length !== 3) throw new Error(`layout family "hero-split-1-2" requires exactly three <figure class="photo photo--pane"> containers in document order (top, bottom-left, bottom-right — found ${figures.length}): ${htmlPath}`);
+    const srcs = figures.map((f) => f.match(/<img[^>]*\ssrc="([^"]+)"/)?.[1]);
+    const themes = figures.map((f) => f.match(/scrim--(charcoal|warm|greige)/)?.[1]);
+    if (srcs.some((s) => !s) || themes.some((t) => !t) || new Set(themes).size !== 1) {
+      throw new Error(`unparseable composition (hero-split pane img/theme missing, or themes mismatched — all three panes must carry the same scrim--{theme} class): ${htmlPath}`);
+    }
+    const colW = Math.round((CANVAS_W - GEO.gridGutter) / 2);
+    const rowTop = GEO.duoTopH + GEO.gridGutter;
+    photos = [
+      { abs: path.resolve(path.dirname(htmlPath), srcs[0]), rect: { x: 0, y: 0, w: CANVAS_W, h: GEO.duoTopH } },          // top hero (brand)
+      { abs: path.resolve(path.dirname(htmlPath), srcs[1]), rect: { x: 0, y: rowTop, w: colW, h: GEO.duoBotH } },         // bottom-left (copy)
+      { abs: path.resolve(path.dirname(htmlPath), srcs[2]), rect: { x: colW + GEO.gridGutter, y: rowTop, w: colW, h: GEO.duoBotH } }, // bottom-right
+    ];
+    theme = themes[0]; img = srcs[0];
   } else {
     // mono-full: the full-bleed hero IS a mono match (byte-identical legacy).
     // img src is located regardless of sibling attributes (data-color-grading
@@ -417,9 +439,10 @@ function parseComposition(htmlPath) {
   // brand polarity. figures[0] always exists past the parse gate above;
   // the `?? h` fallback keeps the legacy global view for safety.
   const topDeep = /scrim--top--deep/.test(figures[0] ?? h);
-  // P2.2: the COPY-platform partner is scoped to the BOTTOM pane — the
+  // P2.2/P2.3: the COPY-platform partner is scoped to the copy pane — the
   // `scrim--bottom--deep` span must live on the SECOND photo container
-  // (the duo detail pane / mono hero). Opt-in; mono posts unaffected.
+  // (duo bottom pane / hero-split bottom-LEFT pane / mono hero). Opt-in;
+  // mono posts unaffected.
   const deepBottom = /scrim--bottom--deep/.test(figures[1] ?? h);
   const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
@@ -444,7 +467,10 @@ function parseComposition(htmlPath) {
 function bands(c) {
   const GAP = COPY_GAP, LH = DISPLAY_FS * DISPLAY_LH;
   const [cxs, rightInset] = COPY_VARIANTS[c.variant];
-  const cxe = CANVAS_W - rightInset;
+  // P2.3: hero-split copy rides the BOTTOM-LEFT pane (x0-539) — the family
+  // override narrows the section's right inset (--copy-right-split) so text
+  // and the modelled bands stay inside the pane with the engine copy gap.
+  const cxe = c.family === 'hero-split-1-2' ? CANVAS_W - GEO.copyRightSplit : CANVAS_W - rightInset;
 // Chromium-calibrated 2026-10-25: Inter's rendered advance for mixed/caps
 // Chicago runs measures ~0.60 x fs per char INCLUDING tracking deltas... hold on — the
 // engine smears letter-spacing separately (0.70 + ls assumed 2026-10-24), but the

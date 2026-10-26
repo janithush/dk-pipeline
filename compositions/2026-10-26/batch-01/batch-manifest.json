@@ -1,0 +1,12 @@
+{
+  "date": "2026-10-26",
+  "batch": "batch-01",
+  "posts": [
+    {
+      "slug": "story-01",
+      "html": "compositions/2026-10-26/batch-01/story-01.html",
+      "output": "renders/2026-10-26/batch-01/story-01",
+      "notes": "Body (caption metadata only — not in DOM per §F.6/§G.8): Considered fronts, quiet hardware — the sage shaker series, seen whole and seen close. Config: P2.3 PILOT — data-layout-family=hero-split-1-2 MATERIAL HERO SPLIT 1+2 GRID (blueprint §G.8.1) · Top pane 54% full-width (--duo-top-h 1037px) = WIDE_HERO DSC00689 (full sage-shaker room: green herringbone glass splashback, pendants, timber floor; brand knockout rides its top-right corner — canvas-coincident, bare top pool for the authored ink wordmark) · Bottom rail 46% (--duo-bottom-h 881px) split into 2 equal cells (--grid-gutter 2px; colW 539 derived): BOTTOM-LEFT = DETAIL_MACRO DSC00797 (open pantry spice pull-out + jars over oak floorboards) hosting the copy platform at the UNCHANGED --copy-bottom 220px pin narrowed by --copy-right-split 565px over the pane-scoped scrim--bottom--deep ramp (pane-anchored ramp canvas-coincident at y1300) · BOTTOM-RIGHT = DETAIL_MACRO DSC00803 (chrome cup handles + open spice drawer), no scrim · serif-accent 'hardware' inside .t-display · copy--bottom-left · bar-top--ink authored (bright ceiling/wall corner class) · copy white authored · same-shoot opposite-class pairing (1 wide + 2 macros, ledger anti-reuse)."
+    }
+  ]
+}

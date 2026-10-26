@@ -28,5 +28,15 @@
     "moved": 1,
     "skipped": 0,
     "trigger": "retire-batch (target date 2026-10-24)"
+  },
+  {
+    "at": "2026-10-26T02:56:39.781Z",
+    "date": "2026-10-24",
+    "kind": "stale-drafts",
+    "from": "compositions/2026-10-24/",
+    "to": "archive/stale-drafts/2026-10-24/",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-26)"
   }
 ]

@@ -1416,6 +1416,31 @@ every pre-Phase-2 composition parses byte-identically).
     brand-polarity ladder as the only declared contrast rungs.
   - photo-fit routes every band pixel by pane rect (`pixelMapFor`); brand bands sample
     pane 1, copy bands pane 2; both panes fail-closed (count ≠ 2 → unparseable).
+- ✅ **`hero-split-1-2` — MATERIAL HERO SPLIT (1+2 GRID, adopted 2026-10-26; the P2.3
+  wiring of the family the closed set reserved from day one):**
+  - **Top Pane (54% height ≈ 1037px):** spans the full 1080px width — dedicated to
+    `WIDE_HERO` (3:2 landscape). Hosts the brand header knockout mark (unchanged
+    top-right canvas anchor; top corner = canvas corner → calibrated radial pool +
+    declared deep/airy partner apply unchanged).
+  - **Bottom Rail (46% height ≈ 881px):** split into 2 equal vertical cells of
+    ~539px × 881px (aspect ≈ 1:1.63 — native 2:3 portrait friendly, near-zero crop
+    loss; `colW = (1080 − gutter) / 2`, derived, never hand-set):
+    - **Bottom-Left Pane:** hosts the copy platform at the UNCHANGED
+      `--copy-bottom: 220px` pin over the native bottom scrim ramp (pane-anchored
+      ramp is canvas-coincident at y1300, exactly as in the duo). The family narrows
+      the copy section's right inset (`--copy-right-split: 565px` = 1080 − (539 − 24)
+      engine copy gap) so text and modelled bands stay inside the pane.
+    - **Bottom-Right Pane:** second `DETAIL_MACRO` cell; no scrim unless declared.
+  - **Gutters:** `--grid-gutter: 2px` — horizontal AND vertical hairlines exposing
+    the family's bone ground; zero content, zero text (same doctrine as the duo
+    gutter). Row geometry is SHARED with the duo (`--duo-top-h` / `--duo-bottom-h`)
+    — one source of truth for the 54/46 rows; only the rail split is family-new.
+  - Three `<figure class="photo photo--pane">` containers in document order (top,
+    bottom-left, bottom-right), all carrying the SAME `scrim--{theme}` class; each
+    carries only the scrim spans its band needs. NO floating shields, NO logo
+    plates; locked color hierarchy strictly maintained.
+  - photo-fit routes brand bands → top-hero rect, copy bands → bottom-left rect,
+    via the same rect-containment `pixelMapFor`; count ≠ 3 → fail-closed refusal.
 
 ### G.9 `.copy--ink` — additive copy variant for bright surfaces (added 2026-10-21 · halos stripped 2026-10-22)
 
