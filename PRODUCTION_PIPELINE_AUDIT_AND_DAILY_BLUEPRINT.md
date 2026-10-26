@@ -1055,7 +1055,7 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   What ships must be exactly what was gated.
 - SAFE-ZONE PREFLIGHT (2026-10-24, Phase 1, ADVISORY): `npm run check:zones` runs
   `hyperframes check --samples 5 --json --caption-zone "x0=0;y0=0.72;x1=1;y1=1;severity=warning"`
-  — samples the routed post over the bottom 28% (the copy-platform + future swatch territory) as
+  — samples the routed post over the bottom 28% (the copy-platform territory) as
   a WARNING-severity zone. It is an advisory sweep (exit behavior tracks the severity model), run
   manually before ship when copy density is unusual; it never replaces the fail-closed preflight chain.
   NEVER run `npm run preflight` manually when using `npm run render:daily` — the batch script
@@ -1381,6 +1381,41 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
 4. Header markup byte-identical across all posts.
 5. Root `data-width="1080" data-height="1920"` matches the router canvas exactly.
 6. Copy anchored at 220px; logo clamped at 40px.
+
+#### G.8.1 Layout families (Phase 2 — declared on the composition root)
+
+`data-layout-family` on the `article.frame` root selects the family from a CLOSED SET
+enforced fail-closed by `photo-fit` (`mono-full` default when the attribute is absent —
+every pre-Phase-2 composition parses byte-identically).
+
+- ⛔ **`swatch-strip` — REJECTED & DECOMMISSIONED (2026-10-26, operator directive).**
+  The 88px material-chip rail could not carry macro fidelity: a 55px texture band is a
+  thin crop that neither reads as the named material nor survives the platform UI belt
+  adjacency. The pilot (`story-02`, P2.1) was replaced by the stacked duo the same day.
+  Its geometry tokens were retired; the family-agnostic `chip-label` solid-tile band
+  role (`SOLID_BG`) REMAINS engine capability for future families.
+- ✅ **`duo-54-46` — STACKED ARCHITECTURAL DUO (adopted 2026-10-26, replacing the
+  rejected side-by-side slit orientation whose cover-crop destroyed 80–83% of wide
+  photography):**
+  - **Top Pane (54% height ≈ 1037px):** dedicated to `WIDE_HERO` (3:2 landscape) —
+    full room context retained (≤31% crop loss at 1080×1037 from 2048×1368). Hosts the
+    brand header knockout mark (canvas-anchored top-right; its top corner IS the canvas
+    corner, so the calibrated radial pool + the declared deep/airy polarity partner
+    apply unchanged).
+  - **Bottom Pane (46% height ≈ 881px):** dedicated to `DETAIL_MACRO` (2:3 portrait or
+    3:2 landscape detail crop). Hosts the copy platform at the unchanged `--copy-bottom:
+    220px` pin over the native full-bleed bottom scrim ramp (the 620px ramp anchored to
+    the pane's bottom edge is canvas-coincident: pane-top 1039 + local band 261 = 1300).
+  - **Gutter:** `--duo-gutter: 2px` — a bone hairline exposed between the panes
+    (`.layout--duo-stacked` bone ground); NOT a divider card — zero content, zero text,
+    WCAG-exempt decoration.
+  - Two `<figure class="photo photo--pane scrim--{theme}">` containers in document
+    order (top then bottom), each carrying its own scrim spans; NO floating shields, NO
+    logo plates; the locked color hierarchy (white display + Cormorant italic accent /
+    bone eyebrow / brass CTA) is strictly maintained, with `.copy--ink` and the
+    brand-polarity ladder as the only declared contrast rungs.
+  - photo-fit routes every band pixel by pane rect (`pixelMapFor`); brand bands sample
+    pane 1, copy bands pane 2; both panes fail-closed (count ≠ 2 → unparseable).
 
 ### G.9 `.copy--ink` — additive copy variant for bright surfaces (added 2026-10-21 · halos stripped 2026-10-22)
 
