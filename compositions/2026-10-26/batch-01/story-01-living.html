@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direct Kitchens — story-01-living</title>
+  <link rel="stylesheet" href="../../../shared/story-system.css">
+  <!-- Zero-CDN doctrine: GSAP vendored locally (shared/vendor/), identical
+       bytes to gsap@3.14.2 dist. The engine seeks this timeline; it does
+       not inject the library for us. -->
+  <script src="../../../shared/vendor/gsap.min.js"></script>
+  <style>
+    /* P4.0 LIVING STORY PILOT — MODEL A (Cinematic Solo) initial states.
+       GSAP fromTo owns every animated property from its first seek; these
+       declarations only guard the pre-timeline first paint and the
+       0.0-0.6s breathing window (zero text, room context only). */
+    .t-eyebrow, .t-display, .cta { opacity: 0; }
+    .t-display { filter: blur(6px); }
+  </style>
+</head>
+<body>
+  <main id="root" data-composition-id="dk-story-01-living" data-duration="4.5" data-fps="30"
+        data-width="1080" data-height="1920"
+        data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;truepeak&quot;,&quot;id&quot;:&quot;tp-master&quot;,&quot;label&quot;:&quot;Delivery ceiling&quot;,&quot;params&quot;:{&quot;ceiling&quot;:-3,&quot;lookahead&quot;:3,&quot;release&quot;:80}}]}">
+    <!-- P4.0 PILOT — MATERIAL HERO SPLIT (1+2 GRID; blueprint §G.8.1) under
+         MODEL A micro Ken Burns. Geometry is UNCHANGED from the certified
+         static family (1037/881 rows, 2px gutters, copy at --copy-bottom
+         220px). Motion lives ONLY on the top WIDE_HERO <img> (1.00 -> 1.04,
+         power2.out): bottom panes stay grounded so the certified copy
+         contrast regime is untouched. STATIONARY SCRIM LAW: every scrim is
+         a stationary sibling (position:absolute; pointer-events:none;
+         z-index:2) — the scaled image crops inside the pane's
+         overflow:hidden frame and can never move the ramp. No plates, no
+         shields, no floating boxes (§F.2/§H.9). -->
+    <article class="frame layout--hero-split-1-2" data-layout-family="hero-split-1-2"
+             aria-label="Material hero split: a wide view of a sage-green shaker kitchen above a pair of close-ups of its pantry spice pull-out over oak floorboards and its sage shaker door fronts with chrome knobs">
+      <!-- Top pane (54%): WIDE_HERO — hosts the brand knockout (top-right).
+           This img alone carries the living-story micro-scale. -->
+      <figure class="photo photo--pane photo--pane--top scrim--warm">
+        <img id="hero-img" src="../../../assets/raw/optimized/DSC00689-RZ-Studios.jpg" alt="Wide view of a sage-green shaker kitchen with white wall cabinetry, a green herringbone glass splashback, pendant lights and a timber floor">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+      </figure>
+
+      <!-- Bottom-left pane: DETAIL_MACRO — hosts the copy platform.
+           GROUNDED: no motion; deepened ramp and certified copy stack
+           unchanged (P2.2/P2.3 polarity partner). -->
+      <figure class="photo photo--pane photo--pane--bl scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00797-RZ-Studios.jpg" alt="Close-up of an open pantry spice pull-out with jars and a timber pepper mill over oak floorboards">
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+      </figure>
+
+      <!-- Bottom-right pane: CALM_PLANAR junction macro — no scrim.
+           GROUNDED: no motion. -->
+      <figure class="photo photo--pane photo--pane--br scrim--warm">
+        <img src="../../../assets/raw/optimized/DSC00791-RZ-Studios.jpg" alt="Close-up of sage shaker door fronts meeting at a stile junction with chrome knobs beneath a white bench edge">
+      </figure>
+
+      <header class="bar-top bar-top--ink">
+        <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+        <p class="brand">Direct Kitchens</p>
+      </header>
+
+      <section class="copy copy--bottom-left">
+        <p class="t-eyebrow">Sage Shaker Series</p>
+        <h1 class="t-display">Considered fronts,<br>quiet <span class="serif-accent">hardware</span></h1>
+        <p class="cta">Book a design visit</p>
+      </section>
+    </article>
+
+    <!-- P4.0 LUXURY ACOUSTIC ARCHITECTURE.
+         BED (Stem A): low-mid ambient pad, loudness-engineered to
+         -26 LUFS (15 LU under the VO so it reads as a pad, not a fight).
+         Clip-local automation lane: 0.5s fade-in -> 0.6 base; duck to 0.2
+         across the VO window (VO hits at t=0.8); smooth ramp back to 0.6
+         by t=3.5; 0.8s fade-out into the end frame. All t values are
+         clip-local seconds (clip starts at 0, so == composition time). -->
+    <audio id="bed-pad" data-audio-group="music"
+           src="../../../assets/audio/beds/ambient-bed-01.mp3"
+           data-start="0" data-duration="4.5"
+           data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0},{&quot;t&quot;:0.5,&quot;v&quot;:0.6},{&quot;t&quot;:0.8,&quot;v&quot;:0.6},{&quot;t&quot;:1.15,&quot;v&quot;:0.2,&quot;curve&quot;:0.3},{&quot;t&quot;:2.85,&quot;v&quot;:0.2},{&quot;t&quot;:3.5,&quot;v&quot;:0.6,&quot;curve&quot;:0.3},{&quot;t&quot;:3.7,&quot;v&quot;:0.6},{&quot;t&quot;:4.5,&quot;v&quot;:0,&quot;curve&quot;:0.35}]}]}"></audio>
+
+    <!-- VO (Stem B): Kokoro-82M bf_emma (British female), speed 0.95,
+         loudness-engineered to -15 LUFS / -1.5 dBTP. Reads the active
+         headline ("Considered fronts. Quiet hardware."), 2.005s long,
+         placed at composition t=0.8 -> ends t=2.805, inside the duck
+         window. -->
+    <audio id="vo-story-01" data-audio-group="voiceover"
+           src="../../../assets/audio/cues/vo-story-01.mp3"
+           data-start="0.8" data-hf-media-start-basis="local" data-volume="1"></audio>
+
+    <script>
+      // P4.0 MODEL A timeline — one paused GSAP timeline, seek-driven.
+      // Motion beats (spec): 0.0-0.6 breathing window; eyebrow drift
+      // 0.6-1.2; headline blur-bloom 0.9-1.8; brass CTA settle 1.6-2.2.
+      // Hero micro Ken Burns 1.00 -> 1.04 over the full 4.5s.
+      (function () {
+        document.fonts.ready.then(function () {
+          var tl = gsap.timeline({ paused: true });
+          tl.fromTo("#hero-img",
+              { scale: 1 },
+              { scale: 1.04, duration: 4.5, ease: "power2.out" }, 0)
+            .fromTo(".t-eyebrow",
+              { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 0.6)
+            .fromTo(".t-display",
+              { filter: "blur(6px)", opacity: 0 },
+              { filter: "blur(0px)", opacity: 1, duration: 0.9, ease: "power2.out" }, 0.9)
+            .fromTo(".cta",
+              { y: 8, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 1.6);
+          window.__timelines["dk-story-01-living"] = tl;
+        });
+      })();
+    </script>
+  </main>
+</body>
+</html>
