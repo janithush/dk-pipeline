@@ -146,4 +146,20 @@ for (const post of manifest.posts) {
 }
 
 console.log(`\n◆ Batch ${batchDate} complete: ${passed} passed, ${failed} failed`);
+
+// ── P5.0 POST-RENDER ARTIFACT HYGIENE (automated) ───────────────────────
+// The png-sequence mediatype leaves every frame on disk (400MB+ per reel).
+// Once the frames exist, the only outputs that matter are the settled
+// poster frame (poster-settled.png) and the delivery MP4 — prune the
+// rest immediately so the repository footprint stays minimal (< 15MB).
+// Runs even when some posts failed (fail-closed on its own verdict), but
+// the batch exit code below still reports render failures first.
+if (failed === 0 && passed > 0) {
+  try {
+    execSync(`node scripts/cleanup-render.js ${batchDate}`, { cwd: ROOT, stdio: 'inherit' });
+  } catch {
+    console.error('⚠ post-render cleanup reported an issue (see above).');
+  }
+}
+
 process.exit(failed > 0 ? 1 : 0);

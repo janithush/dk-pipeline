@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Direct Kitchens — story-01-living-20s (P5.0 Dynamic Living Story)</title>
+  <link rel="stylesheet" href="../../../shared/story-system.css">
+  <!-- Zero-CDN doctrine: GSAP vendored locally (shared/vendor/), identical
+       bytes to gsap@3.14.2 dist. The engine seeks this timeline; it does
+       not inject the library for us. -->
+  <script src="../../../shared/vendor/gsap.min.js"></script>
+  <style>
+    /* P5.0 20S DYNAMIC LIVING STORY — four scenes (one compound) under one
+       paused GSAP timeline. These declarations only guard the pre-timeline
+       first paint: dormant scenes/end-card are autoAlpha-hidden (visibility
+       + opacity, so the contrast sampler can never measure invisible ink
+       copy over a dark ground), and scene copy stacks hold the authored
+       pre-bloom state. GSAP fromTo owns every animated property from its
+       first seek. NOTE (check-paths scanner): tag tokens are never written
+       literally inside comments — "image element" wording is deliberate. */
+    .scene--s2, .scene--s3, .scene--s4, #end-card {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .scene .t-eyebrow, .scene .t-display, .scene .cta,
+    #end-card .t-display { opacity: 0; }
+    .scene .t-display, #end-card .t-display { filter: blur(6px); }
+
+    /* P5.0 SPLIT-PANE COMPOUND SCENE (Scene 3, 8.5-12.5s). Vertical 54/46
+       duo-stack replicated from the engine's certified batch geometry
+       (story-system.css ENGINE GEOMETRY CONTRACT vars: --duo-top-h 1037 /
+       --duo-bottom-h 881 / --duo-gutter 2): TOP pane = room context
+       (wide lifestyle), BOTTOM pane = macro hardware/junction detail
+       hosting the copy platform over the pane-anchored deep bottom ramp.
+       The reel root stays data-layout-family="mono-full" (Scene 1 is the
+       modelled hero; the closed family set cannot express a moving reel),
+       so the compound scene is self-contained local geometry that consumes
+       the SAME contract variables — zero mirrored constants. The bone
+       gutter stays a pure 2px hairline separator. */
+    .split-reel-scene {
+      position: absolute;
+      inset: 0;
+    }
+    .split-reel-scene .pane {
+      position: absolute;
+      left: 0;
+      width: 1080px;
+      overflow: hidden;
+      background: var(--bone, #F6F1E7);
+    }
+    .split-reel-scene .pane--top {
+      top: 0;
+      height: var(--duo-top-h);
+    }
+    /* Slide-from-bottom wipe start state: the detail pane is fully
+       clipped at first paint and the GSAP fromTo sweeps the boundary to
+       the settled inset(0) — a directional push-wipe reveal, not a
+       dissolve (benchmark pattern P5.0-S3). */
+    .split-reel-scene .pane--bottom {
+      top: calc(var(--duo-top-h) + var(--duo-gutter));
+      height: var(--duo-bottom-h);
+      clip-path: inset(100% 0% 0% 0%);
+    }
+    .split-reel-scene .pane img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* SIGNATURE WHITE END-CARD (t=16.5s, z-index 100). The copy section
+       reuses the engine's .copy / .copy--ink descendant recolor contract
+       (ink = --espresso-900 on #ffffff, WCAG AA ~14:1, halos stripped by
+       the engine rule); the local override re-pins the bottom-220px copy
+       block to the end-card's centered composition (id specificity beats
+       the engine class pin). No plates, no shields — bare ink on white. */
+    #end-card {
+      position: absolute;
+      inset: 0;
+      background: #ffffff;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 44px;
+    }
+    .end-card__emblem {
+      width: 176px;
+      height: 176px;
+      border-radius: 50%;
+      object-fit: contain;
+    }
+    #end-card .copy {
+      position: static !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      align-items: center !important;
+      text-align: center !important;
+    }
+    #end-card .t-display {
+      font-size: 44px;
+      letter-spacing: -0.01em;
+    }
+  </style>
+</head>
+<body>
+  <main id="root" data-composition-id="dk-story-04" data-duration="20.0" data-fps="30"
+        data-width="1080" data-height="1920" data-layout-family="mono-full"
+        data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;truepeak&quot;,&quot;id&quot;:&quot;tp-master&quot;,&quot;label&quot;:&quot;Delivery ceiling&quot;,&quot;params&quot;:{&quot;ceiling&quot;:-3.6,&quot;lookahead&quot;:3,&quot;release&quot;:80}}]}">
+    <!-- P5.0 DYNAMIC LIVING STORY — four scenes + end-card (gating model:
+         data-layout-family="mono-full", Scene 1 is the modelled hero; the
+         engine contract's closed family set cannot express a reel, so the
+         scenes stack as full-bleed frames and dissolve/wipe in place; the
+         compound Scene 3 carries its own local duo geometry declared with
+         the SAME engine tokens — see the split-reel-scene CSS block).
+         MOTION LAW (STATIONARY SCRIM LAW, §F.2/§H.9): scale + 2D pan/drift
+         live ONLY on the inner visual element inside each scene's
+         overflow-clipped frame; every scrim is a STATIONARY sibling — a
+         transformed visual can never move a ramp. The Scene 3 wipe runs on
+         the pane wrapper's clip-path boundary, so scrims are unclipped but
+         never translated. Copy rides the UNCHANGED mono contract: bottom
+         220px pin, copy--bottom-left insets, warm deep bottom ramps on
+         every copy-bearing scene, airy top pool + INK brand polarity
+         (bar-top--ink ↔ bare scrim--top, one declared set).
+         CAMERA DYNAMICS: every scene pairs a scale swing (1.00-1.06) with
+         a subtle directional 2D drift (x/y 12-22px) at power1.inOut —
+         beyond P4.1's scale-only hero zoom — while scrims hold still. -->
+    <article class="frame" aria-label="Direct Kitchens 20-second showroom reel: a wide sage-green shaker kitchen with a blooming headline, a timber material study, a split-pane pairing of a lived-in room over a chrome hardware junction, a pantry detail, and a white end-card inviting a free design consultation">
+
+      <!-- SCENE 1 (0.0–4.5s): WIDE ARCHITECTURAL HERO + CORMORANT HEADLINE
+           BLOOM. DSC00689 full sage-shaker room (island-forward, green
+           herringbone splashback, pendants, timber floor). Camera: zoom
+           1.00 -> 1.06 WITH a slow leftward x-drift (-18px), power1.inOut,
+           over the full scene window. -->
+      <figure class="photo photo--full scrim--warm scene scene--s1" aria-label="Wide architectural hero: sage-green shaker kitchen with white wall cabinetry and a timber floor">
+        <img id="s1-img" data-layout-allow-overflow src="../../../assets/raw/optimized/DSC00689-RZ-Studios.jpg" alt="Wide view of a sage-green shaker kitchen with white wall cabinetry, a green herringbone glass splashback, pendant lights and a timber floor">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+        <section class="copy copy--bottom-left">
+          <p class="t-eyebrow">Sage Shaker Series</p>
+          <h1 class="t-display">Considered fronts,<br>quiet <span class="serif-accent">hardware</span></h1>
+          <p class="cta">Book a design visit</p>
+        </section>
+      </figure>
+
+      <!-- SCENE 2 (4.5–8.5s): MATERIAL STUDY. DSC00716 portrait macro of
+           the sage shaker cabinetry finish; sub-audible whoosh cue lands
+           at 4.5s on the cut. Camera: settling counter-zoom 1.04 -> 1.00
+           with a gentle downward y-drift (+12px). -->
+      <figure class="photo photo--full scrim--warm scene scene--s2" aria-label="Material study: portrait close-up of the sage shaker cabinetry finish">
+        <img id="s2-img" data-layout-allow-overflow src="../../../assets/raw/optimized/DSC00716-RZ-Studios.jpg" alt="Portrait close-up of the sage shaker cabinetry finish and detail">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+        <section class="copy copy--bottom-left">
+          <p class="t-eyebrow">Material Honesty</p>
+          <h1 class="t-display">Timber, stone,<br><span class="serif-accent">honest</span> light</h1>
+        </section>
+      </figure>
+
+      <!-- SCENE 3 (8.5–12.5s): SPLIT-PANE COMPOUND (the benchmark pattern).
+           Vertical 54/46 duo-stack, slide-from-bottom push-wipe on the
+           detail pane synchronized with opposite camera drifts. TOP pane
+           (1037px) = DSC00702 room context — the kitchen lived in; BOTTOM
+           pane (881px) = DSC00791 chrome-knob stile junction macro
+           (hardware/junction detail) hosting the copy platform over the
+           pane-scoped scrim--bottom--deep ramp. Whoosh cue #2 (accent
+           lift, -16 dB relative) lands crisply on the 8.5s split reveal.
+           Curated pairing note: 00702 (WIDE_HERO) across from 00791
+           (DETAIL_MACRO) is same-shoot opposite-class pairing — Rule A
+           wide+context, Rule C density inversion — and every photo in the
+           reel appears exactly once (ledger anti-reuse, P3.0). -->
+      <figure class="split-reel-scene scene scene--s3" aria-label="Split pane: the lived-in sage-green kitchen room above a close-up of chrome hardware at the shaker door junction">
+        <div class="pane pane--top">
+          <img id="s3-top-img" data-layout-allow-overflow src="../../../assets/raw/optimized/DSC00702-Edit-RZ-Studios.jpg" alt="Wide lived-in view of the sage-green shaker kitchen room">
+          <span class="scrim scrim--top" aria-hidden="true"></span>
+        </div>
+        <div class="pane pane--bottom">
+          <img id="s3-bottom-img" data-layout-allow-overflow src="../../../assets/raw/optimized/DSC00791-RZ-Studios.jpg" alt="Close-up of sage shaker door fronts meeting at a stile junction with chrome knobs beneath a white bench edge">
+          <span class="scrim scrim--top" aria-hidden="true"></span>
+          <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+          <section class="copy copy--bottom-left">
+            <p class="t-eyebrow">Hardware Study</p>
+            <h1 class="t-display">Every junction,<br><span class="serif-accent">quietly</span> exact</h1>
+          </section>
+        </div>
+      </figure>
+
+      <!-- SCENE 4 (12.5–16.5s): CURATED PANTRY ANCHOR. DSC00797 open spice
+           pull-out over oak floorboards (P2.3-certified copy-pane quality,
+           promoted to a full editor canvas). Camera: zoom 1.00 -> 1.05
+           with a rightward x-drift (+18px). -->
+      <figure class="photo photo--full scrim--warm scene scene--s4" aria-label="Pantry anchor: open spice pull-out with jars set into oak floorboard cabinetry">
+        <img id="s4-img" data-layout-allow-overflow src="../../../assets/raw/optimized/DSC00797-RZ-Studios.jpg" alt="Open pantry spice pull-out with jars over oak floorboards">
+        <span class="scrim scrim--top" aria-hidden="true"></span>
+        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
+        <section class="copy copy--bottom-left">
+          <p class="t-eyebrow">Pantry Study</p>
+          <h1 class="t-display">Everything,<br>in <span class="serif-accent">quiet</span> order</h1>
+        </section>
+      </figure>
+
+      <!-- Persistent canvas-level brand knockout (one header for the whole
+           reel — INK pole with the bare airy top pool; bright upper walls
+           across the wide scenes and pane). -->
+      <header class="bar-top bar-top--ink" data-layout-allow-occlusion>
+        <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
+        <p class="brand">Direct Kitchens</p>
+      </header>
+
+      <!-- SCENE 5 (16.5–20.0s): SIGNATURE WHITE END-CARD — full 3.5s hold.
+           Full-bleed white, z-index 100, activated at t=16.5 in sync with
+           the tactile click; the badge reveal carries the click frame-
+           exactly (16.50s). Circular dk knockout emblem (the brand's black
+           disc / white-dk mark) + Variant A copy in ink on white (WCAG AA
+           ~14:1). Variant D ("Designed & built in Melbourne") enters the
+           batch copy manifest for future posts; A/B/C retained. -->
+      <div id="end-card" data-layout-allow-occlusion aria-label="Signature white end-card: Direct Kitchens circular emblem above the invitation to book a free design consultation">
+        <img class="end-card__emblem" src="../../../assets/logos/logo.png" alt="Direct Kitchens circular dk emblem">
+        <section class="copy copy--ink end-card__copy">
+          <h1 class="t-display">Book your free<br>design consultation</h1>
+        </section>
+      </div>
+    </article>
+
+    <!-- P5.0 AUDIO DOCTRINE — 100% MUSIC-DRIVEN, ZERO VOICEOVER.
+         BED: dk-bed-acoustic-claps-01, full 20s window. Automation lane
+         (clip-local seconds; clip starts at 0 so == composition time):
+         0.5s fade-in ramp (curve declared on the LEFT point of the
+         segment, per spec) -> full body hold. P5.1 ducking pockets: 8.35 -> 8.5 at -5 dB held to
+          8.9, released to 0 dB by 9.2; 16.35 -> 16.5 at -6 dB held to 17.5 ->
+          tail 17.5-20.0 decays
+         -6 dB -> -60 dB across the final 2.5s as explicit dB-stepped gain
+         points (0.531 -> 0.1123 -> 0.02374 -> 0.005011 -> 0.00106, one
+         0.625s step per -13.5 dB notch): true exponential decay in the gain
+         domain, so the musical tail resonates naturally instead of
+         clipping at the cut. Master TruePeak ceiling -3.6 dBTP via the
+         root data-fx-chain above (delivery gate <= -3.0 dBTP holds with
+         headroom). Body gain sits +0.5 dB over unity (P5.1b loudness
+          recalibration) and is calibrated against the -14 LUFS integrated
+         target via the audio loudness gate. -->
+    <audio id="bed-claps" data-audio-group="music"
+           src="../../../assets/audio/beds/dk-bed-acoustic-claps-01.mp3"
+           data-start="0" data-duration="20"
+           data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0,&quot;curve&quot;:0.5},{&quot;t&quot;:0.5,&quot;v&quot;:1.0593},{&quot;t&quot;:8.35,&quot;v&quot;:1.0593},{&quot;t&quot;:8.5,&quot;v&quot;:0.5957},{&quot;t&quot;:8.9,&quot;v&quot;:0.5957},{&quot;t&quot;:9.2,&quot;v&quot;:1.0593},{&quot;t&quot;:16.35,&quot;v&quot;:1.0593},{&quot;t&quot;:16.5,&quot;v&quot;:0.531},{&quot;t&quot;:17.5,&quot;v&quot;:0.531},{&quot;t&quot;:18.125,&quot;v&quot;:0.1123},{&quot;t&quot;:18.75,&quot;v&quot;:0.02374},{&quot;t&quot;:19.375,&quot;v&quot;:0.005011},{&quot;t&quot;:20,&quot;v&quot;:0.00106}]}]}"></audio>
+
+    <!-- CUE 1 (whoosh): sub-audible scene-cut accent at the Scene 2
+         transition, relative level -20 dB (linear 0.10). -->
+    <audio id="cue-whoosh-1" data-audio-group="sfx"
+           src="../../../assets/audio/cues/whoosh-soft-01.mp3"
+           data-start="4.5" data-hf-media-start-basis="local" data-volume="0.1"></audio>
+
+    <!-- CUE 2 (whoosh, COMPOUND PUSH): the split reveal at 8.5s — landed
+         the codified compound-transition accent (-8.5 dB, linear 0.3758) so the compound scene's
+         directional push-wipe reads cleanly in the mix; the bed is carved
+         to a -5 dB ducking pocket 8.35-9.2. -->
+    <audio id="cue-whoosh-2" data-audio-group="sfx"
+           src="../../../assets/audio/cues/whoosh-soft-01.mp3"
+           data-start="8.5" data-hf-media-start-basis="local" data-volume="0.3758"></audio>
+
+    <!-- CUE 3 (whoosh): sub-audible scene-cut accent at the Scene 4
+         transition, relative level -20 dB (linear 0.10). -->
+    <audio id="cue-whoosh-3" data-audio-group="sfx"
+           src="../../../assets/audio/cues/whoosh-soft-01.mp3"
+           data-start="12.5" data-hf-media-start-basis="local" data-volume="0.1"></audio>
+
+    <!-- CUE 4 (tactile click): signature end-card activation — lands
+         frame-exactly on the circular dk badge reveal at t=16.50,
+         relative level -6.5 dB (linear 0.4732) with a -6 dB bed pocket
+         carved from 16.35 and held to the CTA settle. -->
+    <audio id="cue-click" data-audio-group="sfx"
+           src="../../../assets/audio/cues/click-tactile-01.mp3"
+           data-start="16.5" data-hf-media-start-basis="local" data-volume="0.4732"></audio>
+
+    <!-- CUE 5 (soft accent pop): CTA action settle at t=17.2, relative
+         level -7.5 dB (linear 0.4217) — the invitation text landing
+         while the bed holds its -6 dB duck floor. -->
+    <audio id="cue-accent-pop" data-audio-group="sfx"
+           src="../../../assets/audio/cues/accent-pop-01.mp3"
+           data-start="17.2" data-hf-media-start-basis="local" data-volume="0.4217"></audio>
+
+    <script>
+      // P5.0 DYNAMIC LIVING STORY timeline — one paused GSAP timeline,
+      // seek-driven, every property owned by fromTo from its first seek.
+      // Beats:
+      //   S1 0.0-4.5   breathing window; eyebrow 0.6-1.2; headline
+      //                blur-bloom 0.9-1.8 (Cormorant accent inside);
+      //                brass CTA settle 1.6-2.2; camera push zoom 1->1.06
+      //                WITH leftward x-drift -18px.
+      //   Cross 4.5    0.45s cross-dissolve + whoosh cue 1.
+      //   S2 4.5-8.5   copy bloom 4.85-5.9; settling camera drop
+      //                1.04->1.00 with +12px y-drift.
+      //   Cross 8.5    split reveal (NOT a dissolve): scene autoAlpha
+      //                0.45s + bottom-detail pane push-wipe clip boundary
+      //                100%->0% (0.8s power3.out at 8.55) + whoosh cue 2
+      //                (accent) — directional wipe synchronized with
+      //                opposite camera drifts (top drifts up, bottom
+      //                settles down).
+      //   S3 8.5-12.5  top pane camera 1->1.05 y -14px; bottom pane
+      //                parallax 1.06 y +22 -> 1.00 y 0; copy bloom
+      //                9.05-9.9 over the bottom pane ramp.
+      //   Cross 12.5   0.45s dissolve + whoosh cue 3.
+      //   S4 12.5-16.5 copy bloom 12.85-13.9; camera push 1->1.05 with
+      //                rightward x-drift +18px.
+      //   End 16.5     0.45s dissolve to white end-card (z100);
+      //                badge reveal 16.50-17.20 frame-synced with the
+      //                click cue; copy rise 16.95-17.75;
+      //                CTA settle accent pop at 17.2; bed ducking pockets (8.35-9.2 @ -5 dB, 16.5-17.5 @ -6 dB) then dB-stepped -6 -> -60 dB 17.5-20.0.
+      (function () {
+        document.fonts.ready.then(function () {
+          var tl = gsap.timeline({ paused: true });
+
+          // ── SCENE 1 ──
+          tl.fromTo("#s1-img", { scale: 1, x: 0 },
+              { scale: 1.06, x: -18, duration: 4.5, ease: "power1.inOut" }, 0)
+            .fromTo(".scene--s1 .t-eyebrow", { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 0.6)
+            .fromTo(".scene--s1 .t-display",
+              { filter: "blur(6px)", opacity: 0 },
+              { filter: "blur(0px)", opacity: 1, duration: 0.9, ease: "power2.out" }, 0.9)
+            .fromTo(".scene--s1 .cta", { y: 8, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 1.6);
+
+          // ── CROSS 1 → SCENE 2 (4.5s, 0.45s dissolve) ──
+          tl.fromTo(".scene--s1", { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.45, ease: "power1.inOut" }, 4.5)
+            .fromTo(".scene--s2", { autoAlpha: 0 },
+              { autoAlpha: 1, duration: 0.45, ease: "power1.inOut" }, 4.5)
+            .fromTo("#s2-img", { scale: 1.04, y: 0 },
+              { scale: 1.0, y: 12, duration: 4.0, ease: "power1.inOut" }, 4.5)
+            .fromTo(".scene--s2 .t-eyebrow", { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.55, ease: "power2.out" }, 4.85)
+            .fromTo(".scene--s2 .t-display",
+              { filter: "blur(6px)", opacity: 0 },
+              { filter: "blur(0px)", opacity: 1, duration: 0.85, ease: "power2.out" }, 5.05);
+
+          // ── SPLIT REVEAL → SCENE 3 (8.5s, directional push-wipe) ──
+          tl.fromTo(".scene--s2", { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.45, ease: "power1.inOut", immediateRender: false }, 8.5)
+            .fromTo(".scene--s3", { autoAlpha: 0 },
+              { autoAlpha: 1, duration: 0.45, ease: "power1.inOut" }, 8.5)
+            .fromTo(".scene--s3 .pane--bottom",
+              { clipPath: "inset(100% 0% 0% 0%)" },
+              { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: "power3.out" }, 8.55)
+            .fromTo("#s3-top-img", { scale: 1, y: 0 },
+              { scale: 1.05, y: -14, duration: 4.0, ease: "power1.inOut" }, 8.55)
+            .fromTo("#s3-bottom-img", { scale: 1.06, y: 22 },
+              { scale: 1.0, y: 0, duration: 4.0, ease: "power1.inOut" }, 8.55)
+            .fromTo(".scene--s3 .t-eyebrow", { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.55, ease: "power2.out" }, 9.05)
+            .fromTo(".scene--s3 .t-display",
+              { filter: "blur(6px)", opacity: 0 },
+              { filter: "blur(0px)", opacity: 1, duration: 0.85, ease: "power2.out" }, 9.25);
+
+          // ── CROSS 2 → SCENE 4 (12.5s, 0.45s dissolve) ──
+          tl.fromTo(".scene--s3", { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.45, ease: "power1.inOut", immediateRender: false }, 12.5)
+            .fromTo(".scene--s4", { autoAlpha: 0 },
+              { autoAlpha: 1, duration: 0.45, ease: "power1.inOut" }, 12.5)
+            .fromTo("#s4-img", { scale: 1, x: 0 },
+              { scale: 1.05, x: 18, duration: 4.0, ease: "power1.inOut" }, 12.5)
+            .fromTo(".scene--s4 .t-eyebrow", { y: 10, opacity: 0 },
+              { y: 0, opacity: 1, duration: 0.55, ease: "power2.out" }, 12.85)
+            .fromTo(".scene--s4 .t-display",
+              { filter: "blur(6px)", opacity: 0 },
+              { filter: "blur(0px)", opacity: 1, duration: 0.85, ease: "power2.out" }, 13.05);
+
+          // ── SIGNATURE WHITE END-CARD (16.5s, 0.45s dissolve + click) ──
+          tl.fromTo(".scene--s4", { autoAlpha: 1 },
+              { autoAlpha: 0, duration: 0.45, ease: "power1.inOut", immediateRender: false }, 16.5)
+            .fromTo("#end-card", { autoAlpha: 0 },
+              { autoAlpha: 1, duration: 0.45, ease: "power1.inOut" }, 16.5)
+            .fromTo(".end-card__emblem", { scale: 0.92, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.7, ease: "power2.out" }, 16.5)
+            .fromTo("#end-card .t-display",
+              { y: 12, filter: "blur(6px)", opacity: 0 },
+              { y: 0, filter: "blur(0px)", opacity: 1, duration: 0.8, ease: "power2.out" }, 16.95);
+
+          window.__timelines["dk-story-04"] = tl;
+        });
+      })();
+    </script>
+  </main>
+</body>
+</html>

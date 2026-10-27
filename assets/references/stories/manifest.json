@@ -1,9 +1,10 @@
 {
-  "version": 1,
+  "version": 3,
   "codified": "2026-10-27",
-  "purpose": "Brand reference standard for the living-story showroom reel family (P4.1). The ref-*.mp4 files in this directory are LOCAL-ONLY operator references (gitignored heavy video) - they codify the pacing and motion language the produced compositions must honour.",
-  "targetDurationSec": 18.0,
-  "frames": 540,
+  "codifiedRevision": "P5.1 — default multi-cue SFX architecture (whoosh/click/accent-pop + bed ducking pockets, -3.6 dBTP master ceiling); P5.0 20.0s cadence retained",
+  "purpose": "Brand reference standard for the living-story showroom reel family (P5.0). The ref-*.mp4 files in this directory are LOCAL-ONLY operator references (gitignored heavy video) - they codify the pacing and motion language the produced compositions must honour.",
+  "targetDurationSec": 20.0,
+  "frames": 600,
   "fps": 30,
   "canvas": { "width": 1080, "height": 1920 },
   "audioDoctrine": {
@@ -11,22 +12,46 @@
     "targetLoudnessLUFS": -14,
     "loudnessTolerance": 0.5,
     "truePeakCeilingDbtp": -3.0,
-    "clippingCountMax": 0
+    "clippingCountMax": 0,
+    "masterLimiterCeilingDbtp": -3.6,
+    "masterLimiterNote": "root data-fx-chain truepeak node pinned at -3.6 dBTP so the <= -3.0 dBTP delivery gate always holds with margin",
+    "defaultCuePattern": {
+      "mandatory": true,
+      "note": "P5.1 codification - the permanent default multi-cue pattern for every future batch generation of this reel family",
+      "compoundTransitionCue": {
+        "source": "assets/audio/cues/whoosh-soft-01.mp3",
+        "trigger": "every scene compound transition (directional push-wipe / page-turn family)",
+        "gainDb": -8.5,
+        "linearGain": 0.3758
+      },
+      "endCardMicroCues": [
+        { "cue": "logo entrance", "source": "assets/audio/cues/click-tactile-01.mp3", "gainDb": -6.5, "linearGain": 0.4732, "timing": "frame-synced with the dk emblem snap" },
+        { "cue": "CTA action settle", "source": "assets/audio/cues/accent-pop-01.mp3", "gainDb": -7.5, "linearGain": 0.4217, "timing": "on the invitation copy's landing beat" }
+      ],
+      "bedDucking": {
+        "mandatory": true,
+        "carveDb": [-5.0, -6.0],
+        "rule": "carve a -5.0 to -6.0 dB pocket in the music bed at every cue timestamp: enter ~0.15s ahead of the cue, hold through the cue body, release back to 0 dB once the cue decays; the end-card pocket holds at -6.0 dB until the exponential tail decay takes over",
+        "referencePocket": "8.35s 0dB -> 8.5s -5dB -> 8.9s -5dB -> 9.2s 0dB (compound push); 16.35s 0dB -> 16.5s -6dB held to 17.5s, then exponential decay to -60dB at 20.0s"
+      }
+    }
   },
   "sceneProgression": [
-    { "scene": 1, "startSec": 0.0, "endSec": 4.5, "treatment": "Wide Architectural Hero + Cormorant Headline Bloom" },
-    { "scene": 2, "startSec": 4.5, "endSec": 8.5, "treatment": "Detail / Hardware Focus + Sub-audible Whoosh" },
-    { "scene": 3, "startSec": 8.5, "endSec": 12.5, "treatment": "Vertical Split or Secondary Detail" },
-    { "scene": 4, "startSec": 12.5, "endSec": 15.5, "treatment": "Spatial Lifestyle Anchor" },
-    { "scene": 5, "startSec": 15.5, "endSec": 18.0, "treatment": "Signature White End-Card" }
+    { "scene": 1, "startSec": 0.0, "endSec": 4.5, "treatment": "Wide Architectural Hero + Cormorant Headline Bloom (zoom + directional drift)" },
+    { "scene": 2, "startSec": 4.5, "endSec": 8.5, "treatment": "Material Study Detail + Settling counter-zoom + Sub-audible Whoosh" },
+    { "scene": 3, "startSec": 8.5, "endSec": 12.5, "treatment": "SPLIT-PANE COMPOUND (vertical 54/46 duo-stack): room context above macro hardware/junction detail, slide-from-bottom push-wipe + whoosh accent" },
+    { "scene": 4, "startSec": 12.5, "endSec": 16.5, "treatment": "Curated Detail Anchor (zoom + directional drift)" },
+    { "scene": 5, "startSec": 16.5, "endSec": 20.0, "endSecNote": "full 3.5s breathing hold; bed tail exp-decays across the final 2.5s", "treatment": "Signature White End-Card" }
   ],
   "endCardCopySuite": {
     "bannedCopyPermanently": ["Built in Melbourne", "Quality and Craft"],
     "variants": [
       { "variant": "A", "copy": "Book your free design consultation" },
       { "variant": "B", "copy": "Visit our Melbourne showrooms" },
-      { "variant": "C", "copy": "Custom kitchens made for your home" }
-    ]
+      { "variant": "C", "copy": "Custom kitchens made for your home" },
+      { "variant": "D", "copy": "Designed & built in Melbourne", "note": "added P5.0; ink on #ffffff end-card, WCAG AA ~14:1 — not a 'Built in Melbourne' phrasing" }
+    ],
+    "endCardContrastLaw": "every variant renders in the ink copy--ink stack (var --espresso-900) on the #ffffff end-card; halos stripped by the engine rule"
   },
   "references": ["ref-04.mp4", "ref-06.mp4", "ref-11.mp4", "ref-12.mp4"]
 }

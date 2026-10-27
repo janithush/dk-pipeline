@@ -20,6 +20,7 @@
     "optimize:assets": "node scripts/downscale-assets.js",
     "retire:batch": "node scripts/retire-batch.js",
     "render:daily": "node scripts/render-batch.js",
+    "cleanup:renders": "node scripts/cleanup-render.js --all",
     "render:post": "hyperframes render --composition",
     "snapshot": "hyperframes snapshot",
     "test": "echo \"Error: no test specified\" && exit 1"
