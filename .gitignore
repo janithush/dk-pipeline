@@ -10,6 +10,10 @@ renders/
 # Playwright MCP scratch (probe sessions)
 .playwright-mcp/
 
+# Reference story footage (heavy local-only video, never tracked)
+assets/references/stories/*.mp4
+assets/references/stories/*.mov
+
 # OS artifacts
 .DS_Store
 Thumbs.db

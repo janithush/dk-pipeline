@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "codified": "2026-10-27",
+  "purpose": "Brand reference standard for the living-story showroom reel family (P4.1). The ref-*.mp4 files in this directory are LOCAL-ONLY operator references (gitignored heavy video) - they codify the pacing and motion language the produced compositions must honour.",
+  "targetDurationSec": 18.0,
+  "frames": 540,
+  "fps": 30,
+  "canvas": { "width": 1080, "height": 1920 },
+  "audioDoctrine": {
+    "voiceover": "none - 100% music-driven",
+    "targetLoudnessLUFS": -14,
+    "loudnessTolerance": 0.5,
+    "truePeakCeilingDbtp": -3.0,
+    "clippingCountMax": 0
+  },
+  "sceneProgression": [
+    { "scene": 1, "startSec": 0.0, "endSec": 4.5, "treatment": "Wide Architectural Hero + Cormorant Headline Bloom" },
+    { "scene": 2, "startSec": 4.5, "endSec": 8.5, "treatment": "Detail / Hardware Focus + Sub-audible Whoosh" },
+    { "scene": 3, "startSec": 8.5, "endSec": 12.5, "treatment": "Vertical Split or Secondary Detail" },
+    { "scene": 4, "startSec": 12.5, "endSec": 15.5, "treatment": "Spatial Lifestyle Anchor" },
+    { "scene": 5, "startSec": 15.5, "endSec": 18.0, "treatment": "Signature White End-Card" }
+  ],
+  "endCardCopySuite": {
+    "bannedCopyPermanently": ["Built in Melbourne", "Quality and Craft"],
+    "variants": [
+      { "variant": "A", "copy": "Book your free design consultation" },
+      { "variant": "B", "copy": "Visit our Melbourne showrooms" },
+      { "variant": "C", "copy": "Custom kitchens made for your home" }
+    ]
+  },
+  "references": ["ref-04.mp4", "ref-06.mp4", "ref-11.mp4", "ref-12.mp4"]
+}

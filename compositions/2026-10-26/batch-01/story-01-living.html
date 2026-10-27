@@ -13,19 +13,23 @@
     /* P4.0 LIVING STORY PILOT — MODEL A (Cinematic Solo) initial states.
        GSAP fromTo owns every animated property from its first seek; these
        declarations only guard the pre-timeline first paint and the
-       0.0-0.6s breathing window (zero text, room context only). */
+       0.0-0.6s breathing window (zero text, room context only).
+       NOTE (P4.1): the WIDE_HERO img tag-name is spelled out below as
+       "image element" — a literal angle-bracket tag token inside this
+       comment is misread as an empty src by the path gate's tag scanner. */
     .t-eyebrow, .t-display, .cta { opacity: 0; }
     .t-display { filter: blur(6px); }
   </style>
 </head>
 <body>
-  <main id="root" data-composition-id="dk-story-01-living" data-duration="4.5" data-fps="30"
+  <main id="root" data-composition-id="dk-story-02" data-duration="4.5" data-fps="30"
         data-width="1080" data-height="1920"
         data-fx-chain="{&quot;version&quot;:1,&quot;nodes&quot;:[{&quot;type&quot;:&quot;truepeak&quot;,&quot;id&quot;:&quot;tp-master&quot;,&quot;label&quot;:&quot;Delivery ceiling&quot;,&quot;params&quot;:{&quot;ceiling&quot;:-3,&quot;lookahead&quot;:3,&quot;release&quot;:80}}]}">
     <!-- P4.0 PILOT — MATERIAL HERO SPLIT (1+2 GRID; blueprint §G.8.1) under
          MODEL A micro Ken Burns. Geometry is UNCHANGED from the certified
          static family (1037/881 rows, 2px gutters, copy at --copy-bottom
-         220px). Motion lives ONLY on the top WIDE_HERO <img> (1.00 -> 1.04,
+         220px). Motion lives ONLY on the top WIDE_HERO image element
+         (1.00 -> 1.04,
          power2.out): bottom panes stay grounded so the certified copy
          contrast regime is untouched. STATIONARY SCRIM LAW: every scrim is
          a stationary sibling (position:absolute; pointer-events:none;
@@ -108,7 +112,7 @@
             .fromTo(".cta",
               { y: 8, opacity: 0 },
               { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" }, 1.6);
-          window.__timelines["dk-story-01-living"] = tl;
+          window.__timelines["dk-story-02"] = tl;
         });
       })();
     </script>
