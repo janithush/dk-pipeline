@@ -197,11 +197,27 @@ if (fs.existsSync(ctx.manifestPath)) {
     const listedHtml = new Set();
     const slugNums = new Map();       // slug number → slug (duplicate detector)
     const outputs = new Map();        // output → slug (collision detector)
+    const deliverableLeaves = new Map(); // P7.0: deliverable leaf dir → slug (one MP4/leaf)
+    // P7.0 additive manifest typing (kind: static | compound-static | reel).
+    // Unknown `kind` values fail-closed (P1) — a typo like "reel " must never
+    // silently classify a post into the wrong render lane.
+    const KINDS = new Set(['static', 'compound-static', 'reel']);
+    const isReelPost = (post) =>
+      (typeof post.kind === 'string' && post.kind === 'reel') ||
+      (!('kind' in post) && /-living/i.test(path.basename(String(post.html || ''), '.html')));
 
     for (const post of manifest.posts) {
       const slug = String(post.slug || '');
       const absHtmlClean = path.resolve(ROOT, String(post.html || ''));
       const batchDirResolved = path.resolve(ctx.batchDir);
+
+      // P7.0: additive kind field — absent = static (Schema v1/v2 backward
+      // compat), present = must be one of the three permitted values.
+      if ('kind' in post && !KINDS.has(String(post.kind))) {
+        fail(manifestTitled, `[${slug}] kind "${post.kind}" is not a permitted value (static | compound-static | reel)`,
+          'P7.0 additive manifest typing — unknown kinds fail closed so a typo never lands a post in the wrong render lane',
+          'set kind to "static", "compound-static", or "reel" (or omit the field for a legacy static post)');
+      }
 
       // html references this batch dir + exists on disk + no duplicates
       if (path.relative(batchDirResolved, absHtmlClean).startsWith('..')) {
@@ -245,6 +261,37 @@ if (fs.existsSync(ctx.manifestPath)) {
         if (!inside || out.split('/').includes('..') || intoNestedFromFlat) {
           fail(manifestTitled, `[${slug}] output "${out}" escapes render root "${ctx.renderRoot}/" — approved PNG overwrite risk`,
             null, `keep output under ${ctx.renderRoot}/<slug>/`);
+        }
+
+        // ── P7.0 DEDICATED LEAF NAMESPACE (one deliverable per leaf dir) ──
+        // static / compound-static: output IS the leaf      → <renderRoot>/<slug>
+        // reel: output = leaf/<name> and leaf dir = slug dir → <renderRoot>/<slug>/<variant>
+        //   i.e. the MP4 file is <output>.mp4 inside a slug-named directory
+        //   directly under the render root (cleanup's per-leaf budget +
+        //   non-destructive supersede archival key off exactly this shape).
+        const isReel = isReelPost(post);
+        const leafOfOutput = isReel
+          ? out.split('/').slice(0, -1).join('/')   // slug dir (dirname of output)
+          : out;                                    // static output IS its leaf
+        if (inside && !out.includes('..')) {
+          const expectedLeaf = `${ctx.renderRoot}/${slug}`;
+          if (leafOfOutput !== expectedLeaf) {
+            fail(manifestTitled, `[${slug}] ${isReel ? 'reel leaf' : 'output leaf'} "${leafOfOutput}" must be the slug-named dir "${expectedLeaf}" directly under the render root`,
+              'P7.0 Storage Budget Law keys per-leaf budgets and supersede archival on slug-named leaves',
+              isReel
+                ? `set output to ${expectedLeaf}/<variant-name> (MP4 lands as ${expectedLeaf}/<variant-name>.mp4)`
+                : `set output to ${expectedLeaf}/`);
+          }
+          if (isReel && !out.split('/').at(-1)) {
+            fail(manifestTitled, `[${slug}] reel output "${out}" must name the MP4 (the leaf/<variant> path, rendered as <output>.mp4)`,
+              null, `e.g. output = ${expectedLeaf}/living-${typeof post.variant === 'string' ? post.variant : '20s'}`);
+          }
+          if (deliverableLeaves.has(leafOfOutput) && deliverableLeaves.get(leafOfOutput) !== slug) {
+            fail(manifestTitled, `deliverable leaf "${leafOfOutput}" is claimed by both "${deliverableLeaves.get(leafOfOutput)}" and "${slug}" — two MP4s/posters would share one leaf (the P6.0 footgun: a cleanup budget on the shared parent destroyed a sibling reel)`,
+              null, 'one slug-named leaf directory per deliverable');
+          } else {
+            deliverableLeaves.set(leafOfOutput, slug);
+          }
         }
       }
     }

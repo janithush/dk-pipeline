@@ -71,7 +71,12 @@ day are never overwritten.
 | `npm run check:zones` | advisory safe-zone sweep: samples the bottom 28% copy platform as a warning-severity zone |
 | `npm run optimize:assets` | Re-optimize raws (`-- --prune` also removes stale unreferenced optimized copies) |
 | `npm run retire:batch` | Shipped-aware archival of stale dates + router cleanup |
-| `npm run render:daily` | Strict render loop for the active batch |
+| `npm run render:daily` | Strict render loop for the active batch (static lane: `static` + `compound-static`) |
+| `npm run render:reels` | P7.0 reel lane — mp4 delivery render for `kind: "reel"` posts (supersede archival + per-leaf ≤20 MB budget + built-in loudness gate) |
+| `npm run verify:loudness` | P7.0 audio certification gate — ebur128 −14 ±0.5 LUFS · TP ≤ −3.0 dBTP · 0 clipped; digest at `.hyperframes/artifacts/loudness/` |
+| `npm run artifacts:prune` | P7.0 artifact hygiene — sweep snapshots / frame-check / checks older than the batch date (certificates preserved) |
 
 Full architecture, engine contract (§F/§G), intraday multi-batch runbook (§F.9), and the
 zero-friction factory contract (§H): see **PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md**.
+The unified multi-format production manual (format taxonomy, daily loop, archival recovery,
+quality SLAs): see **docs/WORKFLOW.md**.

@@ -100,13 +100,29 @@ if (SKIP_PREFLIGHT) {
   }
 }
 
+// ── P7.0 STATIC-LANE FILTER ─────────────────────────────────────────────
+// Render-batch is the STATIC lane only. Reel posts (manifest kind === "reel",
+// fallback: a `-living` composition filename on kind-less legacy posts) are
+// rendered by scripts/render-reels.js (mp4 delivery + loudness certification)
+// — skipped here, never a failure.
+// fall back to the `-living` filename on kind-less legacy posts (Schema v1/v2).
+const isReelPost = (post) =>
+  String(post.kind) === 'reel' ||
+  (!('kind' in post) && /-living/i.test(path.basename(String(post.html), '.html')));
+
 let passed = 0;
 let failed = 0;
+let reelsSkipped = 0;
 
 console.log(`◆ Rendering daily batch: ${batchDate}`);
 console.log(`   posts: ${manifest.posts.length}\n`);
 
 for (const post of manifest.posts) {
+  if (isReelPost(post)) {
+    reelsSkipped++;
+    console.log(`→ [${post.slug}] SKIPPED (reel lane — render:reels owns mp4 delivery; produce ship renders it next)`);
+    continue;
+  }
   const htmlPath = path.join(ROOT, post.html);
   const outputPath = path.join(ROOT, post.output);
 
@@ -145,7 +161,7 @@ for (const post of manifest.posts) {
   }
 }
 
-console.log(`\n◆ Batch ${batchDate} complete: ${passed} passed, ${failed} failed`);
+console.log(`\n◆ Batch ${batchDate} complete: ${passed} static passed, ${failed} failed${reelsSkipped ? `, ${reelsSkipped} reel(s) deferred to the reel lane` : ''}`);
 
 // ── P5.0 POST-RENDER ARTIFACT HYGIENE (automated) ───────────────────────
 // The png-sequence mediatype leaves every frame on disk (400MB+ per reel).

@@ -36,6 +36,44 @@ const die = (msg) => {
   process.exit(1);
 };
 
+// ── P7.0 FORMAT HELPERS (additive kind typing in manifest posts[]) ──────
+// isReelPost: kind === "reel", falling back to a `-living` filename on
+// kind-less legacy posts (Schema v1/v2 backward compat).
+const isReelPost = (post) =>
+  String(post.kind) === 'reel' ||
+  (!('kind' in post) && /-living/i.test(path.basename(String(post.html), '.html')));
+
+// Deliverable-on-disk check, per format:
+//   static / compound-static → any frame_*.png in the output leaf
+//   reel                     → <output>.mp4 exists (extension-less manifest output)
+function deliverableRendered(post) {
+  const outAbs = path.join(ROOT, ...String(post.output).split('/'));
+  if (isReelPost(post)) return fs.existsSync(outAbs + '.mp4');
+  return fs.existsSync(outAbs) &&
+    fs.readdirSync(outAbs).some((f) => /^frame[-_]\d+\.png$/i.test(f));
+}
+
+// Newest deliverable info per format: { file, size } for receipt/stamping.
+// statics prefer the newest frame file and fall back to poster-settled.png
+// (cleanup prunes frame_*.png, so post-hygiene the poster IS the deliverable).
+function deliverableInfo(post) {
+  const outAbs = path.join(ROOT, ...String(post.output).split('/'));
+  if (isReelPost(post)) {
+    const mp4 = outAbs + '.mp4';
+    return fs.existsSync(mp4) ? { file: path.basename(mp4), size: fs.statSync(mp4).size } : null;
+  }
+  if (!fs.existsSync(outAbs)) return null;
+  const names = fs.readdirSync(outAbs);
+  if (names.includes('poster-settled.png')) {
+    return { file: 'poster-settled.png', size: fs.statSync(path.join(outAbs, 'poster-settled.png')).size };
+  }
+  const frames = names
+    .filter((f) => /^frame[-_]\d+\.png$/i.test(f))
+    .map((f) => ({ f, t: fs.statSync(path.join(outAbs, f)).mtimeMs }))
+    .sort((a, b) => b.t - a.t);
+  return frames[0] ? { file: frames[0].f, size: fs.statSync(path.join(outAbs, frames[0].f)).size } : null;
+}
+
 // ── PHOTO LEDGER (consumption report — read-only) ───────────────────────
 // The old intraday friction: the operator had to remember to delete already-
 // consumed raw photos between batches. This ledger derives the answer from
@@ -133,10 +171,9 @@ if (RUN === 'status') {
     console.log(`  posts:           ${manifest.posts.length} (next free slug: ${detectNextSlug(ctx.dateDir)})`);
     for (const p of manifest.posts) {
       const absHtml = path.join(ROOT, ...String(p.html).split('/'));
-      const outDir = path.join(ROOT, ...String(p.output).split('/'));
-      const rendered = fs.existsSync(outDir) &&
-        fs.readdirSync(outDir).some((f) => /^frame[-_]\d+\.png$/i.test(f));
-      console.log(`    ${fs.existsSync(absHtml) && rendered ? '✓' : fs.existsSync(absHtml) ? '◌' : '✗'} ${p.slug.padEnd(10)} ${fs.existsSync(absHtml) ? 'composition ok' : 'composition MISSING'} · ${rendered ? 'rendered' : 'not rendered'}`);
+      const kindLabel = isReelPost(p) ? 'reel' : (p.kind ? String(p.kind) : 'static');
+      const rendered = deliverableRendered(p);
+      console.log(`    ${fs.existsSync(absHtml) && rendered ? '✓' : fs.existsSync(absHtml) ? '◌' : '✗'} ${p.slug.padEnd(10)} (${kindLabel}) ${fs.existsSync(absHtml) ? 'composition ok' : 'composition MISSING'} · ${rendered ? 'rendered' : 'not rendered'}`);
     }
   } else {
     console.log('  posts:           (no manifest — scaffold first)');
@@ -180,10 +217,7 @@ if (RUN === 'prepare') {
   //      renders/<date>/<batch-XX>/<slug>/ holds a frame) → scaffold the NEXT batch
   //   · otherwise (work in progress on the day) → skip; never fork a batch mid-flight.
   const batchesBefore = listBatches(ctx.dateDir);
-  const frameRendered = (post) => {
-    const outDir = path.join(ROOT, ...String(post.output).split('/'));
-    return fs.existsSync(outDir) && fs.readdirSync(outDir).some((f) => /^frame[-_]\d+\.png$/i.test(f));
-  };
+  const frameRendered = (post) => deliverableRendered(post); // P7.0: reel-aware (kind/frame/mp4)
   const batchShipped = (b) => {
     const bctx = resolveBatchContext(date, b);
     if (!fs.existsSync(bctx.manifestPath)) return false;   // missing manifest = unshipped
@@ -241,43 +275,49 @@ if (manifest.posts.length === 0) die(`active batch ${ctx.batch} has 0 posts — 
 console.log(`◆ shipping batch ${ctx.batch} (${manifest.posts.length} post(s)) of ${date}`);
 
 step('node', ['scripts/downscale-assets.js'], {
-  title: '1/4 · assets re-optimized (idempotent; fresh photos enter slug-map)',
+  title: '1/6 · assets re-optimized (idempotent; fresh photos enter slug-map)',
   failMsg: 'asset optimization failed before ship.',
 });
 step('node', ['scripts/new-batch.js', '--sync-router', '--date', date], {
-  title: '2/4 · router sync (index.html routes every manifest post; idempotent)',
+  title: '2/6 · router sync (index.html routes every manifest post; idempotent)',
   failMsg: 'router sync failed — fix manifest ids/paths, then re-ship.',
 });
-// 3/4 — the full hardened preflight chain (exactly what render would run below):
+// 3/6 — the full hardened preflight chain (exactly what the render lanes trust):
 //   lint → check-paths (+ manifest audit) → photo-fit --fix (model self-heal)
 //   → verify-contrast (browser authority; browser-ordered rung escalation, fail-closed)
 step('npm', ['run', 'preflight'], {
-  title: '3/4 · preflight: lint → check-paths → photo-fit --fix → verify-contrast',
+  title: '3/6 · preflight: lint → check-paths → photo-fit --fix → verify-contrast',
   failMsg: 'preflight RED — self-heal exhausted or a TRUE defect was found (no render attempt was made).',
 });
 step('node', ['scripts/render-batch.js', '--no-preflight', '--date', date], {
-  title: '4/4 · render batch (strict; static png-sequence per post)',
-  failMsg: 'render step failed — see the per-post error above.',
+  title: '4/6 · static lane — png-sequence render (kind: static | compound-static)',
+  failMsg: 'static render step failed — see the per-post error above.',
+});
+step('node', ['scripts/render-reels.js', '--date', date], {
+  title: '5/6 · reel lane — mp4 delivery render (kind: reel; supersede archival + per-leaf budget)',
+  failMsg: 'reel render step failed — see the per-post error above.',
+});
+// 6/6 — independent audio certification line over every reel of the batch
+// (render-reels already runs verify-loudness as an internal gate; this repeat
+// is an idempotent re-measure and the receipt the ship report cites).
+step('node', ['scripts/verify-loudness.js', '--date', date], {
+  title: '6/6 · audio certification (ebur128 −14 ±0.5 LUFS · TP ≤ −3.0 dBTP · 0 clipped samples)',
+  failMsg: 'audio certification RED — a reel is out of tolerance; nothing ships.',
 });
 
 // ── SHIP-CERT (zero-touch audit trail, idempotent) ───────────────────────
 // Every shipped post gets ONE deterministic certificate line in its manifest
 // notes (marker-keyed: re-ship replaces today's cert, prior history — waiver
 // prose of pre-policy batches — is preserved verbatim). The operator never
-// writes manifest notes again.
-function frameInfo(post) {
-  const outDir = path.join(ROOT, ...String(post.output).split('/'));
-  if (!fs.existsSync(outDir)) return null;
-  const frames = fs.readdirSync(outDir)
-    .filter((f) => /^frame[-_]\d+\.png$/i.test(f))
-    .map((f) => ({ f, t: fs.statSync(path.join(outDir, f)).mtimeMs }))
-    .sort((a, b) => b.t - a.t);
-  return frames[0] ? { file: frames[0].f, size: fs.statSync(path.join(outDir, frames[0].f)).size } : null;
-}
+// writes manifest notes again. Statics certificate the newest deliverable
+// (frame file, or poster-settled.png after hygiene); reels certificate the
+// P7.0 loudness numbers.
 
 try {
   const digestFile = path.join(ROOT, '.hyperframes', 'artifacts', 'verify-contrast', `${date}-${ctx.batch}.digest.json`);
   const digestObj = fs.existsSync(digestFile) ? JSON.parse(fs.readFileSync(digestFile, 'utf8')) : null;
+  const loudnessFile = path.join(ROOT, '.hyperframes', 'artifacts', 'loudness', `${date}-${ctx.batch}.digest.json`);
+  const loudnessObj = fs.existsSync(loudnessFile) ? JSON.parse(fs.readFileSync(loudnessFile, 'utf8')) : null;
   for (const post of manifest.posts) {
     const htmlReal = path.join(ROOT, ...String(post.html).split('/'));
     const h = fs.existsSync(htmlReal) ? fs.readFileSync(htmlReal, 'utf8') : '';
@@ -290,10 +330,19 @@ try {
       .join(' → ') || 'none';
     const checked = pdigest?.checked ?? 0;
     const verdict = pdigest?.status ?? 'UNVERIFIED';
-    const fi = frameInfo(post);
     const marker = `SHIP-CERT ${date}-${ctx.batch}`;
     const at = new Date().toISOString();
-    const cert = `${marker} ${at}: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify ${checked} els ${verdict}${escalations !== 'none' ? `; browser-ordered escalations: ${escalations}` : ''}) · state: ${barCls} · ${copyCls}${fi ? ` · shipped frame ${fi.file} (${fi.size} bytes)` : ' · FRAME MISSING'}`;
+    let cert;
+    if (isReelPost(post)) {
+      // P7.0 reel certificate: the P6.0 manual ebur128 pass becomes machine
+      // stamped — measured numbers only, read straight from the digest.
+      const li = loudnessObj?.posts?.find((p) => p.slug === post.slug);
+      const di = deliverableInfo(post);
+      cert = `${marker} ${at}: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify ${checked} els ${verdict}) · reel lane delivery strict (mp4 delivery quality) · audio cert: ${li?.ok ? `I ${li.integratedLUFS} LUFS · TP ${li.truePeakDbfs} dBTP · ${li.clippedSamples ?? 0} clipped · ${li.frames ?? '?'} frames · digest .hyperframes/artifacts/loudness/${date}-${ctx.batch}.digest.json` : 'LOUDNESS UNCERTIFIED (no digest entry)'}${di ? ` · delivered ${di.file} (${di.size} bytes)` : ' · MP4 MISSING'}`;
+    } else {
+      const fi = deliverableInfo(post);
+      cert = `${marker} ${at}: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify ${checked} els ${verdict}${escalations !== 'none' ? `; browser-ordered escalations: ${escalations}` : ''}) · state: ${barCls} · ${copyCls}${fi ? ` · shipped frame ${fi.file} (${fi.size} bytes)` : ' · FRAME MISSING'}`;
+    }
     const base = typeof post.notes === 'string'
       ? post.notes.replace(new RegExp(`${marker}[\\s\\S]*$`), '').trimEnd()
       : '';
@@ -309,16 +358,22 @@ try {
 console.log('\n◆ ─── SHIP RECEIPT ───────────────────────────────────────');
 let okPosts = 0;
 for (const p of manifest.posts) {
-  const fi = frameInfo(p);
-  const line = fi
-    ? `  ✓ ${p.slug.padEnd(10)} → ${p.output}/${fi.file} (${fi.size} bytes)`
-    : `  ✗ ${p.slug.padEnd(10)} → NOT RENDERED (${p.output}/)`;
+  const di = deliverableInfo(p);
+  const kindLabel = isReelPost(p) ? 'reel' : (p.kind ? String(p.kind) : 'static');
+  const line = di
+    ? `  ✓ ${p.slug.padEnd(10)} (${kindLabel}) → ${p.output}${isReelPost(p) ? '.mp4' : ''}${isReelPost(p) ? '' : `/${di.file}`} (${(di.size / 1048576).toFixed(2)} MB)`
+    : `  ✗ ${p.slug.padEnd(10)} (${kindLabel}) → NOT RENDERED (${p.output}${isReelPost(p) ? '.mp4' : '/'}|)`;
   console.log(line);
-  if (fi) okPosts++; else console.error(`     missing render output for ${p.slug}`);
+  if (di) okPosts++; else console.error(`     missing render output for ${p.slug}`);
 }
 const digestPath = path.join(ROOT, '.hyperframes', 'artifacts', 'verify-contrast', `${date}-${ctx.batch}.digest.json`);
 if (fs.existsSync(digestPath)) {
   console.log(`  ✓ contrast certificate: ${relPath(digestPath)}`);
+}
+const loudnessPath = path.join(ROOT, '.hyperframes', 'artifacts', 'loudness', `${date}-${ctx.batch}.digest.json`);
+if (fs.existsSync(loudnessPath)) {
+  const l = JSON.parse(fs.readFileSync(loudnessPath, 'utf8'));
+  console.log(`  ✓ loudness certificate: ${relPath(loudnessPath)}${l.ok ? ' (GREEN)' : ' (RED — do not ship)'}`);
 }
 console.log('');
 if (okPosts === manifest.posts.length) {

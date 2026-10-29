@@ -35,6 +35,9 @@ const ROOT = process.cwd();
 const COMPOSITIONS_DIR = path.join(ROOT, 'compositions');
 const ARCHIVE_DIR = path.join(ROOT, 'archive', 'stale-drafts');
 const ARCHIVE_UNSHIPPED_DIR = path.join(ROOT, 'archive', 'unshipped');
+// P7.0: the audit log is now the SHARED lib (also consumed by cleanup-render
+// supersede archival + render-reels pre-render archival — one log, one format).
+const { appendRetireLog } = require('./lib/retire-log');
 const RETIRE_LOG = path.join(ROOT, 'archive', 'retire-log.json');
 const INDEX_PATH = path.join(ROOT, 'index.html');
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
@@ -47,25 +50,9 @@ const { date: target, basis } = resolveBatchDate(process.argv.slice(2));
 
 logResolved({ date: target, basis }, 'Batch retirement');
 
-// ── RETIRE AUDIT LOG (deterministic, append-only) ───────────────────────
-function appendRetireLog(record) {
-  fs.mkdirSync(path.dirname(RETIRE_LOG), { recursive: true });
-  let log = [];
-  if (fs.existsSync(RETIRE_LOG)) {
-    try {
-      const parsed = JSON.parse(fs.readFileSync(RETIRE_LOG, 'utf8'));
-      if (Array.isArray(parsed)) log = parsed;
-      else throw new Error('not an array');
-    } catch (err) {
-      const aside = RETIRE_LOG.replace(/\.json$/, '.corrupt-' + Date.now() + '.json');
-      fs.renameSync(RETIRE_LOG, aside);
-      console.warn(`   ⚠ retire-log.json unreadable (${err.message}) — set aside as ${path.basename(aside)}, starting a fresh log.`);
-      log = [];
-    }
-  }
-  log.push(record);
-  fs.writeFileSync(RETIRE_LOG, JSON.stringify(log, null, 2) + '\n');
-}
+// ── RETIRE AUDIT LOG ────────────────────────────────────────────────────
+// Append-only audit moved to scripts/lib/retire-log.js (P7.0 shared helper;
+// identical record shape + same corrupt-log set-aside semantics).
 
 // A date counts as SHIPPED iff renders/<DATE>/ exists and holds at least one
 // file of any kind (the renderer writes frame_*.png trees — any remnant of a
