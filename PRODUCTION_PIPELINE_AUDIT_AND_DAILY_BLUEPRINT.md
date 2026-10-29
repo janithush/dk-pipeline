@@ -75,128 +75,24 @@ The machine, fully unattended — and idempotent (safe to re-run any number of t
 Read the terminal: note the `active` batch, the `next slug` and the available photo list.
 Screenshot it or leave it open — Step 3's authoring prompt consumes exactly that inventory.
 
-### Step 3 — Vision Model Composition (The Authoring Prompt)
+### Step 3 — Vision Model Composition (The P7.0 3-Format Authoring Prompt)
+
+> ⚠ **SUPERSEDED (2026-10-29) — LEGACY SINGLE-PHOTO STATIC PROMPT RETIRED.**
+> The prompt below was the P6.0 static-only authoring prompt. It **MUST NOT** be used for P7.0 production.
+> **Operators MUST use the P7.0 Unified 3-Format Authoring Prompt embedded in `docs/WORKFLOW.md` §4.1.**
+> That prompt authors the FULL 3-FORMAT SUITE in one pass:
+> 1. **Full-bleed static hero** (`kind: "static"`)
+> 2. **Compound 1+2 static grid** (`kind: "compound-static"`, `data-layout-family="hero-split-1-2"`)
+> 3. **20.0s Living Story Reel** (`kind: "reel"`, `variant: "20s"`, dedicated leaf `living-20s.mp4`)
 
 Open your **vision-capable** LLM session (OpenCode / Claude / equivalent — dictation-only
-models must NOT run this step) in the repo root, paste the block below, and let it work.
-It authors the stories AND finishes cleanly without asking anything; the ship gate (Step 4)
-is the sole arbiter of quality.
+models must NOT run this step) in the repo root, paste the block from **`docs/WORKFLOW.md` §4.1**,
+and let it work. It authors all three formats AND finishes cleanly without asking anything;
+the ship gate (Step 4) is the sole arbiter of quality.
 
-```text
-# DAILY HYPERFRAMES STORY AUTHORING — ZERO-QUESTIONS COMPOSITION RUN (runbook Step 3)
-# Project: dk-pipeline | Engine: shared/story-system.css | Canvas: Story 1080x1920
-
-You are the Creative Technologist for Direct Kitchens today. Produce the next stories for the
-ACTIVE batch with ZERO questions to me — every decision you make is grounded and validated
-downstream by the automated ship gate. If your session cannot actually SEE images, STOP and
-say so; never fabricate observations.
-
-== INVENTORY (author ONLY from this) ==
-1. Run: npm run produce -- status
-2. Note: active batch folder compositions/<DATE>/<batch-XX>/, the next free slug (story-NN),
-   and the "photos available" list in the photo ledger. NEVER use photos marked as consumed
-   by today's batches, and NEVER invent photos that are not listed.
-
-== GROUNDING (mandatory, one image at a time) ==
-3. Inspect EACH candidate photo SEQUENTIALLY — exactly ONE image per tool call, seen alone
-   before it is reasoned about. Batched multi-image reads are forbidden (they evict evidence).
-4. Log what you SEE per photo: room/space type, hero materials (as literally visible),
-   visible appliances/fittings, color accent + lighting undertone, light direction.
-   This log is the single source of truth for alt text, copy, and scrim choice. A copy claim
-   that does not trace to YOUR observation of THAT photo is forbidden.
-5. Before choosing a variant/theme per post, run the advisory feasibility matrix:
-      node scripts/photo-fit.js --photo assets/raw/optimized/<file>.jpg
-   Do not author a variant x theme combination that its matrix reports infeasible for the
-   default white stack.
-
-== LAYOUT CONTRACT (engine-owned — never repositioned per post) ==
-- Brand bar LOCKED TOP-RIGHT: top: 140px; right: 80px, logo flush right, wordmark to its
-  LEFT (engine flex row-reverse). Markup invariant per post:
-    <header class="bar-top"> … </header>                     (white wordmark — dark tops)
-    or <header class="bar-top bar-top--ink"> … </header>      (ink wordmark — bright tops)
-  Logo: <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
-  paired with <p class="brand">Direct Kitchens</p>. If inspection shows the top-RIGHT region
-  bright (white/cream), use bar-top--ink. (If the ship gate still disagrees, it will
-  auto-flip to the opposite polarity via bar-top--ink — do not preempt it.)
-- Brand polarity partner (2026-10-25 knockout standard): the chosen polarity travels with
-  a DECLARED top-scrim intensity. WHITE wordmark (dark-topped photos) → the top scrim span
-  carries scrim--top--deep (deepened corner pool). INK wordmark (bright-topped photos) →
-  the top scrim span stays bare (airy pool). Set both together, always:
-    <header class="bar-top bar-top--white"> + <span class="scrim scrim--top scrim--top--deep">
-    <header class="bar-top bar-top--ink">  + <span class="scrim scrim--top">
-- Copy variants: EXACTLY TWO EXIST. <section class="copy copy--bottom-left"> or
-  <section class="copy copy--bottom-right"> (alternate bottom-right every OTHER post for
-  rhythm, per §F.7). Any other position — centered included — is PERMANENTLY ELIMINATED
-  from the engine; never emit it. The copy block NEVER carries a background box:
-  .copy--shield / .copy--shield--deep are RETIRED (2026-10-25) — legibility is governed
-  exclusively by the full-bleed edge-to-edge scrim gradients and, for bright surfaces,
-  the declared .copy--ink recolor.
-- Scrims: <span class="scrim scrim--top [scrim--top--deep]"></span> + <span class="scrim scrim--bottom"></span>
-  inside <figure class="photo photo--full scrim--charcoal"> (cool/neutral undertones),
-  scrim--warm (amber/timber undertone), or scrim--greige (warm stone undertone). The
-  deepened 620px bottom scrim is the declared legibility floor — your crisp WHITE
-  typography rides it; author plain white markup plus the polarity partner above and
-  trust the gates (the ladder auto-flips bar-top polarity + pool intensity only if the
-  browser sampler disagrees).
-
-== STRICT DOM CONTRACT (per story — no body copy in the DOM) ==
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Direct Kitchens — story-NN</title>
-  <link rel="stylesheet" href="../../../shared/story-system.css">
-</head>
-<body>
-  <main id="root" data-composition-id="dk-story-NN" data-duration="0.033" data-no-timeline
-        data-width="1080" data-height="1920">
-    <article class="frame" aria-label="<2-line grounded description>">
-      <figure class="photo photo--full scrim--{charcoal|warm|greige}">
-        <img src="../../../assets/raw/optimized/<slugged file>.jpg" alt="<grounded alt text>">
-        <span class="scrim scrim--top scrim--top--deep" aria-hidden="true"></span>
-        <span class="scrim scrim--bottom" aria-hidden="true"></span>
-      </figure>
-      <header class="bar-top bar-top--white">
-        <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
-        <p class="brand">Direct Kitchens</p>
-      </header>
-      <section class="copy copy--{bottom-left|bottom-right}">
-        <p class="t-eyebrow">…</p>
-        <h1 class="t-display">…<span class="serif-accent">…</span></h1>
-        <p class="cta">…</p>
-      </section>
-    </article>
-  </main>
-</body>
-</html>
-DEPTH-3 imports are MANDATORY inside a batch-XX/ folder ("../../" is one level short there
-and silently unstyles the render). root-absolute "/shared/..." is forbidden.
-
-== COPY RULES ==
-- ONE .t-eyebrow (≤2 words, uppercase, category style), ONE .t-display headline (≤2 lines,
-  ≤18 chars/line, ≤1 .serif-accent italic word), ONE .cta drawn ONLY from:
-    "Visit our showroom" | "Book a private design consultation"
-- STRICTLY NO body-copy paragraph in the DOM. NO prices, discounts, "%", offers, T&Cs,
-  exclamation marks, second-person hype. NO material/appliance/room name that is not in
-  YOUR inspection log for THAT photo ("Calacatta", appliance brands without a visible
-  badge = banned).
-- Photo filenames and rendering-safe alt text may restate only verified inspection-log facts.
-
-== OUTPUT (finish cleanly, ask NOTHING) ==
-- Write each composition as compositions/<DATE>/<batch-XX>/<next-slug>.html (slug sequence
-  is CONTINUOUS across the day's batches — start at the "next free slug" from status).
-- Append ONE manifest entry per post to that batch's Schema-v2 manifest
-  compositions/<DATE>/<batch-XX>/batch-manifest.json:
-      { "slug": "story-NN",
-        "html": "compositions/<DATE>/<batch-XX>/story-NN.html",
-        "output": "renders/<DATE>/<batch-XX>/story-NN",
-        "notes": "Body caption (not in DOM): <your verified caption one-liner>" }
-- DO NOT touch index.html (the ship step routes every manifest post automatically).
-- DO NOT run preflight, gates, or renders (the ship step owns them — one batch = one session).
-- END your run by printing: batch folder, each slug → photo → {variant, theme, bar polarity},
-  and the per-photo inspection table summary. No confirmation prompts, no questions.
-```
+> **CRITICAL:** The legacy prompt below is preserved for audit trail only. It produces
+> static-only batches and will cause `check-paths` to fail if used for P7.0 production
+> because it lacks `kind`, `variant`, and the reel leaf path contract.
 
 ### Step 4 — Autonomous Ship (Zero Prompts, Full Safety)
 
@@ -685,15 +581,17 @@ npx hyperframes snapshot --composition dk-story-01 --at 0.0 --no-end \
 
 ## D. THE DAILY OPERATOR PROMPT TEMPLATE (Crucial Deliverable)
 
-> **⚠ SUPERSEDED IN PART (2026-10-23) — §H is now the authoritative daily authority.**
-> §D remains the reference for the *creative* protocol the composition step must follow
-> (inspect-first vision grounding, typography pipeline, luxury constraints, composition HTML
-> contract). The **interactive confirmation rounds it prescribes (Steps 1.5/3/5/6 — "ask me to
-> confirm", "get my sign-off before composing", "ask for my explicit confirmation before
-> triggering renders") are RETIRED**: under the §H zero-friction factory the gates self-heal,
-> self-certify, and self-archival-commit, and the operator's whole day is
-> `drop photos → npm run produce → npm run produce -- ship`. When an instruction here
-> conflicts with §H, **§H wins**; when it describes composition craft, this section stands.
+> **⚠ SUPERSEDED (2026-10-29) — LEGACY STATIC-ONLY PROMPT RETIRED.**
+> The prompt below was the P6.0 static-only authoring prompt. It **MUST NOT** be used for P7.0 production.
+> **Operators MUST use the P7.0 Unified 3-Format Authoring Prompt embedded in `docs/WORKFLOW.md` §4.1.**
+> That prompt authors the FULL 3-FORMAT SUITE in one pass:
+> 1. **Full-bleed static hero** (`kind: "static"`)
+> 2. **Compound 1+2 static grid** (`kind: "compound-static"`, `data-layout-family="hero-split-1-2"`)
+> 3. **20.0s Living Story Reel** (`kind: "reel"`, `variant: "20s"`, dedicated leaf `living-20s.mp4`)
+>
+> The legacy prompt below is preserved for audit trail only. It produces static-only batches and will
+> cause `check-paths` to fail if used for P7.0 production because it lacks `kind`, `variant`, and
+> the reel leaf path contract.
 
 ### OPERATOR PRE-FLIGHT & EXECUTION CHEATSHEET
 

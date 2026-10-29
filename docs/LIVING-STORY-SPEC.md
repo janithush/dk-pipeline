@@ -1,7 +1,7 @@
 # Direct Kitchens — Living Story Motion & Audio Specification
 
-**Version:** P6.0 Production Standard (Cinematic Kinetics)
-**Baseline Anchor:** Certified P6.0 Pipeline Delivery
+**Version:** P7.0 Production Standard (Cinematic Kinetics)
+**Baseline Anchor:** Certified P7.0 Pipeline Delivery
 **Target Specs:** 20.0s (600 frames @ 30 FPS) | 1080×1920 (9:16) | H.264 High bt709
 
 ---
@@ -10,7 +10,7 @@
 
 - **Primary Delivery Video:** `renders/2026-10-26/batch-01/story-01/living-20s.mp4` (~11.1 MB)
 - **Settled Ad Creative / Poster:** `renders/2026-10-26/batch-01/story-01/poster-settled.png` (~769 KB)
-- **Storage Policy:** `scripts/cleanup-render.js` prunes all intermediate sequence frames; local disk retention is strictly capped at **< 15.0 MB** per delivered composition.
+- **Storage Policy (P7.0):** `scripts/cleanup-render.js` prunes all intermediate sequence frames; local disk retention is strictly capped at **≤ 20.0 MB per deliverable leaf directory** (`living-20s.mp4` + `poster-settled.png`); parent batch folders are EXEMPT from the leaf budget.
 
 ---
 
@@ -27,7 +27,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 | **CTA Action Settle** | $t = 17.20\text{s}$ | `accent-pop-01.mp3` | -7.5 dB (linear 0.4217) | Floor at -6.0 dB until 17.50s |
 | **Acoustic Bed Tail** | $t = 17.50\text{s} - 20.00\text{s}$ | `dk-bed-acoustic-claps-01.mp3` | Calibrated (+0.5 dB baseline) | Exponential decay from -6.0 dB down to -60.0 dB at 20.0s |
 
-### Motion Doctrine (P6.0 Cinematic Kinetics)
+### Motion Doctrine (P7.0 Cinematic Kinetics)
 
 - **Beat-Synced Punch-Zooms:** every transition carries an expo.out punch (scale 1.00 → 1.12–1.13) locked to a bed clap accent (4.5 / 8.55 / 12.5s), replacing all flat 1.05 micro-zooms.
 - **Lateral Slider Pans:** wide frames ride motorized lateral glides (S1 x −110 → +42 right-to-left across the cabinetry line; S4 counter-glide x +90 → −22 behind its wipe). **
@@ -43,7 +43,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 ## 3. Scene Progression & Choreography
 
 [0.0s - 4.5s] Scene 1: Hero Architectural Wide (DSC00689)
-- P6.0 Motorized slider: x -110 -> +42 across the cabinetry line (right -> left), scale 1.15 -> 1.16 hold
+- P7.0 Motorized slider: x -110 -> +42 across the cabinetry line (right -> left), scale 1.15 -> 1.16 hold
 - Arrival punch 1.00 -> 1.12 expo.out at t=0.50s (bed full-arrival clap); Archivo Bold Headline + Cormorant Garamond Italic accent bloom
 
 [4.5s - 8.5s] Scene 2: Full-Frame Portrait Macro (DSC00716)
@@ -56,7 +56,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 - Audio: Synchronized -5.0 dB whoosh with -9.0 dB notch (0.10s attack)
 
 [12.5s - 16.5s] Scene 4: Functional Lifestyle Anchor (DSC00797)
-- P6.0 Lateral push-wipe entrance: clip right inset 100% -> 0% (0.75s power3.out); page-turn cue -5.0 dB under -9.0 dB notch
+- P7.0 Lateral push-wipe entrance: clip right inset 100% -> 0% (0.75s power3.out); page-turn cue -5.0 dB under -9.0 dB notch
 - Punch-zoom 1.00 -> 1.13 with lateral counter-glide x +90 -> -22
 
 [16.5s - 20.0s] Scene 5: Signature White End-Card (#ffffff)

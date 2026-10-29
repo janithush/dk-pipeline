@@ -95,11 +95,101 @@ renders/<date>/batch-<NN>/<slug>/      # render leaves mirror batch + slug
 # 1. drop photos            assets/raw/
 # 2. prepare the day
 npm run produce                       # retire stale → optimize → curate → scaffold → report
-# 3. author posts + manifest entries (kind + variant per post)
-#    compositions/<date>/batch-<NN>/<slug>.html
+# 3. author the FULL 3-FORMAT SUITE (static, compound-static, 20s reel) per the P7.0 Master Prompt below
+#    compositions/<date>/batch-<NN>/<slug-01>.html (static)
+#    compositions/<date>/batch-<NN>/<slug-02>.html (compound-static)
+#    compositions/<date>/batch-<NN>/<slug-03>-living-20s.html (reel)
 npm run batch:new --sync-router       # or let ship's step 2/6 do it (idempotent)
 # 4. gate + ship the batch
 npm run ship                          # or: node scripts/produce.js ship
+```
+
+---
+
+### §4.1 P7.0 Unified Story & Reel Authoring Prompt (Copy-Pasteable, Zero-Questions)
+
+> **This is the single authoritative authoring prompt for the daily run. It supersedes all prior static-only prompts (including the legacy prompt in `PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md` §D). Operators paste this block into a vision-capable session — it authors the full 3-format suite and finishes without questions.**
+
+```text
+# DAILY HYPERFRAMES STORY & REEL AUTHORING — ZERO-QUESTIONS P7.0 RUN
+# Project: dk-pipeline | Canvas: 1080x1920 (9:16) | Engine: shared/story-system.css
+
+You are the Creative Technologist for Direct Kitchens today. Author the full 3-format suite for the ACTIVE batch with ZERO questions to the operator. Downstream gates (npm run ship) enforce visual contrast, geometry, and loudness compliance.
+
+== STEP 1: LEDGER DISCOVERY ==
+1. Run: npm run produce -- status
+2. Identify: The active batch folder `compositions/<DATE>/<batch-XX>/`, the next free slug (`story-NN`), and available photos from the photo ledger.
+3. Inspect the candidate photos sequentially. Ground every headline and alt text strictly in visible room architecture, materials, and hardware.
+
+== STEP 2: COMPOSE THE THREE CERTIFIED FORMATS ==
+Using available photos, author the following 3 compositions inside the active batch folder using DEPTH-3 stylesheet imports (`../../../shared/story-system.css`):
+
+1. POST 1 — FULL-BLEED STATIC HERO (`kind: "static"`):
+   - Slug: `<slug-01>.html` (e.g., story-01.html)
+   - Contract: `data-composition-id="dk-<slug-01>"` `data-duration="0.033"` `data-no-timeline` `data-width="1080"` `data-height="1920"`.
+   - Layout: Full-bleed single hero architecture, top-right knockout `.bar-top`, `.copy.copy--bottom-left` or `copy--bottom-right` pinned at 220px.
+
+2. POST 2 — COMPOUND 1+2 STATIC GRID (`kind: "compound-static"`):
+   - Slug: `<slug-02>.html` (e.g., story-02.html)
+   - Contract: `data-composition-id="dk-<slug-02>"` `data-duration="0.033"` `data-no-timeline` `data-width="1080"` `data-height="1920"` `data-layout-family="hero-split-1-2"`.
+   - Layout:
+     * Top Pane (54% height): Wide architectural room hero with top-right knockout brand bar.
+     * Bottom-Left Pane (46% height): Detail macro photo with `.scrim--bottom--deep` hosting the copy block.
+     * Bottom-Right Pane (46% height): Secondary detail/hardware macro (pure photography, 2px bone gutter).
+
+3. POST 3 — 20.0s LIVING STORY REEL (`kind: "reel"`, `variant: "20s"`):
+   - Slug: `<slug-03>-living-20s.html` (e.g., story-03-living-20s.html)
+   - Contract: `data-composition-id="dk-<slug-03>"` `data-duration="20.0"` `data-width="1080"` `data-height="1920"` (GSAP timeline driven, 30fps / 600 frames).
+   - Motion Choreography:
+     * S1 (0.0-4.5s): Hero wide with motorized lateral pan (scale >= 1.15).
+     * S2 (4.5-8.5s): Macro focus with beat-synced arrival punch-zoom.
+     * S3 (8.5-12.5s): 54/46 duo-stack split (settle drift top + push-slide bottom).
+     * S4 (12.5-16.5s): Functional detail via masked lateral push-wipe.
+     * S5 (16.5-20.0s): Pure white `#ffffff` end-card with centered `dk` emblem and approved CTA.
+   - Stationary Scrim Law: Translate and scale apply exclusively to inner `<img>` tags; scrims and brand marks remain fixed siblings.
+   - Master Audio Staging & Ducking:
+     * Bed: `assets/audio/beds/dk-bed-acoustic-claps-01.mp3` (+0.5 dB body).
+     * Whoosh cues: t=4.5s and t=8.5s (`whoosh-soft-01.mp3` at -5.0 dB under -9.0 dB notches).
+     * Lateral wipe cue: t=12.5s (`accent-page-turn-01.mp3` at -5.0 dB under -9.0 dB notch).
+     * Logo snap cue: t=16.5s (`click-tactile-01.mp3` at -6.5 dB under -6.0 dB bed hold).
+     * CTA settle cue: t=17.2s (`accent-pop-01.mp3` at -7.5 dB).
+     * Outro decay: Exponential decay from -6.0 dB to -60.0 dB (17.5s - 20.0s). Root limiter ceiling pinned at -3.6 dBTP.
+
+== STEP 3: UPDATE BATCH MANIFEST ==
+Append all 3 posts to the active `batch-manifest.json` using Schema v2 with explicit `kind` typing and dedicated leaf paths:
+{
+  "date": "<YYYY-MM-DD>",
+  "batch": "<batch-XX>",
+  "posts": [
+    {
+      "slug": "<slug-01>",
+      "kind": "static",
+      "html": "compositions/<DATE>/<batch-XX>/<slug-01>.html",
+      "output": "renders/<DATE>/<batch-XX>/<slug-01>",
+      "notes": "Full-bleed static hero"
+    },
+    {
+      "slug": "<slug-02>",
+      "kind": "compound-static",
+      "html": "compositions/<DATE>/<batch-XX>/<slug-02>.html",
+      "output": "renders/<DATE>/<batch-XX>/<slug-02>",
+      "notes": "1+2 Compound split grid"
+    },
+    {
+      "slug": "<slug-03>",
+      "kind": "reel",
+      "variant": "20s",
+      "html": "compositions/<DATE>/<batch-XX>/<slug-03>-living-20s.html",
+      "output": "renders/<DATE>/<batch-XX>/<slug-03>/living-20s",
+      "notes": "20s Living Story Reel (P7.0 certified)"
+    }
+  ]
+}
+
+== STEP 4: ROUTER SYNC & VERIFY ==
+1. Run: `node scripts/new-batch.js --sync-router`
+2. Run: `npm run check:paths`
+3. Finish cleanly without interactive prompts. Print summary of authored posts.
 ```
 
 `ship` runs the full chain, each step one hardened gate script:
