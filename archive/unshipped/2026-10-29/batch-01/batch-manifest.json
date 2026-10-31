@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-29",
+  "batch": "batch-01",
+  "posts": [
+    {
+      "slug": "story-01",
+      "kind": "static",
+      "html": "compositions/2026-10-29/batch-01/story-01.html",
+      "output": "renders/2026-10-29/batch-01/story-01",
+      "notes": "Full-bleed static hero"
+    },
+    {
+      "slug": "story-02",
+      "kind": "compound-static",
+      "html": "compositions/2026-10-29/batch-01/story-02.html",
+      "output": "renders/2026-10-29/batch-01/story-02",
+      "notes": "1+2 Compound split grid"
+    },
+    {
+      "slug": "story-03",
+      "kind": "reel",
+      "variant": "20s",
+      "html": "compositions/2026-10-29/batch-01/story-03-living-20s.html",
+      "output": "renders/2026-10-29/batch-01/story-03/living-20s",
+      "notes": "20s Living Story Reel (P7.0 certified)"
+    }
+  ]
+}

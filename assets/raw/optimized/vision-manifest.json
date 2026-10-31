@@ -1,133 +1,205 @@
 {
   "version": 1,
-  "generatedAt": "2026-10-26T04:54:47.109Z",
+  "generatedAt": "2026-10-29T12:18:10.697Z",
   "generator": "curate-shoot.js v1 (P3.0)",
-  "model": "GLM-5.3-Flash-Free (OpenCode session executor)",
+  "model": "nemotron-3.5-super-vl",
   "parity": {
-    "raw": 6,
-    "optimized": 6,
+    "raw": 10,
+    "optimized": 10,
     "mirror": "1:1-OK"
   },
   "pool": {
-    "DSC00689-RZ-Studios.jpg": {
-      "bytes": 292951,
-      "sha256": "95b46b690bb25b6c3ecd8ce0ba34c9ad1e2d0a66236e814156b6791d81d59801",
+    "DSC01651.jpg": {
+      "bytes": 247023,
+      "sha256": "6f085601097b485098b9943112f8b836bcd1797c7e3074dabb37cad8901da4b8",
       "width": 2048,
-      "height": 1368,
+      "height": 1365,
       "orientation": "landscape",
       "exif": {
         "focalLength35": null,
         "dateTimeOriginal": null
       },
-      "ahash": "ff7f7b2b3a383800",
-      "sharpness": 9323,
+      "ahash": "9cfef8c0f8ee0303",
+      "sharpness": 8684.8,
       "spatialClass": "WIDE_HERO",
-      "heroCropLoss": 0.304,
-      "detailCropLoss": 0.591,
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
       "burstCluster": "unique",
       "burstRep": true
     },
-    "DSC00702-Edit-RZ-Studios.jpg": {
-      "bytes": 239499,
-      "sha256": "73b6fe47cc6d95ab14010409549942e461ceff37a1c6e4bc84452dfb87fb776a",
+    "DSC01667.jpg": {
+      "bytes": 331462,
+      "sha256": "27d61d2b46c24747a4484fbef2052b39b4b53e8f25e017b0cf8b8c81a11ecdac",
       "width": 2048,
-      "height": 1368,
+      "height": 1365,
       "orientation": "landscape",
       "exif": {
         "focalLength35": null,
         "dateTimeOriginal": null
       },
-      "ahash": "f8c3839f878f8381",
-      "sharpness": 8340.9,
+      "ahash": "ffe7e72727c58703",
+      "sharpness": 11294.1,
       "spatialClass": "WIDE_HERO",
-      "heroCropLoss": 0.304,
-      "detailCropLoss": 0.591,
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
       "burstCluster": "unique",
       "burstRep": true
     },
-    "DSC00716-RZ-Studios.jpg": {
-      "bytes": 198712,
-      "sha256": "4d8588659b6f9ddc409f58928755fad8778c8fb9604b1ed828d90b66c0d2241d",
-      "width": 1368,
+    "DSC01748.jpg": {
+      "bytes": 287088,
+      "sha256": "5298351cfa9523ed039fe29baa7835556de3b0e7187ecc0459af8cc798c4cb04",
+      "width": 1365,
       "height": 2048,
       "orientation": "portrait",
       "exif": {
         "focalLength35": null,
         "dateTimeOriginal": null
       },
-      "ahash": "fffff83838f8fe80",
-      "sharpness": 12224.6,
+      "ahash": "c747072717070707",
+      "sharpness": 25503.2,
       "spatialClass": "DETAIL_MACRO",
-      "heroCropLoss": 0.359,
-      "detailCropLoss": 0.084,
+      "heroCropLoss": 0.36,
+      "detailCropLoss": 0.082,
       "burstCluster": "unique",
       "burstRep": true
     },
-    "DSC00791-RZ-Studios.jpg": {
-      "bytes": 86633,
-      "sha256": "d359d8c788923142dcb14c4bf889b5ad2ba6b471e3f6baf7d92f8e4fddf29832",
-      "width": 1368,
-      "height": 2048,
-      "orientation": "portrait",
-      "exif": {
-        "focalLength35": null,
-        "dateTimeOriginal": null
-      },
-      "ahash": "ffffe0e0f0f00000",
-      "sharpness": 1949.8,
-      "spatialClass": "DETAIL_MACRO",
-      "heroCropLoss": 0.359,
-      "detailCropLoss": 0.084,
-      "burstCluster": "unique",
-      "burstRep": true
-    },
-    "DSC00797-RZ-Studios.jpg": {
-      "bytes": 127588,
-      "sha256": "c160c78d1ecf8162d415d2a3a318967443aa9fa7eb4a73fdb1ac9442b7c360fd",
-      "width": 1368,
-      "height": 2048,
-      "orientation": "portrait",
-      "exif": {
-        "focalLength35": null,
-        "dateTimeOriginal": null
-      },
-      "ahash": "fefffcf870313131",
-      "sharpness": 8335.9,
-      "spatialClass": "DETAIL_MACRO",
-      "heroCropLoss": 0.359,
-      "detailCropLoss": 0.084,
-      "burstCluster": "unique",
-      "burstRep": true
-    },
-    "DSC00803-RZ-Studios.jpg": {
-      "bytes": 96192,
-      "sha256": "d09470ffa57483ca1229ba6005ccfc5034062b48041a30b53a177e324b6b6907",
+    "DSC02131.jpg": {
+      "bytes": 134319,
+      "sha256": "4e2caa61765210505320a0bcc8910b66a80c5258c43942f3ee5117334b0891ff",
       "width": 2048,
-      "height": 1368,
+      "height": 1365,
       "orientation": "landscape",
       "exif": {
         "focalLength35": null,
         "dateTimeOriginal": null
       },
-      "ahash": "1f73637333333313",
-      "sharpness": 3527.3,
+      "ahash": "0f1f1f1f1f3f1c18",
+      "sharpness": 6421.2,
       "spatialClass": "WIDE_HERO",
-      "heroCropLoss": 0.304,
-      "detailCropLoss": 0.591,
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
       "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC02281.jpg": {
+      "bytes": 228777,
+      "sha256": "7553a0fe4b530b4bef85bdf7de758bba0d7cfddf99e3a29a6bc5825a575482fc",
+      "width": 2048,
+      "height": 1365,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "0f1f1f8f0d0f0f07",
+      "sharpness": 13051.3,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC02320.jpg": {
+      "bytes": 204550,
+      "sha256": "fab62ee46b3b83ac53019f3ac27e23e3ee14a6402edaff20d0ea64dca92fabcf",
+      "width": 2048,
+      "height": 1365,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fbf9f8e0e0f0f0f8",
+      "sharpness": 14855.3,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
+      "burstCluster": "bc-001",
+      "burstRep": false
+    },
+    "DSC02379.jpg": {
+      "bytes": 211221,
+      "sha256": "535f49485d7914871dfd4d034259984e33907f2a288088d99f531e1f1565b667",
+      "width": 2048,
+      "height": 1365,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fff8e8e8e8706060",
+      "sharpness": 18071.3,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
+      "burstCluster": "bc-001",
+      "burstRep": true
+    },
+    "DSC02636.jpg": {
+      "bytes": 166363,
+      "sha256": "3310347cd967bf4e0571ec9f894af9a5e8146e870c96c000deaeac1d7df9ce80",
+      "width": 2048,
+      "height": 1365,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "7cfcdcccc4c4c4c0",
+      "sharpness": 5978.4,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
+      "burstCluster": "unique",
+      "burstRep": true
+    },
+    "DSC02662.jpg": {
+      "bytes": 176521,
+      "sha256": "ce9373e956742327b424fd68da3bc7b3997f335c4a11700ed372f7a7b3103673",
+      "width": 1365,
+      "height": 2048,
+      "orientation": "portrait",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fefffffcf0800000",
+      "sharpness": 9480.2,
+      "spatialClass": "DETAIL_MACRO",
+      "heroCropLoss": 0.36,
+      "detailCropLoss": 0.082,
+      "burstCluster": "bc-002",
+      "burstRep": false
+    },
+    "DSC02989.jpg": {
+      "bytes": 323988,
+      "sha256": "0578ef01e07a3480f093ed5bf8e98029dc245f7790e59758556e0a251222b1c5",
+      "width": 2048,
+      "height": 1365,
+      "orientation": "landscape",
+      "exif": {
+        "focalLength35": null,
+        "dateTimeOriginal": null
+      },
+      "ahash": "fffcfcf4fcf00000",
+      "sharpness": 11904.2,
+      "spatialClass": "WIDE_HERO",
+      "heroCropLoss": 0.306,
+      "detailCropLoss": 0.592,
+      "burstCluster": "bc-002",
       "burstRep": true
     }
   },
   "vision": {},
   "pairing": {
     "recommended": {
-      "hero": "DSC00689-RZ-Studios.jpg",
-      "bl": "DSC00797-RZ-Studios.jpg",
-      "br": "DSC00791-RZ-Studios.jpg",
+      "hero": "DSC01651.jpg",
+      "bl": "DSC02379.jpg",
+      "br": "DSC02131.jpg",
       "echoPane": "br",
-      "rationale": "00689 anchors the room (Rule A tie-band candidate, island-forward frame). BL keeps the active spice pull-out (copy pane, browser-certified pixels). BR takes the calm sage door-front junction: different assembly than BL's pull-out (Rule B), ACTIVE↔CALM inversion (Rule C), and the strongest sage echo of the hero island (Rule D). DSC00803 (cup handles + open drawer) is the twin-drawer defect source and stays unpaired this post.",
+      "rationale": "DSC01651 is a unique Rule-A hero (wide architectural, crop-loss within tie band) with crisp-white primary tone. bl DSC02379 (open drawer/pot) and br DSC02131 (marble texture) are from different burst clusters and depict different assemblies, satisfying subject diversity. br shares crisp-white with the hero for colour resonance, and the density pattern CALM→ACTIVE→CALM satisfies inversion.",
       "scores": {
-        "spatial": 0.696,
+        "spatial": 0.694,
         "densityInversion": true,
         "focalContrast": null,
         "colorResonance": true

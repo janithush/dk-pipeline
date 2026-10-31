@@ -78,5 +78,25 @@
     "moved": 1,
     "skipped": 0,
     "trigger": "render-reels pre-render supersede (re-render of a certified leaf)"
+  },
+  {
+    "at": "2026-10-29T12:07:52.030Z",
+    "date": "2026-10-26",
+    "kind": "stale-drafts",
+    "from": "compositions/2026-10-26/",
+    "to": "archive/stale-drafts/2026-10-26/",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-29)"
+  },
+  {
+    "at": "2026-10-31T15:12:41.616Z",
+    "date": "2026-10-29",
+    "kind": "unshipped",
+    "from": "compositions/2026-10-29/",
+    "to": "archive/unshipped/2026-10-29/",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "retire-batch (target date 2026-10-31)"
   }
 ]
