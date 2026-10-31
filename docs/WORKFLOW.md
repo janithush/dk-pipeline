@@ -160,7 +160,12 @@ Using available photos, author the following 3 compositions inside the active ba
      * S5 (16.5-20.0s): Pure white `#ffffff` end-card with centered `dk` emblem and an approved CTA line from the P7.1 verified suite (see STEP 1.5 above — `cta-B "Book your design consultation · Call 1300 449 799"` is the end-card default; the reel's own end-card styling governs its colour/size).
    - Stationary Scrim Law: Translate and scale apply exclusively to inner `<img>` tags; scrims and brand marks remain fixed siblings.
    - Master Audio Staging & Ducking:
-     * Bed: `assets/audio/beds/dk-bed-acoustic-claps-01.mp3` (+0.5 dB body).
+     * Bed: `assets/audio/beds/dk-bed-acoustic-claps-01.mp3` (P7.2 CERTIFIED BASELINE: +1.0 dB body / linear 1.1220 —
+        the −9 dB transition notches remove ~0.5 dB of integrated bed energy, so the body carries BOTH that
+        compensation AND the +0.5 dB delivery headroom. NEVER author a reel at +0.5 dB (1.0593): the 2026-10-31
+        ship measured I −14.7 LUFS (0.2 LU below the −14.5 floor, audio cert RED) from exactly that regression.
+        Notch dips 0.3758 ABSOLUTE (−9.0 dB RELATIVE to the 1.1220 body, ratio ≈ 0.335) · end-card pocket
+        0.5625 absolute (−6 dB relative). P6.0 measured this lane at I −14.3 LUFS.
      * Whoosh cues: t=4.5s and t=8.5s (`whoosh-soft-01.mp3` at -5.0 dB under -9.0 dB notches).
      * Lateral wipe cue: t=12.5s (`accent-page-turn-01.mp3` at -5.0 dB under -9.0 dB notch).
      * Logo snap cue: t=16.5s (`click-tactile-01.mp3` at -6.5 dB under -6.0 dB bed hold).

@@ -136,9 +136,18 @@ function commitShip(date, batch, count) {
 function step(cmd, args, { title, failMsg } = {}) {
   console.log(`\n◈ ${title || `produce: ${cmd} ${args.join(' ')}`}`);
   const needsShell = cmd === 'npm' || cmd === 'npx';   // Windows .cmd shims need a shell
+  // P7.2 SUBPROCESS DATE INHERITANCE (Menu A1): every child stage — including
+  // the opaque `npm run preflight` chain (check-paths · photo-fit ·
+  // verify-contrast, which receive NO --date flag through npm) — re-resolves
+  // its own batch date via lib/batch-date.js / lib/batch-context.js, which
+  // consult DK_BATCH_DATE / DK_BATCH_ID BEFORE falling back to local today.
+  // Threading the resolved values through the child environment guarantees a
+  // post-midnight `produce --date YYYY-MM-DD` can never cascade back to "now"
+  // (2026-10-31 ship: preflight reverted to 2026-11-01 and failed closed) and
+  // no operator has to remember manual $env: declarations again.
   const res = spawnSync(cmd, args, {
     cwd: ROOT, stdio: 'inherit',
-    env: process.env,
+    env: { ...process.env, DK_BATCH_DATE: date, DK_BATCH_ID: ctx.batch },
     shell: needsShell,
   });
   if (res.status !== 0) die(failMsg || `step "${title || `${cmd} ${args.join(' ')}`}" failed (exit ${res.status}) — the day is gated, nothing has been shipped.`);

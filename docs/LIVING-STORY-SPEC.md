@@ -20,12 +20,12 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 
 | Event / Cue | Timestamp | Audio Asset | Gain Staging | Bed Ducking Pocket |
 | :--- | :--- | :--- | :--- | :--- |
-| **Material Study Cut** | $t = 4.50\text{s}$ | `whoosh-soft-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3548): 4.40s (0 dB) → 4.50s → 4.90s → 5.20s (0 dB), 0.10s attack |
-| **Compound Transition** | $t = 8.50\text{s}$ | `whoosh-soft-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3548): 8.40s (0 dB) → 8.50s → 8.95s → 9.25s (0 dB), 0.10s attack |
-| **Lateral Push-Wipe (Pantry)** | $t = 12.50\text{s}$ | `accent-page-turn-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3548): 12.40s (0 dB) → 12.50s → 12.90s → 13.20s (0 dB), 0.10s attack |
+| **Material Study Cut** | $t = 4.50\text{s}$ | `whoosh-soft-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3758 abs · −9.0 dB relative to the +1.0 dB body 1.1220, ratio ≈ 0.335): 4.40s (0 dB) → 4.50s → 4.90s → 5.20s (0 dB), 0.10s attack |
+| **Compound Transition** | $t = 8.50\text{s}$ | `whoosh-soft-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3758 abs, same staging): 8.40s (0 dB) → 8.50s → 8.95s → 9.25s (0 dB), 0.10s attack |
+| **Lateral Push-Wipe (Pantry)** | $t = 12.50\text{s}$ | `accent-page-turn-01.mp3` | -5.0 dB (linear 0.5623) | **-9.0 dB notch** (0.3758 abs, same staging): 12.40s (0 dB) → 12.50s → 12.90s → 13.20s (0 dB), 0.10s attack |
 | **Logo Emblem Reveal** | $t = 16.50\text{s}$ | `click-tactile-01.mp3` | -6.5 dB (linear 0.4732) | 16.35s (0 dB) → 16.50s (-6.0 dB hold to 17.50s) |
 | **CTA Action Settle** | $t = 17.20\text{s}$ | `accent-pop-01.mp3` | -7.5 dB (linear 0.4217) | Floor at -6.0 dB until 17.50s |
-| **Acoustic Bed Tail** | $t = 17.50\text{s} - 20.00\text{s}$ | `dk-bed-acoustic-claps-01.mp3` | Calibrated (+0.5 dB baseline) | Exponential decay from -6.0 dB down to -60.0 dB at 20.0s |
+| **Acoustic Bed Tail** | $t = 17.50\text{s} - 20.00\text{s}$ | `dk-bed-acoustic-claps-01.mp3` | Calibrated (+1.0 dB baseline / 1.1220 — P7.2 certified P6.0 restoration; the P7.0-era +0.5 dB (1.0593) form measured I −14.7 LUFS, 0.2 LU under the −14.5 floor) | Exponential decay from -6.0 dB down to -60.0 dB at 20.0s |
 
 ### Motion Doctrine (P7.0 Cinematic Kinetics)
 

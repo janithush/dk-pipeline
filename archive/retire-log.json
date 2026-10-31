@@ -98,5 +98,25 @@
     "moved": 1,
     "skipped": 0,
     "trigger": "retire-batch (target date 2026-10-31)"
+  },
+  {
+    "at": "2026-10-31T19:24:14.879Z",
+    "date": "2026-10-31",
+    "kind": "superseded-reel",
+    "from": "renders/2026-10-31/batch-01/story-03/living-20s.mp4",
+    "to": "renders/archive/2026-10-31/batch-01/story-03/living-20s-superseded-2026-10-31T19-24-14-879Z.mp4",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "render-reels pre-render supersede (re-render of a certified leaf)"
+  },
+  {
+    "at": "2026-10-31T20:36:10.791Z",
+    "date": "2026-10-31",
+    "kind": "superseded-reel",
+    "from": "renders/2026-10-31/batch-01/story-03/living-20s.mp4",
+    "to": "renders/archive/2026-10-31/batch-01/story-03/living-20s-superseded-2026-10-31T20-36-10-790Z.mp4",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "render-reels pre-render supersede (re-render of a certified leaf)"
   }
 ]

@@ -215,19 +215,25 @@
     <!-- P7.0 AUDIO DOCTRINE — 100% MUSIC-DRIVEN, ZERO VOICEOVER.
          BED: dk-bed-acoustic-claps-01, full 20s window; clip-local
          automation == composition time; 0.5s fade-in (curve on LEFT point).
-         P7.0 notches: -9 dB dip (linear 0.3548) under every transition
-         timestamp with a FAST 0.10s attack (full body 4.40 / 8.40 / 12.40
-         -> 4.50 / 8.50 / 12.50), held ~0.4-0.45s, released by 5.2 / 9.25 /
-         13.2, so the whooshes and the page-turn pierce the bed. 16.5s
-         end-card pocket (-6 dB hold to 17.5), then the exponential
-         -6 -> -60 dB tail (17.5-20.0). TruePeak ceiling -3.6 dBTP on the
-         root data-fx-chain; body gain +0.5 dB (1.0593). All lane values
-         scaled proportionally to preserve the notch and pocket ratios,
-         verified by delivery-render measurement. -->
+         P7.2 CERTIFIED P6.0 BASELINE RESTORED (Menu B1): the notches remove
+         ~0.5 dB of integrated bed energy, so the bed body carries the full
+         +1.0 dB compensation (linear 1.1220) — the P7.0-era re-authoring had
+         regressed to +0.5 dB (1.0593, notch 0.3548, pocket 0.5012) and
+         measured I −14.7 LUFS (0.2 LU below the −14.5 floor, audio cert RED).
+         The restored lane is the P6.0-measured curve verbatim:
+         body 1.1220 (+1.0 dB) · −9 dB relative notches (0.3758 abs, ratio
+         0.3758/1.1220 ≈ 0.335) under every transition timestamp with a FAST
+         0.10s attack (full body 4.40 / 8.40 / 12.40 -> 4.50 / 8.50 / 12.50),
+         held ~0.4-0.45s, released by 5.2 / 9.25 / 13.2, so the whooshes and
+         the page-turn pierce the bed · 16.5s end-card pocket (−6 dB relative,
+         0.5625 abs hold to 17.5) · exponential tail (18.125 0.1190 /
+         18.75 0.02515 / 19.375 0.005308 / 20.0 0.001123). SFX cue staging
+         and the −3.6 dBTP truepeak ceiling are untouched. P6.0 measured this
+         lane at I −14.3 LUFS / TP −3.3 dBFS (window −14.5..−13.5 GREEN). -->
     <audio id="bed-claps" data-audio-group="music"
            src="../../../assets/audio/beds/dk-bed-acoustic-claps-01.mp3"
            data-start="0" data-duration="20"
-           data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0,&quot;curve&quot;:0.5},{&quot;t&quot;:0.5,&quot;v&quot;:1.0593},{&quot;t&quot;:4.4,&quot;v&quot;:1.0593},{&quot;t&quot;:4.5,&quot;v&quot;:0.3548},{&quot;t&quot;:4.9,&quot;v&quot;:0.3548},{&quot;t&quot;:5.2,&quot;v&quot;:1.0593},{&quot;t&quot;:8.4,&quot;v&quot;:1.0593},{&quot;t&quot;:8.5,&quot;v&quot;:0.3548},{&quot;t&quot;:8.95,&quot;v&quot;:0.3548},{&quot;t&quot;:9.25,&quot;v&quot;:1.0593},{&quot;t&quot;:12.4,&quot;v&quot;:1.0593},{&quot;t&quot;:12.5,&quot;v&quot;:0.3548},{&quot;t&quot;:12.9,&quot;v&quot;:0.3548},{&quot;t&quot;:13.2,&quot;v&quot;:1.0593},{&quot;t&quot;:16.35,&quot;v&quot;:1.0593},{&quot;t&quot;:16.5,&quot;v&quot;:0.5012},{&quot;t&quot;:17.5,&quot;v&quot;:0.5012},{&quot;t&quot;:18.125,&quot;v&quot;:0.1059},{&quot;t&quot;:18.75,&quot;v&quot;:0.0224},{&quot;t&quot;:19.375,&quot;v&quot;:0.0047},{&quot;t&quot;:20,&quot;v&quot;:0.001}]}]}"></audio>
+           data-automation="{&quot;version&quot;:1,&quot;lanes&quot;:[{&quot;target&quot;:&quot;volume&quot;,&quot;points&quot;:[{&quot;t&quot;:0,&quot;v&quot;:0,&quot;curve&quot;:0.5},{&quot;t&quot;:0.5,&quot;v&quot;:1.1220},{&quot;t&quot;:4.4,&quot;v&quot;:1.1220},{&quot;t&quot;:4.5,&quot;v&quot;:0.3758},{&quot;t&quot;:4.9,&quot;v&quot;:0.3758},{&quot;t&quot;:5.2,&quot;v&quot;:1.1220},{&quot;t&quot;:8.4,&quot;v&quot;:1.1220},{&quot;t&quot;:8.5,&quot;v&quot;:0.3758},{&quot;t&quot;:8.95,&quot;v&quot;:0.3758},{&quot;t&quot;:9.25,&quot;v&quot;:1.1220},{&quot;t&quot;:12.4,&quot;v&quot;:1.1220},{&quot;t&quot;:12.5,&quot;v&quot;:0.3758},{&quot;t&quot;:12.9,&quot;v&quot;:0.3758},{&quot;t&quot;:13.2,&quot;v&quot;:1.1220},{&quot;t&quot;:16.35,&quot;v&quot;:1.1220},{&quot;t&quot;:16.5,&quot;v&quot;:0.5625},{&quot;t&quot;:17.5,&quot;v&quot;:0.5625},{&quot;t&quot;:18.125,&quot;v&quot;:0.1190},{&quot;t&quot;:18.75,&quot;v&quot;:0.02515},{&quot;t&quot;:19.375,&quot;v&quot;:0.005308},{&quot;t&quot;:20,&quot;v&quot;:0.001123}]}]}"></audio>
 
     <!-- CUE 1 (whoosh): scene-cut accent on the 4.5s clap cut, -5.0 dB
          staging under the -9 dB bed notch. -->
