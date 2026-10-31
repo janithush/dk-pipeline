@@ -152,6 +152,12 @@ const EYEBROW_FS = num(/\.t-eyebrow\s*{[^}]*font-size:\s*([\d.]+)px/, 13);
 const EYEBROW_LS = scrapeEm('.t-eyebrow', 0.34);
 const CTA_FS = num(/\.cta\s*{[^}]*font-size:\s*([\d.]+)px/, 12);
 const CTA_LS = num(/\.cta\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.22);
+// P7.1: the CTA scale was elevated (12px → 20px) and long verified showroom/
+// phone/URL lockups may wrap to a 1–3 line stack. The line-height is scraped
+// here (anti-drift) and the band's box height is DERIVED from an estimated
+// word-wrap of the parsed CTA run (see wrapCount) — the former hardcoded
+// boxH: 15 mirrored constant is retired.
+const CTA_LH = num(/\.cta\s*{[^}]*line-height:\s*([\d.]+)/, 1.5);
 const BRAND_FS = num(/\.bar-top \.brand\s*{[^}]*font-size:\s*([\d.]+)px/, 13);
 const BRAND_LS = num(/\.bar-top \.brand\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/, 0.28);
 // Display role + copy-block rhythm also fuel from the engine (anti-drift: the
@@ -420,16 +426,26 @@ function parseComposition(htmlPath) {
   }
   if (!variant) throw new Error(`unparseable composition (copy variant): ${htmlPath}`);
   const copy = h.match(/<section class="copy[^"]*">([\s\S]*?)<\/section>/)?.[1] ?? '';
-  const strip = (s) => (s ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
+  const strip = (s) => (s ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;|&ensp;|&thinsp;/g, ' ').replace(/\s+/g, ' ').trim();
   const eyebrowText = strip(copy.match(/class="t-eyebrow"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
-  const ctaText = strip(copy.match(/class="cta"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
+  const ctaMatch = copy.match(/class="cta"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? '';
+  const ctaText = strip(ctaMatch);
+  // P7.1: an authored <br> inside the CTA is a deliberate editorial line
+  // break (e.g. the hero-split 2-line lockup "…consultation<br>Call 1300 …").
+  // Author-declared segments are kept so bands() derives the wrapped line
+  // count from the REAL break structure (greedy wrap is still applied per
+  // segment as the over-flow backstop).
+  const ctaSegments = ctaMatch.split(/<br\s*\/?>/i).map(strip).filter(Boolean);
   // Serif-accent span (2026-10-24): extracted verbatim (tags stripped) so the
   // h1-accent sub-band can be modelled (§G.9). Non-ink posts render it white
   // on white — no separate treatment; only .copy--ink recolors it (ESP700).
   const accentText = strip(copy.match(/class="serif-accent"[^>]*>([\s\S]*?)<\/span>/)?.[1]);
   const brandText = strip(h.match(/<p class="brand"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? 'Direct Kitchens');
   const hasEyebrow = /class="t-eyebrow"/.test(copy);
-  const h1Lines = 1 + ((copy.match(/<br>/g) || []).length);
+  // h1Lines counts <br> elements INSIDE the h1 only (scoped fix, P7.1): a
+  // deliberate <br> in the CTA (hero-split 2-line lockup) must never
+  // inflate the display headline's band geometry.
+  const h1Lines = 1 + (((copy.match(/<h1[^>]*>[\s\S]*?<\/h1>/)?.[0] ?? '').match(/<br\s*\/?>/gi) || []).length);
   const hasCta = /class="cta"/.test(copy);
   const inkBar = /bar-top--ink/.test(headerClass);
   // Declared brand-polarity partner (2026-10-25): the TOP PANE's scrim span
@@ -451,7 +467,7 @@ function parseComposition(htmlPath) {
     get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
     hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, deepBottom, accentText: accentText || null,
     grade: gradeLine,
-    eyebrowText, ctaText, brandText: brandText.toUpperCase(), copyClass, headerClass,
+    eyebrowText, ctaText, ctaSegments, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
 }
 
@@ -484,10 +500,50 @@ function bands(c) {
 // folded into the calibration, +6px sequencing slack kept as safety margin.
 const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * fs * (0.60 + ls)) + 6);
 
+// P7.1: greedy word-wrap line estimator for wrapped CTA lockups. Words that
+// don't fit the remaining width flow to the next line (matching the
+// browser's default `overflow-wrap: normal` behaviour). charW is calibrated
+// for ALL-CAPS runs — the real Chromium render (P7.1 measurement session on
+// the 2026-10-31 batch) gave 15.34–15.63px per char at fs 20 / 0.14em
+// tracking (0.767 × fs "BOOK YOUR DESIGN CONSULTATION" 444.8px measured;
+// 0.781 × fs the 880px-column tri-showroom run) → 0.64 glyph factor + the
+// declared tracking. Browsers may legitimately break inside an authored
+// segment when it still overflows the column; the estimator reproduces that
+// with the calibrated width. Author-declared line segments (CTA <br>) are
+// wrapped independently and summed — the deliberate break is honoured.
+function wrapCount(text, fs, ls, maxW) {
+  const words = (text || '').split(/\s+/).filter(Boolean);
+  if (!words.length) return 1;
+  const charW = fs * (0.64 + ls);
+  const wW = (w) => Math.max(1, Math.round(w.length * charW));
+  const spW = Math.round(charW);   // space budgeted as one full glyph — conservative
+  let lines = 1, cur = wW(words[0]);
+  for (const w of words.slice(1)) {
+    const add = spW + wW(w);
+    if (cur + add <= maxW) cur += add;
+    else { lines++; cur = wW(w); }
+  }
+  return lines;
+}
+
   const parts = [];
   if (c.hasEyebrow) parts.push({ role: 'eyebrow', boxH: 16, fs: EYEBROW_FS, ls: EYEBROW_LS, text: c.eyebrowText });
   parts.push({ role: 'h1', boxH: c.h1Lines * LH, fs: DISPLAY_FS, ls: -0.02, text: null });
-  if (c.hasCta) parts.push({ role: 'cta', boxH: 15, fs: CTA_FS, ls: CTA_LS, text: c.ctaText });
+  if (c.hasCta) {
+    // P7.1 derived CTA geometry: long verified showroom/phone/URL lockups
+    // wrap inside the copy column in the real render. The wrapped line count
+    // is derived from the AUTHOR-DECLARED segments (CTA <br> — the
+    // deliberate editorial break) each greedily re-wrapped against the
+    // calibrated caps run width as the overflow backstop. The rendered
+    // element height is lines × fs × line-height at EVERY line count (the
+    // browser draws 1.5 leading on a single line too), and the cap-height
+    // inset is that leading split in half. The former hardcoded boxH: 15
+    // mirrored constant is retired (anti-drift §H.9 #2).
+    const segs = (c.ctaSegments && c.ctaSegments.length) ? c.ctaSegments : [c.ctaText];
+    const colW = Math.max(120, cxe - cxs);
+    const ctaLines = segs.reduce((n, seg) => n + wrapCount(seg, CTA_FS, CTA_LS, colW), 0) || 1;
+    parts.push({ role: 'cta', boxH: ctaLines * CTA_FS * CTA_LH, fs: CTA_FS, ls: CTA_LS, text: c.ctaText, lines: ctaLines });
+  }
 
   const total = parts.reduce((s, p) => s + p.boxH, 0) + GAP * (parts.length - 1);
   // P2.2: the copy pin is the UNCHANGED mono contract (--copy-bottom) for
@@ -499,10 +555,13 @@ const runW = (text, fs, ls) => Math.max(120, Math.round((text || 'XX').length * 
   const blockTop = y, blockBottom = (CANVAS_H - copyBottom);
   const out = parts.map((p) => {
     const small = p.role !== 'h1';
-    const inset = small ? Math.max(1, Math.round((p.boxH - p.fs * 0.72) / 2)) : 0;
+    // (p.lines ?? 1) > 1 → wrapped stack: the cap-height inset is the
+    // per-line leading split in half, so the band covers every glyph row
+    // (the legacy whole-box centre-inset would skip lower lines).
+    const inset = small ? Math.max(1, Math.round((p.lines ?? 1) > 1 ? p.fs * (CTA_LH - 1) / 2 : (p.boxH - p.fs * 0.72) / 2)) : 0;
     const xs = cxs;
     const xe = small ? Math.min(cxe, cxs + runW(p.text, p.fs, p.ls)) : cxe;
-    const band = { role: p.role, y0: Math.round(y + inset), y1: Math.round(y + p.boxH - inset), xs, xe, blockTop, blockBottom, text: p.text };
+    const band = { role: p.role, y0: Math.round(y + inset), y1: Math.round(y + p.boxH - inset), xs, xe, blockTop, blockBottom, text: p.text, lines: p.lines ?? 1 };
     y += p.boxH + GAP;
     return band;
   });
@@ -635,7 +694,7 @@ function evaluateBand(px, c, band) {
   // / shadow-line pixels (<2% of area) can never block, uniform dimness can.
   const p98 = samples[Math.max(0, Math.ceil(samples.length * 0.02) - 1)];
   const need = needMap[band.role];
-  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px'))}`;
+  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px' + ((band.lines ?? 1) > 1 ? ' x' + band.lines : '')))}`;
   const pass = p98 >= need && worst >= HARD_FLOOR;
   const marginPass = p98 >= need + MARGIN && worst >= HARD_FLOOR;
   return { label, need, worst: +worst.toFixed(2), p98: +p98.toFixed(2), pass, marginPass, samples: samples.length };
@@ -801,7 +860,7 @@ if (photoArg) {
       const c = {
         theme, imgAbs: abs, variant, hasEyebrow: true, h1Lines: 2, hasCta: true,
         inkBar: false, inkCopy: false, topDeep: true, deepBottom: false, _htmlPath: null,
-        eyebrowText: 'Material & Light', ctaText: 'Book a private design consultation',
+        eyebrowText: 'Material & Light', ctaText: 'Book your design consultation · Call 1300 449 799',
         brandText: 'DIRECT KITCHENS',
       };
       const base = evaluate(px, c);

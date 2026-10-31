@@ -718,7 +718,7 @@ Before writing code, discuss with me:
 - Luxury composition constraints (Direct Kitchens $50K+ showroom strategy):
   - Full-Bleed Material Primacy: 85–90% of canvas dedicated to raw architectural photography (stone veining, fluted timber, integrated joinery, ambient lighting). No heavy UI containers, floating cards, or opaque backgrounds obscuring craft details.
   - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
-  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. Subtle showroom invitations only ("Visit our showroom" / "Book a private design consultation"). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
+  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. CTA lines come exclusively from the P7.1 VERIFIED 4-VARIANT SUITE (§G.7): tri-showroom network, direct call / in-home booking, URL + phone lockup, or Bayswater-factory manufacturing authority — all grounded in the real Direct Kitchens network (directkitchens.com.au · 1300 449 799 · Blackburn / Moonee Ponds / Bayswater). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
   - Additional high-end editorial details: non-destructive dual-axis scrim gradients (preserve central material detail); micro-tracking for uppercase labels (wide `--track-eyebrow` for breathy labels, tight `--track-tight` for headlines); negative space as a design element — anchor copy to one corner, leave 60–70% of canvas as uninterrupted photography.
 - **Grounding Verification (MANDATORY, before ANY HTML/CSS is written):** Build a Design Mapping table for each post that explicitly cites the verified visual elements logged in Step 1. Every claim in the copy must trace back to something you actually SAW:
 
@@ -727,9 +727,10 @@ Before writing code, discuss with me:
   | Headline: "⟨observed feature⟩, ⟨observed relationship⟩" | Verified element: ⟨exact phrase from the Step 1 log for this photo⟩ | ⟨photo N⟩ |
   | Eyebrow: "⟨OBSERVED ROOM/ZONE⟩" | Room/space type: ⟨as logged for this photo⟩ | ⟨photo N⟩ |
   | Scrim tint: ⟨charcoal or warm⟩ | Lighting undertone: ⟨as logged⟩ | ⟨photo N⟩ |
-  | CTA: "Visit our showroom" | Brand policy — fixed CTA library (§F.6) | — |
+  | CTA: ⟨P7.1 verified suite variant⟩ | Brand policy — verified CTA library (§G.7) | — |
 
   - No headline, callout, eyebrow, or theme may reference a material, appliance, room, or fitting that is NOT in the Step 1 inspection log for the photo being used.
+  - **Kitchen-Centric Canon (P7.1):** visual-model drift toward secondary props is BANNED as headline fuel — lighting fixtures, chairs, barstools, fruit bowls, plants, and background windows never drive `.t-display` or `.t-eyebrow`. Headlines celebrate the BUILT kitchen: Shaker profile doors · integrated pantries · stone waterfall benchtops · fluted timber joinery · quiet-close hardware · architectural splashbacks · bespoke island architecture (e.g. "Hand-crafted Shaker joinery, quiet precision", NOT "Light, hung low").
   - If the copy needs a detail you have not verified, GO BACK and re-inspect the image — do not invent it.
   - Show this table to me and get my sign-off alongside the design discussion. **No HTML/CSS composition may be written until this grounding table is confirmed.**
 Confirm each post's design with me before composing.
@@ -996,8 +997,14 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 
 ### F.6 Copy contract
 - Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line,
-  ≤1 serif-accent italic word), 1 CTA from the fixed library: "Visit our showroom" |
-  "Book a private design consultation".
+  ≤1 serif-accent italic word), 1 CTA from the P7.1 VERIFIED 4-VARIANT SUITE (§G.7): the
+  tri-showroom network line, the direct call / in-home booking line, the URL + phone lockup,
+  or the Bayswater-factory manufacturing authority line — rotate A → B → C → D by post index;
+  never freelance a phrase.
+- KITCHEN-CENTRIC CANON: headlines/eyebrows celebrate the built kitchen (Shaker profiles,
+  integrated pantries, stone waterfall benchtops, fluted timber joinery, quiet-close hardware,
+  architectural splashbacks, bespoke island architecture). Secondary props — lighting fixtures,
+  chairs, barstools, fruit bowls, background windows — NEVER drive the headline or eyebrow.
 - BANNED: prices, discounts, "%", "offer", "deal", "free", "early bird", T&Cs; any material,
   brand, appliance, or fitting NOT in that photo's Step-1 vision log ("hand-milled",
   "Calacatta", "hand-laid", appliance brands without visible badging = banned).
@@ -1199,6 +1206,7 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 ```
 
 - Every `.copy` block is pinned **220px** from the bottom edge — above the platform reply-bar/sticker band. Copy and CTA are **never clipped**.
+- P7.1 fit note: the elevated 20px CTA (1–3 wrapped lines, line-height 1.5) grows the block UPWARD from the unchanged 220px pin — the worst case (3-line lockup in the narrowed hero-split `--copy-right-split: 565px` pane) tops the column out ≈ y1460, still clear of the h1, the 620px scrim ramp, and both bottom platform bounds. `photo-fit` models the wrapped lines (scraped line-height + greedy wrap over the calibrated run width), so the fit is gate-verified, not assumed.
 - Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`. `.copy--centered` is PERMANENTLY ELIMINATED — exactly these two variants exist.
 
 ### G.4 Controlled editorial dynamism — layout variants
@@ -1244,18 +1252,31 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 | Eyebrow | `.t-eyebrow` | 13px / 600 / `--track-eyebrow` / uppercase / `--bone` (token-declared) at 90% |
 | Headline | `.t-display` | 52px / 700 / 1.08 / `--track-tight` (−0.02em) / white |
 | Serif accent | `.serif-accent` (inside `.t-display`) | Cormorant Garamond italic 400 |
-| CTA | `.cta` | 12px / 600 / `.22em` / uppercase / `--brass` (token-declared) |
+| CTA | `.cta` | 20px / 600 / `.14em` / 1.5 / uppercase / `--brass` (token-declared) — P7.1 elevated conversion scale (was 12px / `.22em`); 1–3 line verified lockups wrap in-column, `photo-fit` scrapes fs/tracking/line-height and derives the wrapped band box |
 
 **Serif-accent copy contract (2026-10-24, Phase-1 model alignment).** The accent is an **editorial garnish, not a size experiment**: a 1–3 word italic phrase inside `.t-display` at the UNCHANGED 52px display size (never its own line — it rides inside the headline's `<br>` line structure). Device-constraint lineage from the Mission-1 audit: the italic serif reads as refined, never decorative, and — critically — it is the ONLY text whose colour diverges within a band under `.copy--ink` (`--espresso-700` vs the band's `--ink`), which photo-fit now models explicitly (§G.9): the full h1 band is evaluated a second time at ESP700 and the worst verdict governs. Keep accents SHORT (1–3 words, never numbers) so the conservative model never over-escalates the whole headline.
 
-### G.7 Dual CTA intent (brand copy policy)
+### G.7 Verified CTA suite (brand copy policy, P7.1)
 
-Zero prices, zero discounts. Exactly two invitations, cycled by the batch manifest:
+Zero prices, zero discounts. The generic two-phrase library ("Visit our showroom" /
+"Book a private design consultation") is RETIRED — every CTA draws from the Verified 4-Variant
+Suite, grounded exclusively in Direct Kitchens' real-world credentials
+(web `directkitchens.com.au` · toll-free bookings `1300 449 799` · Melbourne showrooms:
+Blackburn Head Office 184 Whitehorse Rd · Moonee Ponds 42 Maribyrnong Rd · Bayswater Factory
+1 Power Rd). Rotate by post index (A → B → C → D, cyclic):
 
-| CTA | Intent | Placement |
-|---|---|---|
-| **"Visit our showroom"** | Low-commitment foot-traffic invitation | Default closing line |
-| **"Book a private design consultation"** | High-touch, appointment-only, $50K+ showroom strategy | Alternate posts / hero pieces |
+| # | CTA (exact render text) | Intent | Placement |
+|---|---|---|---|
+| **A** | "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" | Tri-showroom network — foot-traffic invitation with verified geography | Default closing line |
+| **B** | "Book your design consultation · Call 1300 449 799" | Direct call & in-home booking — high-touch, appointment strategy | Alternate posts / hero pieces |
+| **C** | "Explore custom kitchens at directkitchens.com.au · 1300 449 799" | Digital URL & phone lockup — destination primaries | Hero pieces / campaign cycles |
+| **D** | "Custom kitchens built in our Bayswater factory · 1300 449 799" | Melbourne manufacturing authority — made-here craft proof | Authoritative craft pieces |
+
+The suite as a whole is machine-verifiable: authoring manifests carry
+`ctaLibrary` with the four exact strings, and each static/compound post annotates its
+assignment via the additive `cta` field. The CTA element renders at the
+elevated engine scale (§G.6) — 20px lockup, no pills, no plates, no background boxes; the
+edge-to-edge scrims carry contrast.
 
 ### G.8 Composition contract (current, supersedes §C.3)
 
@@ -1286,7 +1307,7 @@ Zero prices, zero discounts. Exactly two invitations, cycled by the batch manife
       <section class="copy copy--{bottom-left|bottom-right}">
         <p class="t-eyebrow">…</p>
         <h1 class="t-display">…<span class="serif-accent">…</span></h1>
-        <p class="cta">Visit our showroom</p>
+        <p class="cta">Visit our showrooms: Blackburn · Moonee Ponds · Bayswater</p>
       </section>
     </article>
   </main>

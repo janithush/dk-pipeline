@@ -1,0 +1,49 @@
+{
+  "date": "2026-10-31",
+  "batch": "batch-01",
+  "ctaLibrary": {
+    "policy": "P7.1 verified conversion suite — the ONLY approved CTA inputs. Rotate by manifesto post index (A → B → C → D, cyclic). Zero prices, zero discounts; no pill/plate/box behind the lockup.",
+    "variants": [
+      { "id": "cta-A", "label": "Tri-Showroom Network", "text": "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" },
+      { "id": "cta-B", "label": "Direct Call & In-Home Booking", "text": "Book your design consultation · Call 1300 449 799" },
+      { "id": "cta-C", "label": "Digital URL & Phone Lockup", "text": "Explore custom kitchens at directkitchens.com.au · 1300 449 799" },
+      { "id": "cta-D", "label": "Melbourne Manufacturing Authority", "text": "Custom kitchens built in our Bayswater factory · 1300 449 799" }
+    ],
+    "verifiedNetwork": {
+      "web": "directkitchens.com.au",
+      "bookings": "1300 449 799",
+      "showrooms": [
+        { "name": "Blackburn (Head Office)", "address": "184 Whitehorse Rd, Blackburn VIC 3130", "phone": "1300 449 799" },
+        { "name": "Moonee Ponds", "address": "42 Maribyrnong Rd, Moonee Ponds VIC 3039", "phone": "(03) 9326 1955" },
+        { "name": "Bayswater (Factory)", "address": "1 Power Rd, Bayswater VIC 3153", "phone": "(03) 9720 3588" }
+      ]
+    }
+  },
+  "posts": [
+    {
+      "slug": "story-01",
+      "kind": "static",
+      "html": "compositions/2026-10-31/batch-01/story-01.html",
+      "output": "renders/2026-10-31/batch-01/story-01",
+      "notes": "Full-bleed static hero",
+      "cta": "cta-A"
+    },
+    {
+      "slug": "story-02",
+      "kind": "compound-static",
+      "html": "compositions/2026-10-31/batch-01/story-02.html",
+      "output": "renders/2026-10-31/batch-01/story-02",
+      "notes": "1+2 Compound split grid",
+      "cta": "cta-B",
+      "ctaLockup": "stacked-3 (narrow 539px BL pane: the suite separator '·' is carried by the authored <br> line breaks — 'Book your design consultation<br>Call 1300 449 799' renders BOOK YOUR DESIGN / CONSULTATION / CALL 1300 449 799 with the phone lockup intact; P7.1 Chromium-measured 20px/0.14em caps run)"
+    },
+    {
+      "slug": "story-03",
+      "kind": "reel",
+      "variant": "20s",
+      "html": "compositions/2026-10-31/batch-01/story-03-living-20s.html",
+      "output": "renders/2026-10-31/batch-01/story-03/living-20s",
+      "notes": "20s Living Story Reel (P7.0 certified)"
+    }
+  ]
+}

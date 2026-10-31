@@ -319,13 +319,27 @@ body {
   font-weight: 400;
 }
 
-/* REFINED QUIET CTA */
+/* REFINED QUIET CTA — ELEVATED CONVERSION LOCKUP (P7.1, 2026-11-01).
+   Scale elevated 12px → 20px: a commanding editorial conversion line, no
+   longer microscopic fine-print on the 1080x1920 canvas. Long verified
+   showroom/phone/URL lockups wrap to a balanced 1–2 line stack
+   (line-height 1.5), tracked down to 0.14em so the wider body never
+   balloons. scripts/photo-fit.js scrapes font-size + tracking + line-height
+   here and DERIVES the band's wrapped line count + box height from the
+   parsed CTA run (anti-drift: change a value here, re-run preflight).
+   Vertical fit: the block grows UP from the unchanged 220px bottom pin —
+   worst case (3-line lockup in the hero-split pane) tops out ≈ y1460,
+   clear of the h1 and both platform bounds. Luxury colour discipline is
+   untouched: warm brass on dark scrims / --espresso-800 under .copy--ink.
+   Permanent plate ban intact: no pill, no box — legibility stays on the
+   full-bleed scrim gradients + cinematic shadow stack below. */
 .cta {
-  margin-top: 8px;
+  margin-top: 10px;
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 20px;
+  line-height: 1.5;
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--brass, #c6a77d);
 }
