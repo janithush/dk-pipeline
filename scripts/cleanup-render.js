@@ -27,9 +27,15 @@
 // Fail-closed: never walks outside the scoped root, only ever prunes
 // frame_*.png names, never deletes (only archives) MP4s, never deletes
 // poster-settled.png, never walks into renders/archive/.
+// P7.3: additionally sweeps orphaned Chromium automation temp profiles
+// (puppeteer_dev_chrome_profile-* / playwright_chromiumdev_profile-* /
+// hyperframes-extract-cache-*) under %TEMP% and .hyperframes/ — 60-min
+// idle guard never races a live render session; best-effort, never fails
+// the run (see profileGc below).
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { execFileSync } = require('child_process');
 const { resolveBatchDate } = require('./lib/batch-date');
 const { resolveBatchContext } = require('./lib/batch-context');
@@ -66,6 +72,68 @@ if (!fs.existsSync(scope)) {
 }
 
 const rel = (p) => path.relative(ROOT, p).split(path.sep).join('/');
+
+// ── P7.3 ORPHANED CHROMIUM AUTOMATION PROFILE GC (2026-11-01) ───────────
+// Every render worker launches a Chromium process with a throwaway temp user
+// data directory; when a page/browser close race times out (the P7.3 seam in
+// render-reels logs the opposite case) the engine force-kills the process and
+// the profile directory is orphaned — observed namespaces under %TEMP% over
+// repeated daily runs: `puppeteer_dev_chrome_profile-*` (up to 25 MB each)
+// and `playwright_chromiumdev_profile-*`, plus the engine's content-addressed
+// `hyperframes-extract-cache-*`. This sweep guarantees zero disk
+// accumulation: it removes ONLY those automation namespaces, ONLY when a
+// directory has been idle longer than the SAFE_AGE window (an active render
+// worker's profile is written continuously, so its top-level mtime is always
+// fresh and can never be swept out from under it). Best-effort and strictly
+// read-only about everything else — user-owned temp entries (e.g.
+// chrome_drag*) are never touched. Runs in the produce pipeline post-render
+// phase because both render lanes (render-batch + render-reels) finish by
+// shelling into THIS script.
+const profileGc = () => {
+  const SAFE_AGE_MS = 60 * 60 * 1000;   // 60-min idle guard — never race a live render session
+  const NAMESPACES = [
+    /^puppeteer_dev_chrome_profile-/,
+    /^playwright_chromiumdev_profile-/,
+    /^hyperframes-extract-cache-/,
+  ];
+  const roots = [os.tmpdir(), path.join(ROOT, '.hyperframes')];   // %TEMP% + repo-local engine state
+  const now = Date.now();
+  const dirSize = (d) => (fs.existsSync(d) ? walk(d).reduce((n, p) => n + statSize(p), 0) : 0);
+  const statSize = (p) => { try { return fs.statSync(p).size; } catch { return 0; } };
+  const relOrAbs = (p) => {
+    const r = path.relative(ROOT, p).split(path.sep).join('/');
+    return r && !r.startsWith('..') ? r : p;
+  };
+  const lines = [];
+  let swept = 0, bytes = 0;
+  for (const root of roots) {
+    let entries;
+    try {
+      if (!fs.existsSync(root)) continue;
+      entries = fs.readdirSync(root, { withFileTypes: true });
+    } catch { continue; }
+    for (const e of entries) {
+      if (!e.isDirectory() || !NAMESPACES.some((re) => re.test(e.name))) continue;
+      const dir = path.join(root, e.name);
+      let mtime;
+      try { mtime = fs.statSync(dir).mtimeMs; } catch { continue; }
+      if (now - mtime < SAFE_AGE_MS) { lines.push(`   ${relOrAbs(dir)} — kept (idle < 60 min)`); continue; }
+      const size = dirSize(dir);
+      try {
+        fs.rmSync(dir, { recursive: true, force: true });
+        swept++; bytes += size;
+        lines.push(`   ${relOrAbs(dir)} — swept ${(size / 1048576).toFixed(2)} MB`);
+      } catch (err) {
+        lines.push(`   ${relOrAbs(dir)} — kept (${err.code || err.message})`);
+      }
+    }
+  }
+  if (lines.length) {
+    for (const line of lines) console.log(line);
+    console.log(`◇ cleanup-render: P7.3 profile GC swept ${swept} orphaned Chromium automation dir(s), ${(bytes / 1048576).toFixed(2)} MB reclaimed (namespaces: puppeteer_dev_chrome_profile-* · playwright_chromiumdev_profile-* · hyperframes-extract-cache-*; 60-min idle guard).`);
+  }
+};
+
 
 // ── helpers ─────────────────────────────────────────────────────────────
 const FRAME_RE = /^frame[-_]\d+\.png$/i;
@@ -215,4 +283,10 @@ const total = dirSize(scope);
 const mb = total / 1048576;
 console.log(`◇ informational — ${rel(scope)} total footprint ${mb.toFixed(2)} MB (parent/scope totals exempt from the per-leaf law; renders/ ≈ steady-state under the archiving policy).`);
 console.log(`◇ pruned ${prunedFiles} artifact(s), ${(prunedBytes / 1048576).toFixed(2)} MB reclaimed this run.`);
+
+// 5. P7.3 orphaned Chromium automation profile GC — zero disk accumulation
+//    across repeated daily runs (best-effort; never affects the exit code,
+//    which remains the per-leaf Storage Budget Law verdict).
+profileGc();
+
 process.exit(overLeaves.length ? 1 : 0);

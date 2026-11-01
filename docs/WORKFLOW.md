@@ -1,4 +1,4 @@
-# WORKFLOW — dk-pipeline Unified Multi-Format Production Manual (P7.0)
+# WORKFLOW — dk-pipeline Unified Multi-Format Production Manual (P7.3)
 
 The operator's manual for producing a full day of posts across all three
 delivery formats. Architecture doctrine lives in
@@ -106,12 +106,12 @@ npm run ship                          # or: node scripts/produce.js ship
 
 ---
 
-### §4.1 P7.0 Unified Story & Reel Authoring Prompt (Copy-Pasteable, Zero-Questions)
+### §4.1 Unified Story & Reel Authoring Prompt (P7.3 — Copy-Pasteable, Zero-Questions)
 
-> **This is the single authoritative authoring prompt for the daily run. It supersedes all prior static-only prompts (including the legacy prompt in `PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md` §D). Operators paste this block into a vision-capable session — it authors the full 3-format suite and finishes without questions.**
+> **This is the single authoritative authoring prompt for the daily run. It supersedes all prior static-only prompts (including the legacy prompt in `PRODUCTION_PIPELINE_AUDIT_AND_DAILY_BLUEPRINT.md` §D). Operators paste this block into a vision-capable session — it authors the full 3-format suite and finishes without questions. P7.3 (2026-11-01) carries the verified Head-Office 4-variant CTA suite and the deepened 680px bottom scrim.**
 
 ```text
-# DAILY HYPERFRAMES STORY & REEL AUTHORING — ZERO-QUESTIONS P7.0 RUN
+# DAILY HYPERFRAMES STORY & REEL AUTHORING — ZERO-QUESTIONS P7.3 RUN
 # Project: dk-pipeline | Canvas: 1080x1920 (9:16) | Engine: shared/story-system.css
 
 You are the Creative Technologist for Direct Kitchens today. Author the full 3-format suite for the ACTIVE batch with ZERO questions to the operator. Downstream gates (npm run ship) enforce visual contrast, geometry, and loudness compliance.
@@ -125,13 +125,15 @@ You are the Creative Technologist for Direct Kitchens today. Author the full 3-f
 1. CABINERTY & JOINERY PRIMACY: every `.t-display` headline and `.t-eyebrow` must celebrate the BUILT kitchen itself. Approved topics:
    * Shaker profile doors · integrated pantries · stone waterfall benchtops · fluted timber joinery · quiet-close hardware · architectural splashbacks · bespoke island architecture · hand-crafted joinery precision.
 2. STRICT BAN ON SECONDARY PROPS: lighting fixtures (pendant lights), chairs, barstools, fruit bowls, plants, or background windows must NEVER drive the headline or eyebrow. A vision model fixating on incidental props is a defect, not an angle — re-inspect and re-author around the cabinetry, stone, and joinery. Example shift: NOT "Light, hung low" / "Amber glass accent" — INSTEAD "Hand-crafted Shaker joinery, quiet precision" / "Bespoke island architecture, crafted in Melbourne".
-3. VERIFIED 4-VARIANT CTA SUITE (the ONLY approved CTA texts — rotate by post index within the batch, A → B → C → D, cyclic; never freelance a phrase):
+3. VERIFIED 4-VARIANT CTA SUITE (P7.3 Head-Office standard — the ONLY approved CTA texts; rotate by post index within the batch, A → B → C → D, cyclic; never freelance a phrase):
    * cta-A (Tri-Showroom Network): `Visit our showrooms: Blackburn · Moonee Ponds · Bayswater`
-   * cta-B (Direct Call & In-Home Booking): `Book your design consultation · Call 1300 449 799`
-   * cta-C (Digital URL & Phone Lockup): `Explore custom kitchens at directkitchens.com.au · 1300 449 799`
-   * cta-D (Melbourne Manufacturing Authority): `Custom kitchens built in our Bayswater factory · 1300 449 799`
+   * cta-B (Head-Office Direct & Consultation): `Book a design consultation at Blackburn Head Office · Call 1300 449 799`
+   * cta-C (Digital URL & Clear Call Lockup): `Explore custom kitchens at directkitchens.com.au · Call 1300 449 799`
+   * cta-D (Melbourne Craftsmanship & Head-Office Authority): `Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799`
    These are the verified credentials of record: web `directkitchens.com.au` · toll-free bookings `1300 449 799` · showrooms Blackburn (Head Office, 184 Whitehorse Rd) · Moonee Ponds (42 Maribyrnong Rd) · Bayswater (Factory, 1 Power Rd).
-4. CTA RENDERING: the engine styles `.cta` at the elevated 20px / 600 / 0.14em / 1.5 lockup (brass on dark scrims / espresso-800 under `.copy--ink`). NEVER add per-post CTA styling, pills, plates, or background boxes — long lockups wrap to a balanced 1–3 line stack inside the column on their own, and the scrims alone carry contrast.
+   P7.3 DOCTRINE: customers book design consultations with HEAD OFFICE, never the manufacturing plant — isolated factory-contact CTAs are REMOVED (the factory survives only as proof-of-manufacture inside cta-D, with the call routed to Blackburn `Call Blackburn 1300 449 799`). cta-C's phone entry carries the explicit `Call ` prefix — it eliminates the visual ambiguity between the `.com.au` TLD and the bare 1300 number in a tracked caps run.
+4. CTA RENDERING: the engine styles `.cta` at the elevated 20px / 600 / 0.14em / 1.5 lockup (brass on dark scrims / espresso-800 under `.copy--ink`). NEVER add per-post CTA styling, pills, plates, or background boxes — long lockups wrap to a balanced 1–3 line stack inside the column on their own, and the scrims alone carry contrast. In narrow columns prefer an authored `<br>` at the suite separator `·` so the phone lockup can never split mid-number (e.g. cta-B in the 539px hero-split pane: `Book a design consultation<br>at Blackburn Head Office<br>Call 1300 449 799`; cta-C full-bleed: `Explore custom kitchens at directkitchens.com.au<br>Call 1300 449 799`).
+5. P7.3 SCRIM GEOMETRY: the bottom ramp is deepened to **680px** (`--scrim-bottom: 680px`, was 620px) so the 0.60–0.80 alpha wheel envelops the elevated 20px CTA stack in every pane — the mono + duo/hero-split ramp is canvas-coincident at y1240 over the 881px bottom panes. photo-fit scrapes the token; no per-post scrim CSS is ever authored.
 
 == STEP 2: COMPOSE THE THREE CERTIFIED FORMATS ==
 Using available photos, author the following 3 compositions inside the active batch folder using DEPTH-3 stylesheet imports (`../../../shared/story-system.css`):
@@ -157,7 +159,7 @@ Using available photos, author the following 3 compositions inside the active ba
      * S2 (4.5-8.5s): Macro focus with beat-synced arrival punch-zoom.
      * S3 (8.5-12.5s): 54/46 duo-stack split (settle drift top + push-slide bottom).
      * S4 (12.5-16.5s): Functional detail via masked lateral push-wipe.
-     * S5 (16.5-20.0s): Pure white `#ffffff` end-card with centered `dk` emblem and an approved CTA line from the P7.1 verified suite (see STEP 1.5 above — `cta-B "Book your design consultation · Call 1300 449 799"` is the end-card default; the reel's own end-card styling governs its colour/size).
+     * S5 (16.5-20.0s): Pure white `#ffffff` end-card with centered `dk` emblem and an approved CTA line from the P7.3 verified Head-Office suite (see STEP 1.5 above — `cta-B "Book a design consultation at Blackburn Head Office · Call 1300 449 799"` is the end-card default; the reel's own end-card styling governs its colour/size).
    - Stationary Scrim Law: Translate and scale apply exclusively to inner `<img>` tags; scrims and brand marks remain fixed siblings.
    - Master Audio Staging & Ducking:
      * Bed: `assets/audio/beds/dk-bed-acoustic-claps-01.mp3` (P7.2 CERTIFIED BASELINE: +1.0 dB body / linear 1.1220 —
@@ -173,17 +175,17 @@ Using available photos, author the following 3 compositions inside the active ba
      * Outro decay: Exponential decay from -6.0 dB to -60.0 dB (17.5s - 20.0s). Root limiter ceiling pinned at -3.6 dBTP.
 
 ## STEP 3: UPDATE BATCH MANIFEST ==
-Append all 3 posts to the active `batch-manifest.json` using Schema v2 with explicit `kind` typing and dedicated leaf paths. Static and compound-static posts also carry an additive `cta` field naming the assigned suite variant (`cta-A` | `cta-B` | `cta-C` | `cta-D`, from §1.5 above); the manifest's `ctaLibrary` block (see P7.1 note below) is the variant source of truth:
+Append all 3 posts to the active `batch-manifest.json` using Schema v2 with explicit `kind` typing and dedicated leaf paths. Static and compound-static posts also carry an additive `cta` field naming the assigned suite variant (`cta-A` | `cta-B` | `cta-C` | `cta-D`, from §1.5 above); the manifest's `ctaLibrary` block (P7.3 Head-Office suite — the source of truth to embed VERBATIM in every new manifest):
 {
   "date": "<YYYY-MM-DD>",
   "batch": "<batch-XX>",
   "ctaLibrary": {
-    "policy": "P7.1 verified conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic).",
+    "policy": "P7.3 verified Head-Office conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic). Isolated factory-contact CTAs REMOVED (P7.3): bookings go to Head Office.",
     "variants": [
       { "id": "cta-A", "label": "Tri-Showroom Network", "text": "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" },
-      { "id": "cta-B", "label": "Direct Call & In-Home Booking", "text": "Book your design consultation · Call 1300 449 799" },
-      { "id": "cta-C", "label": "Digital URL & Phone Lockup", "text": "Explore custom kitchens at directkitchens.com.au · 1300 449 799" },
-      { "id": "cta-D", "label": "Melbourne Manufacturing Authority", "text": "Custom kitchens built in our Bayswater factory · 1300 449 799" }
+      { "id": "cta-B", "label": "Head-Office Direct & Consultation", "text": "Book a design consultation at Blackburn Head Office · Call 1300 449 799" },
+      { "id": "cta-C", "label": "Digital URL & Clear Call Lockup", "text": "Explore custom kitchens at directkitchens.com.au · Call 1300 449 799" },
+      { "id": "cta-D", "label": "Melbourne Craftsmanship & Head-Office Authority", "text": "Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799" }
     ]
   },
   "posts": [
@@ -246,6 +248,18 @@ node scripts/render-reels.js   --date <date> [--slug story-04 --fps 30]
 node scripts/verify-loudness.js --date <date> [--slug story-04 | file.mp4]
 node scripts/cleanup-render.js  <date> | --all
 ```
+
+P7.3 lifecycle hardening (2026-11-01): every `render:reels` invocation applies the
+teardown seam (`scripts/lib/render-teardown-seam.js`) — the engine's bundled 5s
+capture-session close race is relaxed to 15s on the pinned vendored build so
+audio-heavy pages (~6 live streams across multi-worker Chromium) tear down
+gracefully instead of being force-killed at "[FrameCapture] Timed out closing
+browser". Idempotent and re-applied per invocation; the CDP protocol timeout stays
+at its 300000ms default. `cleanup-render.js` (run by both render lanes
+post-render) additionally sweeps orphaned Chromium automation temp profiles
+(`puppeteer_dev_chrome_profile-*` · `playwright_chromiumdev_profile-*` ·
+`hyperframes-extract-cache-*`) under `%TEMP%` and `.hyperframes/` with a 60-min
+idle guard — zero disk accumulation across repeated daily runs.
 
 NOTE (Windows): `npm run ship -- --no-git` may drop everything after `--`
 depending on the shell (observed with pwsh + npm 10). To pass flags
@@ -330,4 +344,6 @@ npm run artifacts:prune        # or: node scripts/prune-artifacts.js [--date D] 
 | `verify-loudness` RED on I out of window | bed/VO gains off after an edit | rescale gains proportionally (P6.0 lanes: bed 1.1220 body · notches 0.3758 · pocket 0.5625) and re-run the lane |
 | Two reels share a leaf | hand-edited `output` | `check-paths` refuses; restore the `…/<slug>/living-<variant>` shape |
 | Reel MP4 missing at certify | render failed mid-lane | re-run `node scripts/render-reels.js --slug <slug>` (the missing MP4 fails the gate closed) |
+| "[FrameCapture] Timed out closing browser; forcing browser process shutdown" after a 600-frame audio-heavy render | the engine's bundled 5s capture-session close race (pre-P7.3) | P7.3 seam relaxes it to 15s — verify the `[teardown seam]` line at the head of the render log; if absent, `applyTeardownSeam()` no-opped an engine upgrade (default governs) |
+| Temp disk bloat from repeated daily renders | orphaned Chromium automation profiles in `%TEMP%` | `node scripts/cleanup-render.js --all` — the P7.3 profile GC sweeps `puppeteer_dev_chrome_profile-*` / `playwright_chromiumdev_profile-*` / `hyperframes-extract-cache-*` older than the 60-min idle guard |
 | `hyperframes lint` fails on an OLD date's batch | its optimized photos were retired | recover files from git history (§5) or `npm run retire:batch` |

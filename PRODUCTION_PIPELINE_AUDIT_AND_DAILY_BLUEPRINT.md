@@ -3,7 +3,7 @@
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
 **Engine:** HyperFrames `v0.8.191` (devDependency, EXACT pin — never `^`)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
-**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22
+**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01
 **Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 **Status (2026-10-24 · PHASE 1 of the capability expansion, tag `phase1-green`):** six zero-risk engine amendments shipped — ① BRAND PLATE STANDARD (ink-on-bone by default; brand polarity retired, §F.2/§G.2) ② `scrim--greige` theme (§G.5) ③ serif-accent modelled as ESP700 under `copy--ink` (§G.6/§G.9) ④ DK Signature Grade constrained finishing profile + advisory (§F.2/§H.8) ⑤ `--strict --no-best-effort` renders + `check:zones` advisory sweep (§F.4) ⑥ dual-lens AI vision preflight (`npm run qa:vision`, fail-open, §H.10). Zero layout geometry changes.
@@ -718,7 +718,7 @@ Before writing code, discuss with me:
 - Luxury composition constraints (Direct Kitchens $50K+ showroom strategy):
   - Full-Bleed Material Primacy: 85–90% of canvas dedicated to raw architectural photography (stone veining, fluted timber, integrated joinery, ambient lighting). No heavy UI containers, floating cards, or opaque backgrounds obscuring craft details.
   - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
-  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. CTA lines come exclusively from the P7.1 VERIFIED 4-VARIANT SUITE (§G.7): tri-showroom network, direct call / in-home booking, URL + phone lockup, or Bayswater-factory manufacturing authority — all grounded in the real Direct Kitchens network (directkitchens.com.au · 1300 449 799 · Blackburn / Moonee Ponds / Bayswater). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
+  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. CTA lines come exclusively from the P7.3 VERIFIED HEAD-OFFICE 4-VARIANT SUITE (§G.7): tri-showroom network, Blackburn Head-Office consultation & direct call, URL + clear-call lockup, or Melbourne craftsmanship & Head-Office authority — all grounded in the real Direct Kitchens network (directkitchens.com.au · 1300 449 799 · Blackburn / Moonee Ponds / Bayswater; customers book with HEAD OFFICE, never the plant). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
   - Additional high-end editorial details: non-destructive dual-axis scrim gradients (preserve central material detail); micro-tracking for uppercase labels (wide `--track-eyebrow` for breathy labels, tight `--track-tight` for headlines); negative space as a design element — anchor copy to one corner, leave 60–70% of canvas as uninterrupted photography.
 - **Grounding Verification (MANDATORY, before ANY HTML/CSS is written):** Build a Design Mapping table for each post that explicitly cites the verified visual elements logged in Step 1. Every claim in the copy must trace back to something you actually SAW:
 
@@ -727,7 +727,7 @@ Before writing code, discuss with me:
   | Headline: "⟨observed feature⟩, ⟨observed relationship⟩" | Verified element: ⟨exact phrase from the Step 1 log for this photo⟩ | ⟨photo N⟩ |
   | Eyebrow: "⟨OBSERVED ROOM/ZONE⟩" | Room/space type: ⟨as logged for this photo⟩ | ⟨photo N⟩ |
   | Scrim tint: ⟨charcoal or warm⟩ | Lighting undertone: ⟨as logged⟩ | ⟨photo N⟩ |
-  | CTA: ⟨P7.1 verified suite variant⟩ | Brand policy — verified CTA library (§G.7) | — |
+  | CTA: ⟨P7.3 verified Head-Office suite variant⟩ | Brand policy — verified CTA library (§G.7) | — |
 
   - No headline, callout, eyebrow, or theme may reference a material, appliance, room, or fitting that is NOT in the Step 1 inspection log for the photo being used.
   - **Kitchen-Centric Canon (P7.1):** visual-model drift toward secondary props is BANNED as headline fuel — lighting fixtures, chairs, barstools, fruit bowls, plants, and background windows never drive `.t-display` or `.t-eyebrow`. Headlines celebrate the BUILT kitchen: Shaker profile doors · integrated pantries · stone waterfall benchtops · fluted timber joinery · quiet-close hardware · architectural splashbacks · bespoke island architecture (e.g. "Hand-crafted Shaker joinery, quiet precision", NOT "Light, hung low").
@@ -971,6 +971,10 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   waiver — when the declaration ladder exhausts, photo-fit DEFERS to the browser authority
   (§H.6; the box-model proxy is measured conservative at the small-type rows), and the
   browser gate fail-closes any real defect, demanding a copy/variant/photo change.
+- P7.3 (2026-11-01): on the deepened 680px scrim, photo-fit passes NATIVELY on the
+  elevated-20px-CTA batches — 0 ladder-exhaustion deferrals expected (rendered output
+  unchanged; the declaration ladder and the §H.6 doctrine stay authoritative whenever a
+  future copy/photo combination lands below the model's conservative p98 screen).
 - RENDER STRICTNESS (2026-10-24, Phase 1): `render-batch.js` renders with `--strict --no-best-effort`
   — a frame the renderer would have silently degraded via best-effort recovery is now a RED.
   What ships must be exactly what was gated.
@@ -997,10 +1001,11 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 
 ### F.6 Copy contract
 - Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line,
-  ≤1 serif-accent italic word), 1 CTA from the P7.1 VERIFIED 4-VARIANT SUITE (§G.7): the
-  tri-showroom network line, the direct call / in-home booking line, the URL + phone lockup,
-  or the Bayswater-factory manufacturing authority line — rotate A → B → C → D by post index;
-  never freelance a phrase.
+  ≤1 serif-accent italic word), 1 CTA from the P7.3 VERIFIED HEAD-OFFICE 4-VARIANT SUITE (§G.7): the
+  tri-showroom network line, the Blackburn Head-Office consultation & direct-call line, the URL +
+  clear-call lockup, or the Melbourne craftsmanship & Head-Office authority line — rotate A → B → C → D
+  by post index; never freelance a phrase. Isolated factory-contact CTAs are REMOVED (P7.3): customers
+  book design consultations with HEAD OFFICE, not the manufacturing plant.
 - KITCHEN-CENTRIC CANON: headlines/eyebrows celebrate the built kitchen (Shaker profiles,
   integrated pantries, stone waterfall benchtops, fluted timber joinery, quiet-close hardware,
   architectural splashbacks, bespoke island architecture). Secondary props — lighting fixtures,
@@ -1052,12 +1057,34 @@ the daily run where they overlap §D — they are carried WITH §D exactly like 
   LOCKED TOP-RIGHT (`top: 140px / right: 80px`, flex `row-reverse` — logo on the far right,
   wordmark to its LEFT; the top-left native Instagram/Facebook Story header clash zone is
   abandoned permanently); `.copy--centered` is ELIMINATED — exactly two copy variants exist
-  (`copy--bottom-left`, `copy--bottom-right`); `.scrim--bottom` is DEEPENED (620px, 0.85 peak)
+  (`copy--bottom-left`, `copy--bottom-right`); `.scrim--bottom` is DEEPENED (620px, 0.85 peak —
+  deepened again to **680px** by the P7.3 amendment, 2026-11-01 — see §G.5)
   as the primary legibility floor for crisp white typography and `.copy--ink` renders clean
   ink with every halo text-shadow stripped (`text-shadow: none`). TOP-RIGHT anchoring moves
   the `bar-top--ink` inspection region from the photo's top-LEFT to its top-RIGHT. §D Steps
   3–4 were updated in the same ratification — that supersedes the byte-identical §D sanctuary
   for these steps only.
+- **2026-11-01 P7.3 architectural resolution (RATIFIED — authoritative):** two production
+  defects closed at the architecture level, zero waivers:
+  ① **Scrim depth restored.** The P7.1 elevated 20px CTA (3-line staircase in the 539px
+  hero-split pane tops out ≈ y1458) reached into the shallow alpha zone of the 620px bottom
+  ramp — photo-fit's modelled CTA p98 measured 3.89:1 vs the 4.5:1 need and exhausted its
+  self-heal ladder, deferring to browser authority. `--scrim-bottom` is deepened
+  620px → **680px** (single declaration in `shared/story-system.css`; scrapes propagate to
+  the gate by construction). Worst-row deep-ramp alpha at y1458 rises 0.416 → 0.502 and the
+  band clears AA natively, ladder unused (see §G.3/§G.5).
+  ② **Browser teardown hardened.** The 600-frame delivery render of story-03 (6 live audio
+  streams, multi-worker Chromium) outran the engine's bundled 5s capture-session close race
+  ("[FrameCapture] Timed out closing browser; forcing browser process shutdown"). Upstream
+  v0.8.191 exposes no knob for that constant, so the render lane applies a verified-idempotent
+  teardown seam (`scripts/lib/render-teardown-seam.js`) relaxing it to 15000ms on the pinned
+  vendored build — re-applied per invocation (survives `npm ci`), a no-op wherever the
+  constant disappears ("where supported"). The CDP protocol timeout stays at its 300000ms
+  default. Post-render, `scripts/cleanup-render.js` P7.3 GC sweeps orphaned Chromium
+  automation temp profiles (`puppeteer_dev_chrome_profile-*`,
+  `playwright_chromiumdev_profile-*`, `hyperframes-extract-cache-*`) under `%TEMP%` and
+  `.hyperframes/`, with a 60-min idle guard that can never race a live render session —
+  zero disk accumulation across repeated daily runs.
 
 ### F.9 INTRADAY MULTI-BATCH RUNBOOK (Model A — added 2026-10-21)
 
@@ -1206,7 +1233,8 @@ The engine `@import`s `token.css` and `brand.css` internally, so a story HTML ne
 ```
 
 - Every `.copy` block is pinned **220px** from the bottom edge — above the platform reply-bar/sticker band. Copy and CTA are **never clipped**.
-- P7.1 fit note: the elevated 20px CTA (1–3 wrapped lines, line-height 1.5) grows the block UPWARD from the unchanged 220px pin — the worst case (3-line lockup in the narrowed hero-split `--copy-right-split: 565px` pane) tops the column out ≈ y1460, still clear of the h1, the 620px scrim ramp, and both bottom platform bounds. `photo-fit` models the wrapped lines (scraped line-height + greedy wrap over the calibrated run width), so the fit is gate-verified, not assumed.
+- P7.1 fit note: the elevated 20px CTA (1–3 wrapped lines, line-height 1.5) grows the block UPWARD from the unchanged 220px pin — the worst case (3-line lockup in the narrowed hero-split `--copy-right-split: 565px` pane) tops the column out ≈ y1460, still clear of the h1 and both bottom platform bounds. `photo-fit` models the wrapped lines (scraped line-height + greedy wrap over the calibrated run width), so the fit is gate-verified, not assumed.
+- P7.3 scrim-depth resolution (2026-11-01): that worst case reached into the shallow alpha zone of the then-620px ramp (deep-ramp alpha at the top CTA row: 0.416 — a modelled CTA p98 of 3.89:1 vs the 4.5:1 need, exhausting the ladder and deferring to browser authority). `--scrim-bottom` is **620px → 680px**, so the 0.60–0.80 alpha wheel of the extended ramp stops envelops the elevated copy platform: worst-row ramp progress 74.6% → 68.0%, deep-ramp alpha **0.416 → 0.502 (+20.7%)**. The ramp stays one declared `linear-gradient(0deg, …)` (no shelf, no banding) and photo-fit models the depth BY CONSTRUCTION (it scrapes `--scrim-bottom`; the 0deg math parameterizes on the band height).
 - Margins: `copy--bottom-left` → `left: 80px; right: 120px`, `copy--bottom-right` → `left: 120px; right: 80px`. `.copy--centered` is PERMANENTLY ELIMINATED — exactly these two variants exist.
 
 ### G.4 Controlled editorial dynamism — layout variants
@@ -1222,7 +1250,7 @@ Determinism at the system level, variety at the selection level. Each post picks
 
 ### G.5 Controlled editorial dynamism — scrim themes (color-adaptive)
 
-Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm|greige}">`. All three themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **620px** — height deepened 2026-10-22) and differ ONLY in the bottom undertone ramp. The `.scrim--top` band is a unified **TOP-RIGHT architectural vignette** — anchored at `100% 0%` to mirror the top-right brand bar — shared identically by every theme: `radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)`.
+Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|warm|greige}">`. All three themes share the geometry (`.scrim--top` **320px**, `.scrim--bottom` **680px** — deepened 2026-10-22 (620px) then AGAIN by the P7.3 amendment, 2026-11-01, to envelope the elevated 20px CTA platform) and differ ONLY in the bottom undertone ramp. The `.scrim--top` band is a unified **TOP-RIGHT architectural vignette** — anchored at `100% 0%` to mirror the top-right brand bar — shared identically by every theme: `radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%), linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.18) 50%, transparent 100%)`.
 
 | Theme | Class | Undertone | Apply to |
 |---|---|---|---|
@@ -1230,7 +1258,7 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 | **Warm Amber** | `scrim--warm` | Warm brown-black bottom ramp (`rgba(24,16,10,·)`); top vignette shared & neutral | Spotted gum, warm joinery, amber lighting, timber floors |
 | **Warm Greige** | `scrim--greige` | Warm stone bottom ramp (`rgba(58,50,42,·)` — tint `--greige-900 #3A322A`, token.css); top vignette shared & neutral (added 2026-10-24) | Greige cabinetry, taupe stone, blended warm/neutral scenes where neither charcoal nor amber reads right |
 
-**Actual alpha ramps (as implemented — top vignette AIRY, bottom DEEPENED 2026-10-22, max alpha 0.85).** The deepened 620px bottom scrim is now the primary legibility floor — it guarantees crisp white typography over bright material detail at the copy zone. The top vignette stays airy (≤0.50 radial cap + ≤0.45 linear) so the header zone keeps editorial luminance; brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha; the cinematic text-shadow stacks on `.t-eyebrow`/`.t-display`/`.cta` remain as depth garnish — and `.copy--ink` renders with NO halos at all (§G.9). Bottom ramps are linear across the stated stops:
+**Actual alpha ramps (as implemented — top vignette AIRY, bottom DEEPENED 2026-10-22 max alpha 0.85, band length 680px since P7.3 2026-11-01).** The deepened 680px bottom scrim is now the primary legibility floor — it guarantees crisp white typography over bright material detail at the copy zone AND envelopes the P7.1 elevated-CTA copy platform (the 0.60–0.80 alpha wheel now covers the top of a 3-line 20px lockup at y≈1458, worst-row deep-ramp alpha 0.502 vs 0.416 on the former 620px band). The top vignette stays airy (≤0.50 radial cap + ≤0.45 linear) so the header zone keeps editorial luminance; brand-bar legibility over bright tops is carried by the `bar-top--ink` variant (§F.2), never by scrim alpha; the cinematic text-shadow stacks on `.t-eyebrow`/`.t-display`/`.cta` remain as depth garnish — and `.copy--ink` renders with NO halos at all (§G.9). Bottom ramps are linear across the stated stops (stop positions are % OF THE BAND, so the 680px extension re-scales the ramp curves smoothly — the rendered ramp remains a single cubic-progressed fade into the photo, never a shelf):
 
 | Ramp | Stops (position % → alpha) |
 |---|---|
@@ -1256,27 +1284,47 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 
 **Serif-accent copy contract (2026-10-24, Phase-1 model alignment).** The accent is an **editorial garnish, not a size experiment**: a 1–3 word italic phrase inside `.t-display` at the UNCHANGED 52px display size (never its own line — it rides inside the headline's `<br>` line structure). Device-constraint lineage from the Mission-1 audit: the italic serif reads as refined, never decorative, and — critically — it is the ONLY text whose colour diverges within a band under `.copy--ink` (`--espresso-700` vs the band's `--ink`), which photo-fit now models explicitly (§G.9): the full h1 band is evaluated a second time at ESP700 and the worst verdict governs. Keep accents SHORT (1–3 words, never numbers) so the conservative model never over-escalates the whole headline.
 
-### G.7 Verified CTA suite (brand copy policy, P7.1)
+### G.7 Verified CTA suite (brand copy policy, P7.3 — Head-Office authority)
 
 Zero prices, zero discounts. The generic two-phrase library ("Visit our showroom" /
-"Book a private design consultation") is RETIRED — every CTA draws from the Verified 4-Variant
-Suite, grounded exclusively in Direct Kitchens' real-world credentials
+"Book a private design consultation") is RETIRED — every CTA draws from the Verified
+Head-Office 4-Variant Suite, grounded exclusively in Direct Kitchens' real-world credentials
 (web `directkitchens.com.au` · toll-free bookings `1300 449 799` · Melbourne showrooms:
 Blackburn Head Office 184 Whitehorse Rd · Moonee Ponds 42 Maribyrnong Rd · Bayswater Factory
-1 Power Rd). Rotate by post index (A → B → C → D, cyclic):
+1 Power Rd). Rotate by post index (A → B → C → D, cyclic).
+
+**P7.3 strategic shift (2026-11-01, authoritative):** customers book design consultations
+with HEAD OFFICE, not the manufacturing plant. Isolated factory-contact CTAs are REMOVED —
+the Bayswater factory survives only as proof-of-manufacture inside CTA D's craftsmanship
+line ("designed & built", with the call routed to Blackburn). Variant C's phone entry is
+pinned to `Call 1300 449 799` — the explicit "Call" prefix eliminates the visual ambiguity
+between the `.com.au` TLD and the bare 1300 number in a 0.14em-tracked caps run.
 
 | # | CTA (exact render text) | Intent | Placement |
 |---|---|---|---|
 | **A** | "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" | Tri-showroom network — foot-traffic invitation with verified geography | Default closing line |
-| **B** | "Book your design consultation · Call 1300 449 799" | Direct call & in-home booking — high-touch, appointment strategy | Alternate posts / hero pieces |
-| **C** | "Explore custom kitchens at directkitchens.com.au · 1300 449 799" | Digital URL & phone lockup — destination primaries | Hero pieces / campaign cycles |
-| **D** | "Custom kitchens built in our Bayswater factory · 1300 449 799" | Melbourne manufacturing authority — made-here craft proof | Authoritative craft pieces |
+| **B** | "Book a design consultation at Blackburn Head Office · Call 1300 449 799" | Head-office direct & consultation — high-touch, appointment strategy routed to Blackburn | Alternate posts / hero pieces |
+| **C** | "Explore custom kitchens at directkitchens.com.au · Call 1300 449 799" | Digital URL & clear-call lockup — destination primaries with explicit call instruction | Hero pieces / campaign cycles |
+| **D** | "Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799" | Melbourne craftsmanship & Head-Office authority — made-here craft proof, Blackburn-routed call | Authoritative craft pieces |
 
 The suite as a whole is machine-verifiable: authoring manifests carry
 `ctaLibrary` with the four exact strings, and each static/compound post annotates its
 assignment via the additive `cta` field. The CTA element renders at the
 elevated engine scale (§G.6) — 20px lockup, no pills, no plates, no background boxes; the
 edge-to-edge scrims carry contrast.
+
+**Variant C parity check (P7.3, gate-verified):** C is the suite's longest lockup
+(62 chars / 7 words + phone). Across the two certified layout kinds it fits cleanly
+inside the `--copy-bottom: 220px` pin on the deepened 680px ramp — the engine model
+(Chromium-calibrated caps factor `0.64×fs + 0.14em` tracking at 20px):
+Full-Bleed Static (`kind: "static"`, 880px copy column) → balanced 2-line stack,
+CTA box 60px, block top y1487.7 — pin clear. Compound 1+2 Grid
+(`kind: "compound-static"`, 435px bottom-left pane column) → 3-line staircase, CTA
+box 90px, block top y1457.7 — pin clear, worst CTA row deep-ramp alpha 0.502.
+AUTHORING DOCTRINE: in narrow columns prefer an authored `<br>` at the `·` separator
+("…directkitchens.com.au<br>Call 1300 449 799" — deterministic single-line segments, the
+phone lockup can never split mid-number, the suite separator `·` is carried by the break
+exactly as the P7.1/P7.3 story-02 lockup does).
 
 ### G.8 Composition contract (current, supersedes §C.3)
 
@@ -1345,8 +1393,9 @@ every pre-Phase-2 composition parses byte-identically).
     apply unchanged).
   - **Bottom Pane (46% height ≈ 881px):** dedicated to `DETAIL_MACRO` (2:3 portrait or
     3:2 landscape detail crop). Hosts the copy platform at the unchanged `--copy-bottom:
-    220px` pin over the native full-bleed bottom scrim ramp (the 620px ramp anchored to
-    the pane's bottom edge is canvas-coincident: pane-top 1039 + local band 261 = 1300).
+    220px` pin over the native full-bleed bottom scrim ramp (the 680px ramp anchored to
+    the pane's bottom edge is canvas-coincident: pane-top 1039 + local band 201 = 1240;
+    was 620px / y1300 before the P7.3 deepening).
   - **Gutter:** `--duo-gutter: 2px` — a bone hairline exposed between the panes
     (`.layout--duo-stacked` bone ground); NOT a divider card — zero content, zero text,
     WCAG-exempt decoration.
@@ -1368,7 +1417,8 @@ every pre-Phase-2 composition parses byte-identically).
     loss; `colW = (1080 − gutter) / 2`, derived, never hand-set):
     - **Bottom-Left Pane:** hosts the copy platform at the UNCHANGED
       `--copy-bottom: 220px` pin over the native bottom scrim ramp (pane-anchored
-      ramp is canvas-coincident at y1300, exactly as in the duo). The family narrows
+      ramp is canvas-coincident at y1240 since the P7.3 deepening — was y1300 on the
+      620px band — exactly as in the duo). The family narrows
       the copy section's right inset (`--copy-right-split: 565px` = 1080 − (539 − 24)
       engine copy gap) so text and modelled bands stay inside the pane.
     - **Bottom-Right Pane:** second `DETAIL_MACRO` cell; no scrim unless declared.

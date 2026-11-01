@@ -113,6 +113,14 @@ const GEO = {
   copyRightB: scrapeVar('copy-right-b', 'px'),
   scrimTopH:  scrapeVar('scrim-top', 'px'),
   scrimBotH:  scrapeVar('scrim-bottom', 'px'),
+  // P7.3 (2026-11-01): --scrim-bottom deepened 620 → 680px. The deepened
+  // ramp propagates to the model BY CONSTRUCTION — alphaOfLayer parameterizes
+  // every 0deg ramp by the scraped band height (pct = (CANVAS_H − y) / BOT_H),
+  // so no mirror constant exists and none can drift. Effect at the P7.1
+  // elevated-CTA worst row (3-line lockup tops out ≈ y1458): ramp progress
+  // 74.5% → 67.9%, deep-ramp alpha 0.42 → 0.50 — the 0.60–0.80 alpha wheel of
+  // the extended stops envelops the elevated copy platform and the CTA band
+  // clears AA natively instead of exhausting the declaration ladder (§H.6).
   // Phase 2 family tokens (P2.2 stacked duo — see story-system.css ENGINE
   // GEOMETRY CONTRACT). Scraped, never mirrored (§H.9 #2). The P2.1
   // swatch-strip tokens were retired with the family (decommissioned
@@ -860,7 +868,7 @@ if (photoArg) {
       const c = {
         theme, imgAbs: abs, variant, hasEyebrow: true, h1Lines: 2, hasCta: true,
         inkBar: false, inkCopy: false, topDeep: true, deepBottom: false, _htmlPath: null,
-        eyebrowText: 'Material & Light', ctaText: 'Book your design consultation · Call 1300 449 799',
+        eyebrowText: 'Material & Light', ctaText: 'Book a design consultation at Blackburn Head Office · Call 1300 449 799',
         brandText: 'DIRECT KITCHENS',
       };
       const base = evaluate(px, c);

@@ -1,16 +1,17 @@
 # Direct Kitchens — Living Story Motion & Audio Specification
 
-**Version:** P7.0 Production Standard (Cinematic Kinetics)
-**Baseline Anchor:** Certified P7.0 Pipeline Delivery
+**Version:** P7.3 Production Standard (Cinematic Kinetics · Head-Office CTA suite)
+**Baseline Anchor:** Certified P7.0 Pipeline Delivery · P7.2 audio-gain certification · P7.3 scrim-depth + teardown certification (2026-11-01)
 **Target Specs:** 20.0s (600 frames @ 30 FPS) | 1080×1920 (9:16) | H.264 High bt709
 
 ---
 
 ## 1. Executive Summary & Delivery Artifacts
 
-- **Primary Delivery Video:** `renders/2026-10-26/batch-01/story-01/living-20s.mp4` (~11.1 MB)
-- **Settled Ad Creative / Poster:** `renders/2026-10-26/batch-01/story-01/poster-settled.png` (~769 KB)
-- **Storage Policy (P7.0):** `scripts/cleanup-render.js` prunes all intermediate sequence frames; local disk retention is strictly capped at **≤ 20.0 MB per deliverable leaf directory** (`living-20s.mp4` + `poster-settled.png`); parent batch folders are EXEMPT from the leaf budget.
+- **Primary Delivery Video:** `renders/<date>/<batch>/<slug>/living-20s.mp4` (~11–15 MB)
+- **Settled Ad Creative / Poster:** `renders/<date>/<batch>/<slug>/poster-settled.png` (~0.8–1.4 MB)
+- **Storage Policy (P7.0/P7.3):** `scripts/cleanup-render.js` prunes all intermediate sequence frames; local disk retention is strictly capped at **≤ 20.0 MB per deliverable leaf directory** (`living-20s.mp4` + `poster-settled.png`); parent batch folders are EXEMPT from the leaf budget. P7.3 additionally sweeps orphaned Chromium automation temp profiles (`%TEMP%` + `.hyperframes/`, 60-min idle guard) so repeated daily rehearsals never accumulate render-lane disk residue.
+- **Delivery render lane (P7.3):** `render:reels` runs `--quality delivery --strict --no-best-effort` with the teardown seam applied — the engine's bundled 5s capture-session close race is relaxed to 15s so the end-of-render teardown of 6 concurrent audio streams across multi-worker Chromium completes gracefully (the P7.2-certified 2026-10-31 story-03 600-frame delivery previously hit the force-shutdown race).
 
 ---
 
@@ -70,12 +71,14 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 
 1. **Stationary Scrim Law:** All scale and translate animations live strictly on child image elements inside overflow-clipped frames. Gradient scrims and branding bars remain fixed siblings to prevent optical pulsation.
 2. **Typography Doctrine:** Primary headlines are set in Archivo Bold. Cormorant Garamond is strictly restricted to single italic accent words inside headlines (e.g., *hardware*, *drawer*, *light*). Full Cormorant headlines are prohibited.
-3. **Approved CTA Suite (`manifest.json` v3):**
-   - Variant A: *"Book your free design consultation"*
-   - Variant B: *"Visit our Melbourne showrooms"*
-   - Variant C: *"Custom kitchens made for your home"*
-   - Variant D: *"Designed & built in Melbourne"*
-4. **Banned Legacy Copy:** The phrases *"Built in Melbourne"* (unqualified) and *"Quality and Craft"* are permanently deprecated.
+3. **Approved CTA Suite (P7.3 — single source of truth: the active batch's `ctaLibrary`):** every lockup is drawn from the verified Head-Office 4-variant suite (rotate A → B → C → D by post index, cyclic; the "·" separator may be carried by an authored `<br>` in narrow columns so the phone lockup never splits mid-number):
+   - Variant A (Tri-Showroom Network): *"Visit our showrooms: Blackburn · Moonee Ponds · Bayswater"*
+   - Variant B (Head-Office Direct & Consultation; end-card default): *"Book a design consultation at Blackburn Head Office · Call 1300 449 799"*
+   - Variant C (Digital URL & Clear Call Lockup): *"Explore custom kitchens at directkitchens.com.au · Call 1300 449 799"*
+   - Variant D (Melbourne Craftsmanship & Head-Office Authority): *"Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799"*
+   Isolated factory-contact CTAs are REMOVED (P7.3): bookings route to HEAD OFFICE, never the plant.
+4. **Reel End-Card Safe Zones (P7.2/P7.3 certified):** the Scene-5 white end-card keeps the engine copy contract — centered ink stack, 176px circular emblem, copy tops well inside the 220px bottom safe zone on the static lanes (the reel's end-card re-pins the block to the centered composition; platform UI adjacency is unchanged). Scene copy over photo panes rides the deepened **680px** bottom ramp (`--scrim-bottom: 680px`, P7.3) so the CTA envelope's worst rows sit near ramp progress 68% (deep-ramp alpha ≈ 0.50).
+5. **Banned Legacy Copy:** The phrases *"Built in Melbourne"* (unqualified) and *"Quality and Craft"* are permanently deprecated; unqualified "free"-economy phrasing stays off the verified suite (the end-card legacy string "Book your free design consultation" predates the suite and is NOT a ctaLibrary variant — new reels author Variant B verbatim).
 
 ---
 
@@ -85,5 +88,6 @@ Before any batch artifact is certified for release, all gates must pass with zer
 
 - **Lint & Paths:** `npm run preflight` → 0 errors, 0 warnings.
 - **Contrast & Layout:** `npx hyperframes check` → 100% WCAG AA compliance across text elements.
-- **Render Strictness:** `hyperframes render` with `--strict --no-best-effort`.
+- **Render Strictness:** `hyperframes render` with `--strict --no-best-effort` (the P7.3 teardown seam relaxes the 5s browser-close race to 15s so the audio-heavy page teardown completes gracefully).
 - **Loudness Standards:** -14 ±0.5 LUFS integrated, TruePeak $\le -3.0\text{ dBTP}$, 0 clipping counts.
+- **P7.2/P7.3 Certified Metrics of Record (2026-10-31 story-03 600-frame delivery):** audio cert I −14.3 LUFS · TP −3.3 dBTP · 0 clipped samples · 600/600 frames; preflight lint 0/0 · check-paths 1:1 parity · browser AA verify PASS; P7.3 adds the 680px scrim depth (photo-fit native pass, 0 ladder-exhaustion deferrals) and the 15s teardown race.

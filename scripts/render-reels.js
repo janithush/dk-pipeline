@@ -20,6 +20,11 @@
 //      (`--strict` aborts on lint errors; `--no-best-effort` forbids the
 //      renderer from silently degrading frames — same gate semantics as the
 //      static lane: what ships must be exactly what was gated).
+//      P7.3: before any render, the teardown seam (scripts/lib/
+//      render-teardown-seam.js) relaxes the engine's bundled 5s capture-
+//      session close race to 15s so audio-heavy pages (~6 live audio streams
+//      across multi-worker Chromium) teardown gracefully instead of being
+//      force-killed at the "[FrameCapture] Timed out closing browser" race.
 //   3. Post-render: cleanup-render.js (poster derivation + frame pruning +
 //      per-leaf 20 MB Storage Budget Law) then verify-loudness.js
 //      (−14 ±0.5 LUFS · TP ≤ −3.0 dBTP · 0 clipped samples — exit 1 on any
@@ -36,9 +41,31 @@ const { execSync, spawnSync } = require('child_process');
 const { resolveBatchDate, logResolved } = require('./lib/batch-date');
 const { resolveBatchContext, manifestSchemaError } = require('./lib/batch-context');
 const { archiveSupersededMp4 } = require('./lib/supersede-archive');
+const { applyTeardownSeam, TARGET_MS: TEARDOWN_TARGET_MS } = require('./lib/render-teardown-seam');
 
 const ROOT = process.cwd();
 const argv = process.argv.slice(2);
+
+// ── P7.3 TEARDOWN HARDENING (2026-11-01) ────────────────────────────────
+// The 600-frame delivery of story-03 (6 live audio streams, multi-worker
+// Chromium) outran the engine's bundled 5s capture-session close race and the
+// browser was force-killed ("Timed out closing browser; forcing browser
+// process shutdown"). Upstream exposes no CLI/env knob for that constant, so
+// the teardown seam relaxes it to 15000ms on the pinned vendored build —
+// idempotent, re-applied per invocation (survives `npm ci`), and a no-op
+// wherever an engine upgrade removes or raises the constant ("where
+// supported"). The CDP protocol timeout stays at its 300000ms default —
+// that is a different knob and must not be tightened. Audio-heavy graceful
+// close: page.close drains every audio stream before the process exits.
+const seam = applyTeardownSeam();
+if (seam.status === 'relaxed') {
+  console.log(`◆ [teardown seam] browser/page close race relaxed ${seam.fromMs}ms → ${TEARDOWN_TARGET_MS}ms (P7.3 — audio-heavy graceful close; ${path.relative(ROOT, seam.file)})`);
+} else if (seam.status === 'already-relaxed') {
+  console.log(`◇ [teardown seam] close race already relaxed (${seam.fromMs}ms ≥ ${TEARDOWN_TARGET_MS}ms) — no-op.`);
+} else {
+  console.log(`◇ [teardown seam] vendored close-race constant not relaxed (${seam.detail || seam.status}) — engine default governs.`);
+}
+
 
 const { date: batchDate, basis } = resolveBatchDate(argv);
 logResolved({ date: batchDate, basis }, 'Render reels');

@@ -2,7 +2,7 @@
   "date": "2026-10-31",
   "batch": "batch-01",
   "ctaLibrary": {
-    "policy": "P7.1 verified conversion suite — the ONLY approved CTA inputs. Rotate by manifesto post index (A → B → C → D, cyclic). Zero prices, zero discounts; no pill/plate/box behind the lockup.",
+    "policy": "P7.3 verified Head-Office conversion suite — the ONLY approved CTA inputs. Rotate by manifesto post index (A → B → C → D, cyclic). Zero prices, zero discounts; no pill/plate/box behind the lockup. Customers book design consultations with HEAD OFFICE, not the manufacturing plant — isolated factory-contact CTAs are REMOVED (P7.3); the factory survives only as proof-of-manufacture inside cta-D's craftsmanship line.",
     "variants": [
       {
         "id": "cta-A",
@@ -11,18 +11,18 @@
       },
       {
         "id": "cta-B",
-        "label": "Direct Call & In-Home Booking",
-        "text": "Book your design consultation · Call 1300 449 799"
+        "label": "Head-Office Direct & Consultation",
+        "text": "Book a design consultation at Blackburn Head Office · Call 1300 449 799"
       },
       {
         "id": "cta-C",
-        "label": "Digital URL & Phone Lockup",
-        "text": "Explore custom kitchens at directkitchens.com.au · 1300 449 799"
+        "label": "Digital URL & Clear Call Lockup",
+        "text": "Explore custom kitchens at directkitchens.com.au · Call 1300 449 799"
       },
       {
         "id": "cta-D",
-        "label": "Melbourne Manufacturing Authority",
-        "text": "Custom kitchens built in our Bayswater factory · 1300 449 799"
+        "label": "Melbourne Craftsmanship & Head-Office Authority",
+        "text": "Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799"
       }
     ],
     "verifiedNetwork": {
@@ -63,7 +63,7 @@
       "output": "renders/2026-10-31/batch-01/story-02",
       "notes": "1+2 Compound split grid · SHIP-CERT 2026-10-31-batch-01 2026-10-31T20:37:56.385Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left · shipped frame poster-settled.png (1383513 bytes)",
       "cta": "cta-B",
-      "ctaLockup": "stacked-3 (narrow 539px BL pane: the suite separator '·' is carried by the authored <br> line breaks — 'Book your design consultation<br>Call 1300 449 799' renders BOOK YOUR DESIGN / CONSULTATION / CALL 1300 449 799 with the phone lockup intact; P7.1 Chromium-measured 20px/0.14em caps run)"
+      "ctaLockup": "stacked-3 (narrow 539px BL pane: the suite separator '·' is carried by the authored <br> line breaks — 'Book a design consultation<br>at Blackburn Head Office<br>Call 1300 449 799' renders BOOK A DESIGN CONSULTATION / AT BLACKBURN HEAD OFFICE / CALL 1300 449 799 with each authored segment fitting the 435px column in a single line; P7.3 Chromium-measured 20px/0.14em caps run)"
     },
     {
       "slug": "story-03",
