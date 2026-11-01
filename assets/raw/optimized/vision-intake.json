@@ -1,0 +1,76 @@
+{
+  "model": "GLM-5.3 Flash Free (session agent)",
+  "vision": {
+    "DSC06480.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "NONE",
+      "subject": "full white shaker kitchen run with stainless fridge, stone-top island and gas range on timber floor",
+      "tones": { "primary": { "hex": "#F5F6F5", "family": "crisp-white" }, "secondary": { "hex": "#D9BC8F", "family": "warm-timber" } },
+      "detailNote": "Wide room view: crisp-white shaker fronts with nickel cup handles run wall-to-wall around a white stone island, oak floor below."
+    },
+    "DSC06488.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "APPLIANCE",
+      "subject": "symmetric cabinetry elevation with range cooker centred under grey handmade tile and a timber open shelf",
+      "tones": { "primary": { "hex": "#F6F7F6", "family": "crisp-white" }, "secondary": { "hex": "#D7D8D4", "family": "stone-greige" } },
+      "detailNote": "Frontal architectural elevation: white shaker doors flank a stainless range under a grey ceramic tile splashback, open oak shelf at right."
+    },
+    "DSC06490.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "NONE",
+      "subject": "stone island bench with undermount sink and gooseneck mixer before full-height white cabinetry",
+      "tones": { "primary": { "hex": "#F4F5F4", "family": "crisp-white" }, "secondary": { "hex": "#8E9291", "family": "charcoal" } },
+      "detailNote": "Foreground island edge: white stone benchtop with undermount stainless sink, full-height shaker pantry run behind on the same tile splashback."
+    },
+    "DSC06496.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "HARDWARE_PULL",
+      "subject": "two brushed-nickel bar pulls mounted on a white shaker tall door",
+      "tones": { "primary": { "hex": "#F7F8F7", "family": "crisp-white" }, "secondary": { "hex": "#8C8F92", "family": "charcoal" } },
+      "detailNote": "Macro of twin turned-bar nickel appliance pulls set true and level on an inset shaker pantry door, blurred run receding right."
+    },
+    "DSC06505.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "HARDWARE_PULL",
+      "subject": "angled pair of nickel bar pulls running down a shaker drawer stack over oak flooring",
+      "tones": { "primary": { "hex": "#F7F7F6", "family": "crisp-white" }, "secondary": { "hex": "#D9B98C", "family": "warm-timber" } },
+      "detailNote": "Low-angle macro: nickel bar handles in a vertical rhythm down white shaker drawers, warm oak boards carrying depth behind."
+    },
+    "DSC06521.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "SURFACE_TEXTURE",
+      "subject": "white quartz benchtop macro with soft taupe-grey veining",
+      "tones": { "primary": { "hex": "#F3F3F2", "family": "crisp-white" }, "secondary": { "hex": "#C9C4BC", "family": "stone-greige" } },
+      "detailNote": "Soft-focus macro of a white stone benchtop, gentle taupe veining drifting across the field."
+    },
+    "DSC06509.jpg": {
+      "density": "ACTIVE_COMPLEX",
+      "focusZone": "APPLIANCE",
+      "subject": "cabinetry corner with coffee machine, oven range, drawer stack and tiled splashback",
+      "tones": { "primary": { "hex": "#F4F5F3", "family": "crisp-white" }, "secondary": { "hex": "#D3D4D0", "family": "stone-greige" } },
+      "detailNote": "Working corner: shaker drawers with nickel bar pulls meet a tiled splashback, espresso machine on the stone bench and the range oven at right."
+    },
+    "DSC06515.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "SURFACE_TEXTURE",
+      "subject": "glossy grey handmade subway tile splashback macro with stone benchtop below",
+      "tones": { "primary": { "hex": "#D5D6D2", "family": "stone-greige" }, "secondary": { "hex": "#B9BBB7", "family": "charcoal" } },
+      "detailNote": "Macro of an architectural splashback: irregular glazed grey tiles with hand-made edge variation above a plain stone benchline."
+    },
+    "DSC06533.jpg": {
+      "density": "CALM_PLANAR",
+      "focusZone": "HARDWARE_PULL",
+      "subject": "twin round-bar nickel pulls on an overhead shaker door above the tiled splashback line",
+      "tones": { "primary": { "hex": "#F5F6F5", "family": "crisp-white" }, "secondary": { "hex": "#C6C4BE", "family": "stone-greige" } },
+      "detailNote": "Macro of two nickel round-bar pulls centred on a shaker overhead door, grey tile blur beneath."
+    }
+  },
+  "pairing": {
+    "hero": "DSC06488.jpg",
+    "bl": "DSC06496.jpg",
+    "br": "DSC06509.jpg",
+    "echoPane": "bl",
+    "rationale": "The symmetric elevation (Rule-A candidate) anchors the hero; a nickel-pull macro echoes its crisp-white joinery in the copy-hosting bl pane, while the busy working-corner assembly supplies density inversion and hardware diversity in br.",
+    "ruleVerdicts": { "B": "PASS", "C": "PASS", "D": "PASS" }
+  }
+}
