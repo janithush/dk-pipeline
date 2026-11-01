@@ -254,10 +254,12 @@ const composite = (bg, rgb, a) => bg.map((c, i) => c * (1 - a) + rgb[i] * a);
 // ── LAYOUT-SURFACE TILES (family band device, P2.0) ───────────────────
 // A band with band.solid === 'bone' evaluates against the INVARIANT tile
 // fill --bone (#F6F1E7) instead of composited photo pixels — no photo
-// lookups run at all. Family-agnostic solid-tile band role (P2.0): the
+// lookups run at all. Family-agnostic solid-tile band role (P2.0). The
 // swatch-strip chip device that first used it was DECOMMISSIONED (P2.2,
-// blueprint §G.8.1), so no emitter currently sets band.solid — the role
-// remains engine capability for future families. DORMANT.
+// blueprint §G.8.1). DORMANT until P7.4 (2026-11-01): Format 2
+// `hero-split-editorial` adopts the role — every copy band of the solid
+// bone editorial tile is attributed solid:'bone' (ink-on-bone = native AAA,
+// zero self-heal ladder execution by construction).
 const SOLID_BG = { bone: BONE };
 
 // Radial farthest-corner ellipse (center at (cx%,cy%), box W×H)
@@ -383,7 +385,7 @@ function parseComposition(htmlPath) {
   // closed set). hero-split-1-2 stays declared-but-unwired (P2.3).
   const familyRaw = h.match(/data-layout-family="([a-z0-9-]+)"/)?.[1] ?? '';
   const family = familyRaw === '' ? 'mono-full' : familyRaw;
-  const FAMILY_SET = ['mono-full', 'duo-54-46', 'hero-split-1-2'];
+  const FAMILY_SET = ['mono-full', 'duo-54-46', 'hero-split-1-2', 'hero-split-editorial', 'hero-split-pure-grid'];
   if (familyRaw === 'swatch-strip') throw new Error(`layout family "swatch-strip" is DECOMMISSIONED (P2.2 — thin-slit geometry + macro fidelity rejected; blueprint §G.8.1): ${htmlPath}`);
   if (!FAMILY_SET.includes(family)) throw new Error(`unknown data-layout-family "${family}" (closed set: ${FAMILY_SET.join(' | ')}) — fix or remove the attribute: ${htmlPath}`);
   // Pane containers: document order = paint order (duo: top pane, bottom pane).
@@ -404,10 +406,12 @@ function parseComposition(htmlPath) {
       { abs: path.resolve(path.dirname(htmlPath), srcs[1]), rect: { x: 0, y: GEO.duoTopH + GEO.duoGutter, w: CANVAS_W, h: GEO.duoBotH } },
     ];
     theme = themes[0]; img = srcs[0];   // legacy singular views (imgAbs getter → photos[0])
-  } else if (family === 'hero-split-1-2') {
-    // MATERIAL HERO SPLIT 1+2 GRID (P2.3, blueprint §G.8.1): top hero row
-    // (full width) + bottom rail split into two equal cells. All rect
-    // numbers derive from the SCRAPED engine contract (§H.9 #2):
+  } else if (family === 'hero-split-1-2' || family === 'hero-split-pure-grid') {
+    // MATERIAL HERO SPLIT 1+2 GRID (P2.3, blueprint §G.8.1) + P7.4 PURE-VISUAL
+    // GRID (Format 3): top hero row (full width) + bottom rail split into two
+    // equal cells (1-2: details + copy; pure-grid: BOTH cells are pure
+    // photographs and the composition carries ZERO copy). All rect numbers
+    // derive from the SCRAPED engine contract (§H.9 #2):
     //   colW = (1080 − gridGutter) / 2 = 539; rowTop = duoTopH + gutter = 1039.
     if (figures.length !== 3) throw new Error(`layout family "hero-split-1-2" requires exactly three <figure class="photo photo--pane"> containers in document order (top, bottom-left, bottom-right — found ${figures.length}): ${htmlPath}`);
     const srcs = figures.map((f) => f.match(/<img[^>]*\ssrc="([^"]+)"/)?.[1]);
@@ -423,6 +427,28 @@ function parseComposition(htmlPath) {
       { abs: path.resolve(path.dirname(htmlPath), srcs[2]), rect: { x: colW + GEO.gridGutter, y: rowTop, w: colW, h: GEO.duoBotH } }, // bottom-right
     ];
     theme = themes[0]; img = srcs[0];
+  } else if (family === 'hero-split-editorial') {
+    // P7.4 SOLID-TILE EDITORIAL SPLIT (Format 2 of the 4-Format Production
+    // Canon, blueprint §G.8.1/§F.2): top hero pane + ONE pure detail macro
+    // (bottom-right); the bottom-LEFT rail cell is the declared layout
+    // surface — a solid bone editorial tile (`<div class="pane
+    // pane--solid-bone">`, grid area 2/1): ZERO photo, ZERO scrim. Copy
+    // bands model against the invariant bone fill (SOLID_BG via band.solid
+    // — ink-on-bone native AAA). Document order: top pane, tile div (not a
+    // figure — skipped by the photo scan), bottom-right photo.
+    if (figures.length !== 2) throw new Error(`layout family "hero-split-editorial" requires exactly two <figure class="photo photo--pane"> photo containers in document order (top hero, bottom-right pure macro — the solid bone tile is a <div class="pane pane--solid-bone">, never a photo; found ${figures.length}): ${htmlPath}`);
+    const srcs = figures.map((f) => f.match(/<img[^>]*\ssrc="([^"]+)"/)?.[1]);
+    const themes = figures.map((f) => f.match(/scrim--(charcoal|warm|greige)/)?.[1]);
+    if (srcs.some((s) => !s) || themes.some((t) => !t) || themes[0] !== themes[1]) {
+      throw new Error(`unparseable composition (editorial img/theme missing, or themes mismatched — both photo panes must carry the same scrim--{theme} class; the tile pane itself carries NO photo and NO scrim): ${htmlPath}`);
+    }
+    const colW = Math.round((CANVAS_W - GEO.gridGutter) / 2);
+    const rowTop = GEO.duoTopH + GEO.gridGutter;
+    photos = [
+      { abs: path.resolve(path.dirname(htmlPath), srcs[0]), rect: { x: 0, y: 0, w: CANVAS_W, h: GEO.duoTopH } },          // top hero (brand)
+      { abs: path.resolve(path.dirname(htmlPath), srcs[1]), rect: { x: colW + GEO.gridGutter, y: rowTop, w: colW, h: GEO.duoBotH } }, // bottom-right pure macro (no copy, no scrim)
+    ];
+    theme = themes[0]; img = srcs[0];
   } else {
     // mono-full: the full-bleed hero IS a mono match (byte-identical legacy).
     // img src is located regardless of sibling attributes (data-color-grading
@@ -432,7 +458,10 @@ function parseComposition(htmlPath) {
     if (!theme || !img) throw new Error(`unparseable composition: ${htmlPath}`);
     photos = [{ abs: path.resolve(path.dirname(htmlPath), img), rect: { x: 0, y: 0, w: CANVAS_W, h: CANVAS_H } }];
   }
-  if (!variant) throw new Error(`unparseable composition (copy variant): ${htmlPath}`);
+  if (!variant && family !== 'hero-split-pure-grid') throw new Error(`unparseable composition (copy variant): ${htmlPath}`);
+  if (family === 'hero-split-pure-grid' && variant) {
+    throw new Error(`layout family "hero-split-pure-grid" must carry ZERO copy elements (P7.4 Format 3 — no eyebrow, no headline, no CTA; delete the <section class="copy">): ${htmlPath}`);
+  }
   const copy = h.match(/<section class="copy[^"]*">([\s\S]*?)<\/section>/)?.[1] ?? '';
   const strip = (s) => (s ?? '').replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&nbsp;|&ensp;|&thinsp;/g, ' ').replace(/\s+/g, ' ').trim();
   const eyebrowText = strip(copy.match(/class="t-eyebrow"[^>]*>([\s\S]*?)<\/p>/)?.[1]);
@@ -470,6 +499,17 @@ function parseComposition(htmlPath) {
   const deepBottom = /scrim--bottom--deep/.test(figures[1] ?? h);
   const gradeLine = gradeAudit(h);
   const inkCopy = /copy--ink/.test(copyClass);
+  // P7.4 EDITORIAL-TILE CONTRACT (fail-closed, Format 2): the solid bone tile
+  // speaks ink-on-bone ONLY — no eyebrow, authored .copy--ink recolor (dark
+  // ink h1 + espresso CTA = native AAA, zero self-heal dependency), and the
+  // tile MUST host both a headline and a CTA from the verified suite.
+  if (family === 'hero-split-editorial') {
+    if (hasEyebrow) throw new Error(`layout family "hero-split-editorial" FORBIDS the .t-eyebrow (P7.4 — STRICTLY NO EYEBROW on the solid bone tile): ${htmlPath}`);
+    if (!inkCopy) throw new Error(`layout family "hero-split-editorial" requires the authored .copy--ink recolor (dark ink on the bone tile = native AAA; the manifest-canon copy block is <section class="copy copy--bottom-left copy--ink">): ${htmlPath}`);
+    if (!hasCta || !/<h1/.test(copy)) {
+      throw new Error(`layout family "hero-split-editorial" tile MUST host a kitchen-centric headline (<h1 class="t-display">) AND a verified-suite CTA (<p class="cta">): ${htmlPath}`);
+    }
+  }
   return {
     theme, family, photos, variant,
     get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
@@ -490,11 +530,20 @@ function parseComposition(htmlPath) {
 // band spans the wordmark text only. All numbers fuel from CSS.
 function bands(c) {
   const GAP = COPY_GAP, LH = DISPLAY_FS * DISPLAY_LH;
-  const [cxs, rightInset] = COPY_VARIANTS[c.variant];
+  // P7.4 pure-visual grid (Format 3): STRICTLY ZERO TEXT — the only band is
+  // the brand knockout on the top pane (the composition may legally carry
+  // no <section class="copy"> at all). Every copy-part guard below honours
+  // PURE; the empty parts list degrades to a brand-only band set cleanly.
+  const PURE = c.family === 'hero-split-pure-grid';
+  const [cxs, rightInset] = PURE ? [0, 0] : COPY_VARIANTS[c.variant];
   // P2.3: hero-split copy rides the BOTTOM-LEFT pane (x0-539) — the family
   // override narrows the section's right inset (--copy-right-split) so text
   // and the modelled bands stay inside the pane with the engine copy gap.
-  const cxe = c.family === 'hero-split-1-2' ? CANVAS_W - GEO.copyRightSplit : CANVAS_W - rightInset;
+  // P7.4: the editorial family shares the SAME 539px pane law — its copy
+  // platform floats over the solid bone tile, geometrically identical.
+  const cxe = (c.family === 'hero-split-1-2' || c.family === 'hero-split-editorial')
+    ? CANVAS_W - GEO.copyRightSplit
+    : CANVAS_W - rightInset;
 // Chromium-calibrated 2026-10-25: Inter's rendered advance for mixed/caps
 // Chicago runs measures ~0.60 x fs per char INCLUDING tracking deltas... hold on — the
 // engine smears letter-spacing separately (0.70 + ls assumed 2026-10-24), but the
@@ -535,9 +584,9 @@ function wrapCount(text, fs, ls, maxW) {
 }
 
   const parts = [];
-  if (c.hasEyebrow) parts.push({ role: 'eyebrow', boxH: 16, fs: EYEBROW_FS, ls: EYEBROW_LS, text: c.eyebrowText });
-  parts.push({ role: 'h1', boxH: c.h1Lines * LH, fs: DISPLAY_FS, ls: -0.02, text: null });
-  if (c.hasCta) {
+  if (!PURE && c.hasEyebrow) parts.push({ role: 'eyebrow', boxH: 16, fs: EYEBROW_FS, ls: EYEBROW_LS, text: c.eyebrowText });
+  if (!PURE) parts.push({ role: 'h1', boxH: c.h1Lines * LH, fs: DISPLAY_FS, ls: -0.02, text: null });
+  if (!PURE && c.hasCta) {
     // P7.1 derived CTA geometry: long verified showroom/phone/URL lockups
     // wrap inside the copy column in the real render. The wrapped line count
     // is derived from the AUTHOR-DECLARED segments (CTA <br> — the
@@ -569,7 +618,14 @@ function wrapCount(text, fs, ls, maxW) {
     const inset = small ? Math.max(1, Math.round((p.lines ?? 1) > 1 ? p.fs * (CTA_LH - 1) / 2 : (p.boxH - p.fs * 0.72) / 2)) : 0;
     const xs = cxs;
     const xe = small ? Math.min(cxe, cxs + runW(p.text, p.fs, p.ls)) : cxe;
-    const band = { role: p.role, y0: Math.round(y + inset), y1: Math.round(y + p.boxH - inset), xs, xe, blockTop, blockBottom, text: p.text, lines: p.lines ?? 1 };
+    const band = {
+      role: p.role, y0: Math.round(y + inset), y1: Math.round(y + p.boxH - inset), xs, xe,
+      blockTop, blockBottom, text: p.text, lines: p.lines ?? 1,
+      // P7.4 Format 2: every copy band of the editorial family evaluates
+      // against the INVARIANT solid bone tile fill (SOLID_BG.bone) — no
+      // photo sampling, composited scrims ignored. Native AAA by token law.
+      solid: c.family === 'hero-split-editorial' ? 'bone' : undefined,
+    };
     y += p.boxH + GAP;
     return band;
   });
@@ -938,7 +994,7 @@ if (photoArg) {
     const markers = [
       cf.inkBar ? 'bar-top--ink' : 'bar-top--white',
       cf.topDeep ? 'scrim top pool: deep' : 'scrim top pool: airy',
-      `copy ${cf.variant}`,
+      cf.variant ? `copy ${cf.variant}` : 'copy (none — pure visual grid)',
       cf.inkCopy ? 'copy--ink' : null,
       cf.accentText ? 'serif-accent (ESP700 modelled)' : null,
       `scrim--${cf.theme}`,

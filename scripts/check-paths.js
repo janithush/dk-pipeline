@@ -198,10 +198,15 @@ if (fs.existsSync(ctx.manifestPath)) {
     const slugNums = new Map();       // slug number → slug (duplicate detector)
     const outputs = new Map();        // output → slug (collision detector)
     const deliverableLeaves = new Map(); // P7.0: deliverable leaf dir → slug (one MP4/leaf)
-    // P7.0 additive manifest typing (kind: static | compound-static | reel).
-    // Unknown `kind` values fail-closed (P1) — a typo like "reel " must never
-    // silently classify a post into the wrong render lane.
-    const KINDS = new Set(['static', 'compound-static', 'reel']);
+    // P7.0 additive manifest typing (kind: static | compound-static | reel)
+    // — P7.4 extends the closed set with the 4-Format Production Canon
+    // static-lane kinds: `editorial-split` (Format 2 — solid bone editorial
+    // tile) and `pure-grid` (Format 3 — pure-visual 3-photo grid). Both are
+    // STATIC-LANE deliverables (png-sequence, same leaf law as static);
+    // only `reel` owns a distinct lane. Unknown `kind` values fail-closed —
+    // a typo like "reel " must never silently classify a post into the
+    // wrong render lane.
+    const KINDS = new Set(['static', 'compound-static', 'editorial-split', 'pure-grid', 'reel']);
     const isReelPost = (post) =>
       (typeof post.kind === 'string' && post.kind === 'reel') ||
       (!('kind' in post) && /-living/i.test(path.basename(String(post.html || ''), '.html')));
@@ -214,9 +219,9 @@ if (fs.existsSync(ctx.manifestPath)) {
       // P7.0: additive kind field — absent = static (Schema v1/v2 backward
       // compat), present = must be one of the three permitted values.
       if ('kind' in post && !KINDS.has(String(post.kind))) {
-        fail(manifestTitled, `[${slug}] kind "${post.kind}" is not a permitted value (static | compound-static | reel)`,
+        fail(manifestTitled, `[${slug}] kind "${post.kind}" is not a permitted value (static | compound-static | editorial-split | pure-grid | reel)`,
           'P7.0 additive manifest typing — unknown kinds fail closed so a typo never lands a post in the wrong render lane',
-          'set kind to "static", "compound-static", or "reel" (or omit the field for a legacy static post)');
+          'set kind to "static", "compound-static", "editorial-split", "pure-grid", or "reel" (or omit the field for a legacy static post)');
       }
 
       // html references this batch dir + exists on disk + no duplicates
@@ -264,7 +269,8 @@ if (fs.existsSync(ctx.manifestPath)) {
         }
 
         // ── P7.0 DEDICATED LEAF NAMESPACE (one deliverable per leaf dir) ──
-        // static / compound-static: output IS the leaf      → <renderRoot>/<slug>
+        // static / compound-static / editorial-split / pure-grid: output IS
+        // the leaf       → <renderRoot>/<slug>
         // reel: output = leaf/<name> and leaf dir = slug dir → <renderRoot>/<slug>/<variant>
         //   i.e. the MP4 file is <output>.mp4 inside a slug-named directory
         //   directly under the render root (cleanup's per-leaf budget +

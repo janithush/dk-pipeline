@@ -194,6 +194,33 @@ try {
     console.log(`\n◆ [${post.slug}] browser verify: ${htmlRel}`);
     const prePost = fs.readFileSync(INDEX_PATH);   // restore the canonical router after EVERY post
 
+    // P7.4 pure-visual grid (Format 3, `kind: "pure-grid"` / family
+    // `hero-split-pure-grid`): ZERO copy elements is the CONTRACT
+    // (§G.8.1) — the browser sampler would report checked === 0 (vacuous
+    // green by construction) because there is nothing to sample. The post
+    // bypasses browser contrast with a DECLARED status; its wordmark legibility
+    // over the top pane is still certified by photo-fit's deterministic band
+    // model upstream in the preflight chain.
+    let pureVisual = false;
+    try { pureVisual = pf.parseComposition(htmlPath).family === 'hero-split-pure-grid'; } catch { pureVisual = false; }
+    if (pureVisual) {
+      // Brand wordmark legibility is modelled (photo-fit), so mirror its authored state here for the record.
+      let brandPole = 'author';
+      try {
+        const c = pf.parseComposition(htmlPath);
+        const cand = pf.candidateConfig(c, 'author', 'author');
+        brandPole = cand.inkBar ? 'bar-top--ink' : 'bar-top--white';
+      } catch { brandPole = 'author'; }
+      const pureStatus = 'PASS (pure-visual zero-copy bypass)';
+      console.log(`${'✓'} [${post.slug}] verify-contrast verdict: ${pureStatus} — §G.8.1 Format 3 contract: zero copy elements; brand (${brandPole}) certified by the photo-fit deterministic band model.`);
+      digest.posts.push({
+        slug: post.slug, html: htmlRel, status: pureStatus, checked: 0,
+        aaFailures: [], attempts: [{ bypass: true, reason: 'pure-visual zero-copy contract (§G.8.1 Format 3)', brandPole }],
+        ok: true,
+      });
+      continue;
+    }
+
     let status = 'FAIL';
     let lastFindings = [];
     let checkedCount = 0;

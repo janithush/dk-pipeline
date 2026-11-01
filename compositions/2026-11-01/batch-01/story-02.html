@@ -7,19 +7,21 @@
   <link rel="stylesheet" href="../../../shared/story-system.css">
 </head>
 <body>
-  <main id="root" data-composition-id="dk-story-02" data-duration="0.033" data-no-timeline data-width="1080" data-height="1920" data-layout-family="hero-split-1-2">
-    <article class="frame layout--hero-split-1-2" aria-label="Material hero split 1+2 grid: a symmetric shaker cabinetry elevation above an integrated pantry pull macro hosting the copy platform and a working-corner joinery assembly">
+  <main id="root" data-composition-id="dk-story-02" data-duration="0.033" data-no-timeline data-width="1080" data-height="1920" data-layout-family="hero-split-editorial">
+    <article class="frame layout--hero-split-editorial" aria-label="Editorial solid-tile split: a symmetric shaker cabinetry elevation hero above a solid bone editorial tile hosting the copy platform beside an uninterrupted pantry hardware macro — macro photography freed from text occlusion, ink-on-bone native AAA">
       <!-- Top pane (54%): WIDE_HERO — hosts the brand knockout (top-right). -->
       <figure class="photo photo--pane photo--pane--top scrim--charcoal" aria-hidden="true">
         <img src="../../../assets/raw/optimized/DSC06488.jpg" alt="Symmetric cabinetry elevation: white shaker doors flanking a stainless range under a grey ceramic tile splashback with an open oak shelf">
         <span class="scrim scrim--top" aria-hidden="true"></span>
       </figure>
-      <!-- Bottom-left pane (46%): DETAIL_MACRO — hosts the copy platform over the deep bottom ramp. -->
-      <figure class="photo photo--pane photo--pane--bl scrim--charcoal" aria-hidden="true">
-        <img src="../../../assets/raw/optimized/DSC06496.jpg" alt="Macro of twin brushed-nickel bar appliance pulls set on an inset shaker pantry door">
-        <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
-      </figure>
-      <!-- Bottom-right pane (46%): secondary detail/hardware macro — pure photography, 2px bone gutter. -->
+      <!-- Bottom-left cell (46%): SOLID BONE EDITORIAL TILE — zero photo, zero
+           scrim, zero eyebrow. The copy platform (ink on bone = native AAA)
+           rides the unchanged engine pin (220px) over this tile. -->
+      <div class="pane pane--solid-bone" aria-hidden="true"></div>
+      <!-- Bottom-right pane (46%): PURE DETAIL MACRO — uninterrupted
+           craftsmanship texture: no copy, no scrim, no occlusion. (The
+           figure carries the family's declared scrim theme class only —
+           zero scrim spans are declared, so no ramp paints here.) -->
       <figure class="photo photo--pane photo--pane--br scrim--charcoal" aria-hidden="true">
         <img src="../../../assets/raw/optimized/DSC06509.jpg" alt="Working joinery corner: shaker drawer stack with nickel bar pulls meeting the tiled splashback and range oven">
       </figure>
@@ -27,9 +29,8 @@
         <img src="../../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">
         <p class="brand">Direct Kitchens</p>
       </header>
-      <section class="copy copy--bottom-left">
-        <p class="t-eyebrow">Quiet-Close Hardware</p>
-        <h1 class="t-display">Integrated pantry,<br><span class="serif-accent">quiet</span> hardware</h1>
+      <section class="copy copy--bottom-left copy--ink">
+        <h1 class="t-display">Inside a modern<br><span class="serif-accent">shaker kitchen</span></h1>
         <p class="cta">Book a design consultation<br>at Blackburn Head Office<br>Call 1300 449 799</p>
       </section>
     </article>

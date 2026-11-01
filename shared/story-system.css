@@ -451,12 +451,25 @@ body {
   object-fit: cover !important;
 }
 
-/* ── Material Hero Split (1+2 Grid, P2.3) ────────────────────────────────
-   Top row: full-width WIDE_HERO (54%). Bottom row: TWO equal detail cells.
+/* ── Material Hero Split (1+2 Grid, P2.3 · extended P7.4) ────────────────
+   Top row: full-width WIDE_HERO (54%). Bottom row: TWO equal (~539px) cells.
    Grid geometry on the .frame root (its flow children are ONLY the panes —
    bar-top/copy stay canvas-absolute above the grid, z10). Row heights are
-   the SHARED duo tokens; the grid gap + bone ground form the hairlines. */
-.layout--hero-split-1-2 {
+   the SHARED duo tokens; the grid gap + bone ground form the hairlines.
+   P7.4 (2026-11-01) adds two 4-Format Canon families to the SAME row/column
+   law — one source of grid truth, zero new geometry tokens:
+     · layout--hero-split-editorial — Format 2: the bottom-LEFT rail cell is
+       a SOLID bone editorial tile (zero photo, zero scrim) hosting the copy:
+       macro photography is liberated from text occlusion and the copy lands
+       on an invariant surface. The bottom-RIGHT cell stays a pure detail
+       macro (no copy, no scrim).
+     · layout--hero-split-pure-grid — Format 3: ALL THREE cells are pure
+       photographs (wide hero + two detail macros); zero text, zero scrims
+       anywhere — only the top-right knockout brand bar anchors the expo.
+*/
+.layout--hero-split-1-2,
+.layout--hero-split-editorial,
+.layout--hero-split-pure-grid {
   display: grid !important;
   grid-template-rows: var(--duo-top-h) var(--duo-bottom-h) !important;
   grid-template-columns: repeat(2, 1fr) !important;
@@ -464,30 +477,41 @@ body {
   background: var(--bone, #F6F1E7) !important;
 }
 
-.layout--hero-split-1-2 .photo--pane {
+.layout--hero-split-1-2 .photo--pane,
+.layout--hero-split-editorial .photo--pane,
+.layout--hero-split-pure-grid .photo--pane {
   position: relative !important;
   overflow: hidden !important;
   background: var(--bone, #F6F1E7) !important;
 }
 
 /* Top hero pane: row 1, spanning both columns. */
-.layout--hero-split-1-2 .photo--pane--top {
+.layout--hero-split-1-2 .photo--pane--top,
+.layout--hero-split-editorial .photo--pane--top,
+.layout--hero-split-pure-grid .photo--pane--top {
   grid-area: 1 / 1 / 2 / 3 !important;
 }
 
-/* Bottom-left detail pane: row 2, column 1 — hosts the copy platform. */
-.layout--hero-split-1-2 .photo--pane--bl {
+/* Bottom-left detail pane: row 2, column 1 — hosts the copy platform
+   (mono/photo families). The editorial family has NO bottom-left photo:
+   that cell is the solid tile below. */
+.layout--hero-split-1-2 .photo--pane--bl,
+.layout--hero-split-pure-grid .photo--pane--bl {
   grid-area: 2 / 1 / 3 / 2 !important;
 }
 
 /* Bottom-right detail pane: row 2, column 2. */
-.layout--hero-split-1-2 .photo--pane--br {
+.layout--hero-split-1-2 .photo--pane--br,
+.layout--hero-split-editorial .photo--pane--br,
+.layout--hero-split-pure-grid .photo--pane--br {
   grid-area: 2 / 2 / 3 / 3 !important;
 }
 
 /* Pane imagery — object-fit: cover within the pane box (the engine's pane
    rect maps exactly this crop). */
-.layout--hero-split-1-2 .photo--pane img {
+.layout--hero-split-1-2 .photo--pane img,
+.layout--hero-split-editorial .photo--pane img,
+.layout--hero-split-pure-grid .photo--pane img {
   position: absolute !important;
   inset: 0 !important;
   width: 100% !important;
@@ -499,6 +523,34 @@ body {
    right inset becomes --copy-right-split (1080 − (539 − 24)), keeping text
    and the modelled bands inside the 539px pane with the engine copy gap.
    Bottom pin unchanged (--copy-bottom: 220px). */
-.layout--hero-split-1-2 .copy--bottom-left {
+.layout--hero-split-1-2 .copy--bottom-left,
+.layout--hero-split-editorial .copy--bottom-left {
   right: var(--copy-right-split) !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   P7.4 SOLID EDITORIAL TILE (Format 2 — `hero-split-editorial`, 4-Format
+   Production Canon). The bottom-left rail cell is an invariant LAYOUT
+   SURFACE, not a photo: solid bone ground, zero scrims, zero cover crops.
+   The engine copy platform (unchanged 220px pin + --copy-right-split inset)
+   floats over it at canvas level (z10, .copy--ink recolor authored per
+   post), so photo-fit's band model evaluates the copy block against this
+   declared tile fill (SOLID_BG.bone) — native AAA, zero self-heal rungs.
+   The editorial canon strips every cinematic halo: no text-shadow may
+   render against the flat tile ground. Eyebrow is BANNED on this family
+   (photo-fit fail-closed) — the tile speaks ink-on-bone only.
+   ═══════════════════════════════════════════════════════════════════════ */
+.pane--solid-bone {
+  grid-area: 2 / 1 / 3 / 2 !important;
+  position: relative !important;
+  overflow: hidden !important;
+  background: var(--bone-50, #F5F2EB) !important;
+}
+
+/* Ink-on-bone typography hygiene: halos and hairline-shadows are hostile to
+   a flat editorial surface — strip them on every text role over the tile. */
+.layout--hero-split-editorial .t-display,
+.layout--hero-split-editorial .t-eyebrow,
+.layout--hero-split-editorial .cta {
+  text-shadow: none !important;
 }
