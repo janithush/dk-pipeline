@@ -1,7 +1,7 @@
 # Direct Kitchens — Living Story Motion & Audio Specification
 
-**Version:** P7.3 Production Standard (Cinematic Kinetics · Head-Office CTA suite)
-**Baseline Anchor:** Certified P7.0 Pipeline Delivery · P7.2 audio-gain certification · P7.3 scrim-depth + teardown certification (2026-11-01)
+**Version:** P7.5 Production Standard (Cinematic Kinetics · Head-Office CTA suite · 4-Format Canon)
+**Baseline Anchor:** Certified P7.0 Pipeline Delivery · P7.2 audio-gain certification · P7.3 scrim-depth + teardown certification · P7.4 Solid Editorial Tile · P7.5 Pure-Visual Grid + 4-Post Suite Integration (2026-11-01)
 **Target Specs:** 20.0s (600 frames @ 30 FPS) | 1080×1920 (9:16) | H.264 High bt709
 
 ---
@@ -79,6 +79,15 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
    Isolated factory-contact CTAs are REMOVED (P7.3): bookings route to HEAD OFFICE, never the plant.
 4. **Reel End-Card Safe Zones (P7.2/P7.3 certified):** the Scene-5 white end-card keeps the engine copy contract — centered ink stack, 176px circular emblem, copy tops well inside the 220px bottom safe zone on the static lanes (the reel's end-card re-pins the block to the centered composition; platform UI adjacency is unchanged). Scene copy over photo panes rides the deepened **680px** bottom ramp (`--scrim-bottom: 680px`, P7.3) so the CTA envelope's worst rows sit near ramp progress 68% (deep-ramp alpha ≈ 0.50).
 5. **Banned Legacy Copy:** The phrases *"Built in Melbourne"* (unqualified) and *"Quality and Craft"* are permanently deprecated; unqualified "free"-economy phrasing stays off the verified suite (the end-card legacy string "Book your free design consultation" predates the suite and is NOT a ctaLibrary variant — new reels author Variant B verbatim).
+6. **P7.5 4-Format Production Canon — Format Harmony & Asset Discipline:**
+   The daily batch now delivers a complete 4-post suite across four distinct layout families:
+   | Post | `kind` | Layout Family | Description |
+   |------|--------|---------------|-------------|
+   | story-01 | `static` | `mono-full` | Full-bleed static hero — wide room architecture, deep 680px bottom scrim, copy platform at 220px. |
+   | story-02 | `editorial-split` | `hero-split-editorial` | Format 2: Top hero + solid bone editorial tile (ink-on-bone native AAA, zero scrim/eyebrow) + pure detail macro (no copy). |
+   | story-03 | `reel` | (GSAP timeline) | Format 4: 20s Living Story Reel — 5-scene cinematic kinetics, P7.2 certified audio baseline, Variant B end-card. |
+   | story-04 | `pure-grid` | `hero-split-pure-grid` | Format 3: Top hero + 2 subject-diverse detail macros — ZERO text, ZERO scrims, brand bar only. |
+   - **Asset Diversity Law (cross-format):** The two detail macros in `pure-grid` MUST be subject-diverse (e.g., hardware pull + joinery corner — NO twin pullouts/drawers). The wide hero may be shared with at most ONE other post in the batch (typically `editorial-split` for continuity). All three static-lane formats (`static`, `editorial-split`, `pure-grid`) share the same brand bar contract and render via `render:daily` png-sequence to the same leaf namespace (`renders/<date>/<batch>/<slug>/poster-settled.png`).
 
 ---
 

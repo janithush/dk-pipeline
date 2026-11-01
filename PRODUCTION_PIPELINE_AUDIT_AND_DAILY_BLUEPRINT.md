@@ -3,10 +3,11 @@
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
 **Engine:** HyperFrames `v0.8.191` (devDependency, EXACT pin — never `^`)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
-**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01
+**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01 · **P7.4 amendment (Solid Editorial Tile · Pure-Visual Grid · 4-Format Canon):** 2026-11-01 · **P7.5 amendment (4-Post Suite Integration · Asset Diversity Law · 3-Doc Sync):** 2026-11-01
 **Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 **Status (2026-10-24 · PHASE 1 of the capability expansion, tag `phase1-green`):** six zero-risk engine amendments shipped — ① BRAND PLATE STANDARD (ink-on-bone by default; brand polarity retired, §F.2/§G.2) ② `scrim--greige` theme (§G.5) ③ serif-accent modelled as ESP700 under `copy--ink` (§G.6/§G.9) ④ DK Signature Grade constrained finishing profile + advisory (§F.2/§H.8) ⑤ `--strict --no-best-effort` renders + `check:zones` advisory sweep (§F.4) ⑥ dual-lens AI vision preflight (`npm run qa:vision`, fail-open, §H.10). Zero layout geometry changes.
+**Status (2026-11-01 · P7.4/P7.5 4-FORMAT PRODUCTION CANON):** The daily batch now delivers a complete 4-format suite (story-01..04): ① Full-Bleed Static Hero (`kind: "static"`) ② Editorial Split Tile (`kind: "editorial-split"`) — solid bone tile, ink-on-bone native AAA, zero scrim, zero eyebrow ③ Pure-Visual 3-Photo Grid (`kind: "pure-grid"`) — zero copy, zero scrim, subject-diversity-enforced detail macros ④ Living Story Reel (`kind: "reel"`, 20s) — P7.2 audio baseline certified. Asset Diversity Law: posts within a batch must not clone multiple photo pairings (at most one shared photo; detail macros must be subject-diverse).
 
 ---
 
@@ -1442,6 +1443,50 @@ every pre-Phase-2 composition parses byte-identically).
     this family — §H.9 #6 applies pane-locally as well as canvas-wide.
   - photo-fit routes brand bands → top-hero rect, copy bands → bottom-left rect,
     via the same rect-containment `pixelMapFor`; count ≠ 3 → fail-closed refusal.
+ - ✅ **`hero-split-editorial` — EDITORIAL SOLID-TILE SPLIT (P7.4 Format 2, 4-Format
+   Production Canon):**
+   - **Top Pane (54% height ≈ 1037px):** spans the full 1080px width — dedicated to
+     `WIDE_HERO` (3:2 landscape). Hosts the brand header knockout mark (unchanged
+     top-right canvas anchor; top corner = canvas corner → calibrated radial pool +
+     declared deep/airy partner apply unchanged).
+   - **Bottom Rail (46% height ≈ 881px):** split into 2 equal vertical cells of
+     ~539px × 881px:
+     - **Bottom-Left Cell:** **SOLID BONE EDITORIAL TILE** — a declared layout surface,
+       NOT a photo. `<div class="pane pane--solid-bone">` (grid area 2/1). Background:
+       `var(--bone-50, #F5F2EB)`. Zero photo, zero scrim, zero gutter content. The
+       engine copy platform (unchanged 220px pin + `--copy-right-split` inset) floats
+       over this tile at canvas level (z10). Copy contract: STRICTLY NO EYEBROW;
+       authored `.copy--ink` (dark ink h1 + espresso CTA = native AAA); kitchen-centric
+       headline celebrating built cabinetry/joinery; verified-suite CTA (Head-Office
+       suite variant). photo-fit evaluates ALL copy bands against the invariant
+       SOLID_BG.bone fill — native WCAG AAA (12:1+), zero self-heal rungs.
+     - **Bottom-Right Cell:** `DETAIL_MACRO` pure photography. No copy, no scrim,
+       zero occlusion — macro craftsmanship (hinges, drawer edges, timber texture)
+       liberated from text overlay.
+   - **Gutters:** `--grid-gutter: 2px` — horizontal AND vertical hairlines exposing
+     the bone ground; zero content, zero text.
+   - Document order: top pane `<figure>`, solid tile `<div>`, bottom-right `<figure>`.
+     All photo panes carry the SAME `scrim--{theme}` class; the solid tile carries
+     NO theme class. Photo-fit parses 2 photos + 1 tile div; count ≠ 2 photos →
+     fail-closed.
+ - ✅ **`hero-split-pure-grid` — PURE-VISUAL 3-PHOTO GRID (P7.5 Format 3, 4-Format
+   Production Canon):**
+   - **Top Pane (54% height ≈ 1037px):** `WIDE_HERO` wide room elevation — hosts the
+     top-right knockout brand bar only.
+   - **Bottom Rail (46% height ≈ 881px):** split into 2 equal vertical cells of
+     ~539px × 881px — BOTH cells are `DETAIL_MACRO` pure photography.
+   - **STRICTLY ZERO TEXT / COPY / SCRIMS** across all three panes. The only
+     overlay is the top-right brand bar (`.bar-top` — polarity authored per top
+     photo luminosity). No `.copy` section, no `.t-eyebrow`, no `.t-display`,
+     no `.cta`, no gradient scrim spans on the detail panes.
+   - **Asset Diversity Law (enforced by authoring, fail-closed by operator):**
+     The two detail macros MUST depict subject-diverse assemblies (e.g., hardware
+     pull macro + joinery corner macro — NO twin pullouts, NO twin drawers).
+     The top hero may be shared with ONE other post in the batch for continuity,
+     but the detail macro pair must be fresh assets from the active pool.
+   - Photo-fit: 3 photos, zero copy bands → brand band only. verify-contrast:
+     DECLARED PASS bypass (pure-visual zero-copy contract; brand certified by
+     photo-fit deterministic model).
 
 ### G.9 `.copy--ink` — additive copy variant for bright surfaces (added 2026-10-21 · halos stripped 2026-10-22)
 

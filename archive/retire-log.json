@@ -128,5 +128,15 @@
     "moved": 1,
     "skipped": 0,
     "trigger": "retire-batch (target date 2026-11-01)"
+  },
+  {
+    "at": "2026-11-01T13:14:45.947Z",
+    "date": "2026-11-01",
+    "kind": "superseded-reel",
+    "from": "renders/2026-11-01/batch-01/story-03/living-20s.mp4",
+    "to": "renders/archive/2026-11-01/batch-01/story-03/living-20s-superseded-2026-11-01T13-14-45-947Z.mp4",
+    "moved": 1,
+    "skipped": 0,
+    "trigger": "render-reels pre-render supersede (re-render of a certified leaf)"
   }
 ]

@@ -1,4 +1,4 @@
-# WORKFLOW — dk-pipeline Unified Multi-Format Production Manual (P7.3)
+# WORKFLOW — dk-pipeline Unified Multi-Format Production Manual (P7.5)
 
 The operator's manual for producing a full day of posts across all three
 delivery formats. Architecture doctrine lives in
@@ -10,12 +10,14 @@ audio doctrine lives in `docs/LIVING-STORY-SPEC.md`; this file is the *step-by-s
 ## §1 Format Taxonomy
 
 Every manifest `posts[]` entry carries an additive `kind` field (Schema v1/v2
-stay valid — unknown additive fields are ignored by every gate):
+stay valid — unknown additive fields are ignored by every gate). The P7.5
+4-Format Production Canon defines four distinct kinds:
 
 | `kind` | Composition file | Renderer | Deliverable leaf | Gates that bind |
 |---|---|---|---|---|
 | `static` | `<slug>.html` | `render:daily` (png-sequence) | `renders/<date>/<batch>/<slug>/` | preflight chain (lint · check-paths · photo-fit · verify-contrast) |
-| `compound-static` | `<slug>.html` (layout-family grid, e.g. `hero-split-1-2`) | `render:daily` (png-sequence) | `renders/<date>/<batch>/<slug>/` | same as static (+ browser AA on every pane's copy) |
+| `editorial-split` | `<slug>.html` (`layout-family="hero-split-editorial"`) | `render:daily` (png-sequence) | `renders/<date>/<batch>/<slug>/` | same as static (+ solid-tile native AAA, zero self-heal) |
+| `pure-grid` | `<slug>.html` (`layout-family="hero-split-pure-grid"`) | `render:daily` (png-sequence) | `renders/<date>/<batch>/<slug>/` | same as static (zero copy bands; brand certified by photo-fit) |
 | `reel` | `<slug>-living[-<variant>].html` | `render:reels` (mp4, `--quality delivery --strict`) | `renders/<date>/<batch>/<slug>/living-<variant>.mp4` | preflight chain **+** audio certification (§6) |
 
 Rules:
@@ -28,8 +30,15 @@ Rules:
 3. `unknown` kinds fail `check-paths` closed (a typo must never route a post
    into the wrong lane).
 4. Slugs stay `story-NN` and are CONTINUOUS intraday across ALL formats
-   (`detectNextSlug` rule, §F.9) — a 4.5s pilot reel and a 20s showpiece in
-   one batch own story-02 and story-04 respectively.
+   (`detectNextSlug` rule, §F.9) — a 4-post suite in one batch owns
+   story-01..04.
+5. **Asset Diversity Law (P7.5):** Posts within a batch MUST NOT clone
+   multiple photo pairings. At most ONE photo may be shared between any two
+   posts (typically the wide hero for batch continuity). Detail macro panes
+   MUST be subject-diverse — no twin pullouts, no twin drawers, no twin
+   appliance handles. Violations are caught at authoring; `check-paths`
+   enforces manifest structure but the diversity rule is an operator
+   discipline (§H.7 vision-grounding).
 
 ### Leaf namespaces (one deliverable per leaf — Storage Budget Law)
 
@@ -135,25 +144,53 @@ You are the Creative Technologist for Direct Kitchens today. Author the full 3-f
 4. CTA RENDERING: the engine styles `.cta` at the elevated 20px / 600 / 0.14em / 1.5 lockup (brass on dark scrims / espresso-800 under `.copy--ink`). NEVER add per-post CTA styling, pills, plates, or background boxes — long lockups wrap to a balanced 1–3 line stack inside the column on their own, and the scrims alone carry contrast. In narrow columns prefer an authored `<br>` at the suite separator `·` so the phone lockup can never split mid-number (e.g. cta-B in the 539px hero-split pane: `Book a design consultation<br>at Blackburn Head Office<br>Call 1300 449 799`; cta-C full-bleed: `Explore custom kitchens at directkitchens.com.au<br>Call 1300 449 799`).
 5. P7.3 SCRIM GEOMETRY: the bottom ramp is deepened to **680px** (`--scrim-bottom: 680px`, was 620px) so the 0.60–0.80 alpha wheel envelops the elevated 20px CTA stack in every pane — the mono + duo/hero-split ramp is canvas-coincident at y1240 over the 881px bottom panes. photo-fit scrapes the token; no per-post scrim CSS is ever authored.
 
-== STEP 2: COMPOSE THE THREE CERTIFIED FORMATS ==
-Using available photos, author the following 3 compositions inside the active batch folder using DEPTH-3 stylesheet imports (`../../../shared/story-system.css`):
+== STEP 2: COMPOSE THE FOUR CERTIFIED FORMATS (P7.5 4-FORMAT PRODUCTION CANON) ==
+Using available photos, author the following 4 compositions inside the active batch folder using DEPTH-3 stylesheet imports (../../../shared/story-system.css):
 
-1. POST 1 — FULL-BLEED STATIC HERO (`kind: "static"`):
-   - Slug: `<slug-01>.html` (e.g., story-01.html)
-   - Contract: `data-composition-id="dk-<slug-01>"` `data-duration="0.033"` `data-no-timeline` `data-width="1080"` `data-height="1920"`.
-   - Layout: Full-bleed single hero architecture, top-right knockout `.bar-top`, `.copy.copy--bottom-left` or `copy--bottom-right` pinned at 220px.
+1. POST 1 - FULL-BLEED STATIC HERO (kind: "static" - Format 1):
+   - Slug: <slug-01>.html (e.g., story-01.html)
+   - Contract: data-composition-id="dk-<slug-01>" data-duration="0.033" data-no-timeline data-width="1080" data-height="1920".
+   - Layout: Full-bleed single hero architecture, top-right knockout .bar-top, .copy.copy--bottom-left or copy--bottom-right pinned at 220px.
 
-2. POST 2 — COMPOUND 1+2 STATIC GRID (`kind: "compound-static"`):
-   - Slug: `<slug-02>.html` (e.g., story-02.html)
-   - Contract: `data-composition-id="dk-<slug-02>"` `data-duration="0.033"` `data-no-timeline` `data-width="1080"` `data-height="1920"` `data-layout-family="hero-split-1-2"`.
+2. POST 2 - EDITORIAL SPLIT TILE (kind: "editorial-split" - Format 2):
+   - Slug: <slug-02>.html (e.g., story-02.html)
+   - Contract: data-composition-id="dk-<slug-02>" data-duration="0.033" data-no-timeline data-width="1080" data-height="1920" data-layout-family="hero-split-editorial".
    - Layout:
      * Top Pane (54% height): Wide architectural room hero with top-right knockout brand bar.
-     * Bottom-Left Pane (46% height): Detail macro photo with `.scrim--bottom--deep` hosting the copy block.
-     * Bottom-Right Pane (46% height): Secondary detail/hardware macro (pure photography, 2px bone gutter).
+     * Bottom-Left Cell (46% height): **SOLID BONE EDITORIAL TILE** - <div class="pane pane--solid-bone"> (zero photo, zero scrim, zero eyebrow). Copy platform floats over tile: authored .copy--ink (dark ink headline + espresso CTA = native AAA), kitchen-centric headline (celebrating built cabinetry/joinery), verified-suite CTA.
+     * Bottom-Right Cell (46% height): Pure detail macro - uninterrupted craftsmanship texture (no copy, no scrim).
 
-3. POST 3 — 20.0s LIVING STORY REEL (`kind: "reel"`, `variant: "20s"`):
-   - Slug: `<slug-03>-living-20s.html` (e.g., story-03-living-20s.html)
-   - Contract: `data-composition-id="dk-<slug-03>"` `data-duration="20.0"` `data-width="1080"` `data-height="1920"` (GSAP timeline driven, 30fps / 600 frames).
+3. POST 3 - PURE-VISUAL 3-PHOTO GRID (kind: "pure-grid" - Format 3):
+   - Slug: <slug-04>.html (e.g., story-04.html) - note: story-03 is the reel, story-04 is the pure-grid.
+   - Contract: data-composition-id="dk-<slug-04>" data-duration="0.033" data-no-timeline data-width="1080" data-height="1920" data-layout-family="hero-split-pure-grid".
+   - Layout:
+     * Top Pane (54% height): Wide architectural room hero with top-right knockout brand bar.
+     * Bottom-Left Cell (46% height): Pure detail macro 1 - **NO copy, NO scrim**.
+     * Bottom-Right Cell (46% height): Pure detail macro 2 - **NO copy, NO scrim**.
+   - **Asset Diversity Law (STRICT):** The two detail macros MUST depict subject-diverse assemblies (e.g., hardware pull macro + joinery corner macro - NO twin pullouts, NO twin drawers). The top hero may be shared with ONE other post in the batch for continuity; the detail macro pair must be fresh assets from the active pool.
+
+4. POST 4 - 20.0s LIVING STORY REEL (kind: "reel", ariant: "20s" - Format 4):
+   - Slug: <slug-03>-living-20s.html (e.g., story-03-living-20s.html)
+   - Contract: data-composition-id="dk-<slug-03>" data-duration="20.0" data-width="1080" data-height="1920" (GSAP timeline driven, 30fps / 600 frames).
+   - Motion Choreography:
+     * S1 (0.0-4.5s): Hero wide with motorized lateral pan (scale >= 1.15).
+     * S2 (4.5-8.5s): Macro focus with beat-synced arrival punch-zoom.
+     * S3 (8.5-12.5s): 54/46 duo-stack split (settle drift top + push-slide bottom).
+     * S4 (12.5-16.5s): Functional detail via masked lateral push-wipe.
+     * S5 (16.5-20.0s): Pure white #ffffff end-card with centered dk emblem and an approved CTA line from the P7.3 verified Head-Office suite (see STEP 1.5 above - cta-B "Book a design consultation at Blackburn Head Office · Call 1300 449 799" is the end-card default; the reel's own end-card styling governs its colour/size).
+   - Stationary Scrim Law: Translate and scale apply exclusively to inner <img> tags; scrims and brand marks remain fixed siblings.
+   - Master Audio Staging & Ducking:
+     * Bed: ssets/audio/beds/dk-bed-acoustic-claps-01.mp3 (P7.2 CERTIFIED BASELINE: +1.0 dB body / linear 1.1220 -
+        the -9 dB transition notches remove ~0.5 dB of integrated bed energy, so the body carries BOTH that
+        compensation AND the +0.5 dB delivery headroom. NEVER author a reel at +0.5 dB (1.0593): the 2026-10-31
+        ship measured I -14.7 LUFS (0.2 LU below the -14.5 floor, audio cert RED) from exactly that regression.
+        Notch dips 0.3758 ABSOLUTE (-9.0 dB RELATIVE to the 1.1220 body, ratio ≈ 0.335) · end-card pocket
+        0.5625 absolute (-6 dB relative). P6.0 measured this lane at I -14.3 LUFS.
+     * Whoosh cues: t=4.5s and t=8.5s (whoosh-soft-01.mp3 at -5.0 dB under -9.0 dB notches).
+     * Lateral wipe cue: t=12.5s (ccent-page-turn-01.mp3 at -5.0 dB under -9.0 dB notch).
+     * Logo snap cue: t=16.5s (click-tactile-01.mp3 at -6.5 dB under -6.0 dB bed hold).
+     * CTA settle cue: t=17.2s (ccent-pop-01.mp3 at -7.5 dB).
+     * Outro decay: Exponential decay from -6.0 dB to -60.0 dB (17.5s - 20.0s). Root limiter ceiling pinned at -3.6 dBTP.n, 30fps / 600 frames).
    - Motion Choreography:
      * S1 (0.0-4.5s): Hero wide with motorized lateral pan (scale >= 1.15).
      * S2 (4.5-8.5s): Macro focus with beat-synced arrival punch-zoom.
@@ -175,12 +212,12 @@ Using available photos, author the following 3 compositions inside the active ba
      * Outro decay: Exponential decay from -6.0 dB to -60.0 dB (17.5s - 20.0s). Root limiter ceiling pinned at -3.6 dBTP.
 
 ## STEP 3: UPDATE BATCH MANIFEST ==
-Append all 3 posts to the active `batch-manifest.json` using Schema v2 with explicit `kind` typing and dedicated leaf paths. Static and compound-static posts also carry an additive `cta` field naming the assigned suite variant (`cta-A` | `cta-B` | `cta-C` | `cta-D`, from §1.5 above); the manifest's `ctaLibrary` block (P7.3 Head-Office suite — the source of truth to embed VERBATIM in every new manifest):
+Append all 4 posts to the active `batch-manifest.json` using Schema v2 with explicit `kind` typing and dedicated leaf paths. Static-lane posts (`static`, `editorial-split`, `pure-grid`) carry an additive `cta` field for copy-bearing posts only; `pure-grid` posts carry NO CTA (zero-copy contract). The manifest's `ctaLibrary` block (P7.3 Head-Office suite — the source of truth to embed VERBATIM in every new manifest):
 {
   "date": "<YYYY-MM-DD>",
   "batch": "<batch-XX>",
   "ctaLibrary": {
-    "policy": "P7.3 verified Head-Office conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic). Isolated factory-contact CTAs REMOVED (P7.3): bookings go to Head Office.",
+    "policy": "P7.3 verified Head-Office conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic). Isolated factory-contact CTAs REMOVED (P7.3): bookings go to Head Office. P7.4/5: pure-grid posts carry NO CTA — the rotation continues unbroken across copy-bearing posts only.",
     "variants": [
       { "id": "cta-A", "label": "Tri-Showroom Network", "text": "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" },
       { "id": "cta-B", "label": "Head-Office Direct & Consultation", "text": "Book a design consultation at Blackburn Head Office · Call 1300 449 799" },
@@ -194,15 +231,15 @@ Append all 3 posts to the active `batch-manifest.json` using Schema v2 with expl
       "kind": "static",
       "html": "compositions/<DATE>/<batch-XX>/<slug-01>.html",
       "output": "renders/<DATE>/<batch-XX>/<slug-01>",
-      "notes": "Full-bleed static hero",
+      "notes": "Full-bleed static hero (Format 1)",
       "cta": "<cta-A|cta-B|cta-C|cta-D>"
     },
     {
       "slug": "<slug-02>",
-      "kind": "compound-static",
+      "kind": "editorial-split",
       "html": "compositions/<DATE>/<batch-XX>/<slug-02>.html",
       "output": "renders/<DATE>/<batch-XX>/<slug-02>",
-      "notes": "1+2 Compound split grid",
+      "notes": "Editorial Split Tile — solid bone editorial tile + pure detail macro (Format 2)",
       "cta": "<cta-next in rotation>"
     },
     {
@@ -211,7 +248,14 @@ Append all 3 posts to the active `batch-manifest.json` using Schema v2 with expl
       "variant": "20s",
       "html": "compositions/<DATE>/<batch-XX>/<slug-03>-living-20s.html",
       "output": "renders/<DATE>/<batch-XX>/<slug-03>/living-20s",
-      "notes": "20s Living Story Reel (P7.0 certified)"
+      "notes": "20s Living Story Reel (P7.0 certified, P7.2 audio baseline)"
+    },
+    {
+      "slug": "<slug-04>",
+      "kind": "pure-grid",
+      "html": "compositions/<DATE>/<batch-XX>/<slug-04>.html",
+      "output": "renders/<DATE>/<batch-XX>/<slug-04>",
+      "notes": "Pure-Visual 3-Photo Grid — wide hero + 2 subject-diverse detail macros (Format 3)"
     }
   ]
 }
