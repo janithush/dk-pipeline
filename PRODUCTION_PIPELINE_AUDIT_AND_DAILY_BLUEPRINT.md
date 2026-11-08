@@ -3,7 +3,7 @@
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
 **Engine:** HyperFrames `v0.8.191` (devDependency, EXACT pin — never `^`)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
-**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01 · **P7.4 amendment (Solid Editorial Tile · Pure-Visual Grid · 4-Format Canon):** 2026-11-01 · **P7.5 amendment (4-Post Suite Integration · Asset Diversity Law · 3-Doc Sync):** 2026-11-01
+**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01 · **P7.4 amendment (Solid Editorial Tile · Pure-Visual Grid · 4-Format Canon):** 2026-11-01 · **P7.5 amendment (4-Post Suite Integration · Asset Diversity Law · 3-Doc Sync):** 2026-11-01 · **P7.6 amendment (CTA Suite Generalization — Blackburn/Head-Office locators eliminated from Variants B & D):** 2026-11-08
 **Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 **Status (2026-10-24 · PHASE 1 of the capability expansion, tag `phase1-green`):** six zero-risk engine amendments shipped — ① BRAND PLATE STANDARD (ink-on-bone by default; brand polarity retired, §F.2/§G.2) ② `scrim--greige` theme (§G.5) ③ serif-accent modelled as ESP700 under `copy--ink` (§G.6/§G.9) ④ DK Signature Grade constrained finishing profile + advisory (§F.2/§H.8) ⑤ `--strict --no-best-effort` renders + `check:zones` advisory sweep (§F.4) ⑥ dual-lens AI vision preflight (`npm run qa:vision`, fail-open, §H.10). Zero layout geometry changes.
@@ -719,7 +719,7 @@ Before writing code, discuss with me:
 - Luxury composition constraints (Direct Kitchens $50K+ showroom strategy):
   - Full-Bleed Material Primacy: 85–90% of canvas dedicated to raw architectural photography (stone veining, fluted timber, integrated joinery, ambient lighting). No heavy UI containers, floating cards, or opaque backgrounds obscuring craft details.
   - Hairline Callout Guardrail: Strictly 0, 1, or maximum 2 architectural hairline pointers per creative (e.g., "Calacatta marble waterfall edge", "Hand-milled fluted oak"). Never clutter or turn the asset into a technical schematic.
-  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. CTA lines come exclusively from the P7.3 VERIFIED HEAD-OFFICE 4-VARIANT SUITE (§G.7): tri-showroom network, Blackburn Head-Office consultation & direct call, URL + clear-call lockup, or Melbourne craftsmanship & Head-Office authority — all grounded in the real Direct Kitchens network (directkitchens.com.au · 1300 449 799 · Blackburn / Moonee Ponds / Bayswater; customers book with HEAD OFFICE, never the plant). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
+  - Restrained Editorial Typography: Minimalist copy — zero discounts, zero price tags. CTA lines come exclusively from the P7.6 VERIFIED GENERALIZED 4-VARIANT SUITE (§G.7): tri-showroom network, direct consultation booking & call lockup, URL + clear-call lockup, or Melbourne craftsmanship authority — all grounded in the real Direct Kitchens network (directkitchens.com.au · 1300 449 799 · Blackburn / Moonee Ponds / Bayswater; customers book with HEAD OFFICE, never the plant). Monochrome foundation (clean white, deep slate/black, subtle neutral scrims) harmonizing with the photo's undertones.
   - Additional high-end editorial details: non-destructive dual-axis scrim gradients (preserve central material detail); micro-tracking for uppercase labels (wide `--track-eyebrow` for breathy labels, tight `--track-tight` for headlines); negative space as a design element — anchor copy to one corner, leave 60–70% of canvas as uninterrupted photography.
 - **Grounding Verification (MANDATORY, before ANY HTML/CSS is written):** Build a Design Mapping table for each post that explicitly cites the verified visual elements logged in Step 1. Every claim in the copy must trace back to something you actually SAW:
 
@@ -728,7 +728,7 @@ Before writing code, discuss with me:
   | Headline: "⟨observed feature⟩, ⟨observed relationship⟩" | Verified element: ⟨exact phrase from the Step 1 log for this photo⟩ | ⟨photo N⟩ |
   | Eyebrow: "⟨OBSERVED ROOM/ZONE⟩" | Room/space type: ⟨as logged for this photo⟩ | ⟨photo N⟩ |
   | Scrim tint: ⟨charcoal or warm⟩ | Lighting undertone: ⟨as logged⟩ | ⟨photo N⟩ |
-  | CTA: ⟨P7.3 verified Head-Office suite variant⟩ | Brand policy — verified CTA library (§G.7) | — |
+  | CTA: ⟨P7.6 verified generalized suite variant⟩ | Brand policy — verified CTA library (§G.7) | — |
 
   - No headline, callout, eyebrow, or theme may reference a material, appliance, room, or fitting that is NOT in the Step 1 inspection log for the photo being used.
   - **Kitchen-Centric Canon (P7.1):** visual-model drift toward secondary props is BANNED as headline fuel — lighting fixtures, chairs, barstools, fruit bowls, plants, and background windows never drive `.t-display` or `.t-eyebrow`. Headlines celebrate the BUILT kitchen: Shaker profile doors · integrated pantries · stone waterfall benchtops · fluted timber joinery · quiet-close hardware · architectural splashbacks · bespoke island architecture (e.g. "Hand-crafted Shaker joinery, quiet precision", NOT "Light, hung low").
@@ -1002,9 +1002,9 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 
 ### F.6 Copy contract
 - Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line,
-  ≤1 serif-accent italic word), 1 CTA from the P7.3 VERIFIED HEAD-OFFICE 4-VARIANT SUITE (§G.7): the
-  tri-showroom network line, the Blackburn Head-Office consultation & direct-call line, the URL +
-  clear-call lockup, or the Melbourne craftsmanship & Head-Office authority line — rotate A → B → C → D
+  ≤1 serif-accent italic word), 1 CTA from the P7.6 VERIFIED GENERALIZED 4-VARIANT SUITE (§G.7): the
+  tri-showroom network line, the direct consultation booking & call lockup, the URL + clear-call
+  lockup, or the Melbourne craftsmanship authority line — rotate A → B → C → D
   by post index; never freelance a phrase. Isolated factory-contact CTAs are REMOVED (P7.3): customers
   book design consultations with HEAD OFFICE, not the manufacturing plant.
 - KITCHEN-CENTRIC CANON: headlines/eyebrows celebrate the built kitchen (Shaker profiles,
@@ -1285,28 +1285,33 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 
 **Serif-accent copy contract (2026-10-24, Phase-1 model alignment).** The accent is an **editorial garnish, not a size experiment**: a 1–3 word italic phrase inside `.t-display` at the UNCHANGED 52px display size (never its own line — it rides inside the headline's `<br>` line structure). Device-constraint lineage from the Mission-1 audit: the italic serif reads as refined, never decorative, and — critically — it is the ONLY text whose colour diverges within a band under `.copy--ink` (`--espresso-700` vs the band's `--ink`), which photo-fit now models explicitly (§G.9): the full h1 band is evaluated a second time at ESP700 and the worst verdict governs. Keep accents SHORT (1–3 words, never numbers) so the conservative model never over-escalates the whole headline.
 
-### G.7 Verified CTA suite (brand copy policy, P7.3 — Head-Office authority)
+### G.7 Verified CTA suite (brand copy policy, P7.3 head-office routing · P7.6 generalization)
 
 Zero prices, zero discounts. The generic two-phrase library ("Visit our showroom" /
 "Book a private design consultation") is RETIRED — every CTA draws from the Verified
-Head-Office 4-Variant Suite, grounded exclusively in Direct Kitchens' real-world credentials
+Generalized 4-Variant Suite, grounded exclusively in Direct Kitchens' real-world credentials
 (web `directkitchens.com.au` · toll-free bookings `1300 449 799` · Melbourne showrooms:
 Blackburn Head Office 184 Whitehorse Rd · Moonee Ponds 42 Maribyrnong Rd · Bayswater Factory
 1 Power Rd). Rotate by post index (A → B → C → D, cyclic).
 
 **P7.3 strategic shift (2026-11-01, authoritative):** customers book design consultations
 with HEAD OFFICE, not the manufacturing plant. Isolated factory-contact CTAs are REMOVED —
-the Bayswater factory survives only as proof-of-manufacture inside CTA D's craftsmanship
-line ("designed & built", with the call routed to Blackburn). Variant C's phone entry is
-pinned to `Call 1300 449 799` — the explicit "Call" prefix eliminates the visual ambiguity
-between the `.com.au` TLD and the bare 1300 number in a 0.14em-tracked caps run.
+the Bayswater factory survives only as proof-of-manufacture evidence behind the network.
+Variant C's phone entry is pinned to `Call 1300 449 799` — the explicit "Call" prefix eliminates
+the visual ambiguity between the `.com.au` TLD and the bare 1300 number in a 0.14em-tracked
+caps run. **P7.6 generalization (2026-11-08, authoritative):** "Blackburn" and "Head Office"
+locators are ELIMINATED from Variants B and D — Greater-Melbourne prospects (Moonee Ponds,
+Western/Northern suburbs) were reading the locators as a service-area restriction. Variants B
+and D render the bare `Call 1300 449 799` lockup with NO branch/head-office qualifier; do NOT
+re-insert "Head Office" into Variant D. The locators survive ONLY in Variant A (tri-showroom
+geography) and in provenance records (this table, archives, ship certificates).
 
 | # | CTA (exact render text) | Intent | Placement |
 |---|---|---|---|
 | **A** | "Visit our showrooms: Blackburn · Moonee Ponds · Bayswater" | Tri-showroom network — foot-traffic invitation with verified geography | Default closing line |
-| **B** | "Book a design consultation at Blackburn Head Office · Call 1300 449 799" | Head-office direct & consultation — high-touch, appointment strategy routed to Blackburn | Alternate posts / hero pieces |
+| **B** | "Book a design consultation · Call 1300 449 799" | Direct consultation booking — high-touch appointment strategy, geolocation-free | Alternate posts / hero pieces |
 | **C** | "Explore custom kitchens at directkitchens.com.au · Call 1300 449 799" | Digital URL & clear-call lockup — destination primaries with explicit call instruction | Hero pieces / campaign cycles |
-| **D** | "Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799" | Melbourne craftsmanship & Head-Office authority — made-here craft proof, Blackburn-routed call | Authoritative craft pieces |
+| **D** | "Melbourne custom kitchens designed & built · Call 1300 449 799" | Melbourne craftsmanship authority — made-here craft proof, bare toll-free lockup | Authoritative craft pieces |
 
 The suite as a whole is machine-verifiable: authoring manifests carry
 `ctaLibrary` with the four exact strings, and each static/compound post annotates its
@@ -1457,7 +1462,7 @@ every pre-Phase-2 composition parses byte-identically).
        engine copy platform (unchanged 220px pin + `--copy-right-split` inset) floats
        over this tile at canvas level (z10). Copy contract: STRICTLY NO EYEBROW;
        authored `.copy--ink` (dark ink h1 + espresso CTA = native AAA); kitchen-centric
-       headline celebrating built cabinetry/joinery; verified-suite CTA (Head-Office
+       headline celebrating built cabinetry/joinery; verified-suite CTA (generalized
        suite variant). photo-fit evaluates ALL copy bands against the invariant
        SOLID_BG.bone fill — native WCAG AAA (12:1+), zero self-heal rungs.
      - **Bottom-Right Cell:** `DETAIL_MACRO` pure photography. No copy, no scrim,

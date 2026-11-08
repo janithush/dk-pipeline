@@ -2,7 +2,7 @@
   "date": "2026-11-01",
   "batch": "batch-01",
   "ctaLibrary": {
-    "policy": "P7.3 verified Head-Office conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic). Isolated factory-contact CTAs REMOVED (P7.3): bookings go to Head Office. P7.4: pure-grid posts carry NO CTA (zero-copy contract) — the rotation continues unbroken across copy-bearing posts only.",
+    "policy": "P7.6 generalized conversion suite — the ONLY approved CTA inputs. Rotate by manifest post index (A → B → C → D, cyclic). Isolated factory-contact CTAs REMOVED (P7.3): bookings go to Head Office. P7.4/5: pure-grid posts carry NO CTA (zero-copy contract) — the rotation continues unbroken across copy-bearing posts only. P7.6: Variants B and D generalized — branch/head-office locators eliminated; phone lockup `Call 1300 449 799` preserved.",
     "variants": [
       {
         "id": "cta-A",
@@ -11,8 +11,8 @@
       },
       {
         "id": "cta-B",
-        "label": "Head-Office Direct & Consultation",
-        "text": "Book a design consultation at Blackburn Head Office · Call 1300 449 799"
+        "label": "Direct Consultation Booking",
+        "text": "Book a design consultation · Call 1300 449 799"
       },
       {
         "id": "cta-C",
@@ -21,8 +21,8 @@
       },
       {
         "id": "cta-D",
-        "label": "Melbourne Craftsmanship & Head-Office Authority",
-        "text": "Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799"
+        "label": "Melbourne Craftsmanship Authority",
+        "text": "Melbourne custom kitchens designed & built · Call 1300 449 799"
       }
     ]
   },
@@ -32,7 +32,7 @@
       "kind": "static",
       "html": "compositions/2026-11-01/batch-01/story-01.html",
       "output": "renders/2026-11-01/batch-01/story-01",
-      "notes": "Full-bleed static hero — DSC06480 wide shaker room, waterfall island (P7.3 deep bottom ramp) · · SHIP-CERT 2026-11-01-batch-01 2026-11-01T13:16:35.757Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--ink · copy copy--bottom-left · shipped frame poster-settled.png (658167 bytes)",
+      "notes": "Full-bleed static hero — DSC06480 wide shaker room, waterfall island (P7.3 deep bottom ramp) · · · SHIP-CERT 2026-11-01-batch-01 2026-11-08T16:04:31.397Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--ink · copy copy--bottom-left · shipped frame poster-settled.png (658167 bytes)",
       "cta": "cta-A"
     },
     {
@@ -40,7 +40,7 @@
       "kind": "editorial-split",
       "html": "compositions/2026-11-01/batch-01/story-02.html",
       "output": "renders/2026-11-01/batch-01/story-02",
-      "notes": "P7.4 Format 2 Editorial Split Tile — DSC06488 wide elevation hero / solid bone editorial tile (kitchen-centric ink headline + cta-B, ZERO eyebrow, ZERO scrim) / DSC06509 pure detail macro (ZERO copy, ZERO scrim) · · SHIP-CERT 2026-11-01-batch-01 2026-11-01T13:16:35.758Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--ink · copy copy--bottom-left copy--ink · shipped frame poster-settled.png (916234 bytes)",
+      "notes": "P7.4 Format 2 Editorial Split Tile — DSC06488 wide elevation hero / solid bone editorial tile (kitchen-centric ink headline + cta-B, ZERO eyebrow, ZERO scrim) / DSC06509 pure detail macro (ZERO copy, ZERO scrim) · · · SHIP-CERT 2026-11-01-batch-01 2026-11-08T16:04:31.398Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--ink · copy copy--bottom-left copy--ink · shipped frame poster-settled.png (914099 bytes)",
       "cta": "cta-B"
     },
     {
@@ -49,14 +49,14 @@
       "variant": "20s",
       "html": "compositions/2026-11-01/batch-01/story-03-living-20s.html",
       "output": "renders/2026-11-01/batch-01/story-03/living-20s",
-      "notes": "20s Living Story Reel (P7.0 certified choreography, P7.2 bed baseline +1.0 dB, P7.3 cta-B Head-Office end-card) · · SHIP-CERT 2026-11-01-batch-01 2026-11-01T13:16:35.759Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 5 els PASS) · reel lane delivery strict (mp4 delivery quality) · audio cert: I -14.3 LUFS · TP -3.3 dBTP · 0 clipped · 600 frames · digest .hyperframes/artifacts/loudness/2026-11-01-batch-01.digest.json · delivered living-20s.mp4 (9713557 bytes)"
+      "notes": "20s Living Story Reel (P7.0 certified choreography, P7.2 bed baseline +1.0 dB, P7.3 cta-B Head-Office end-card) · · · SHIP-CERT 2026-11-01-batch-01 2026-11-08T16:04:31.399Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 5 els PASS) · reel lane delivery strict (mp4 delivery quality) · audio cert: I -14.3 LUFS · TP -3.3 dBTP · 0 clipped · 600 frames · digest .hyperframes/artifacts/loudness/2026-11-01-batch-01.digest.json · delivered living-20s.mp4 (9669344 bytes)"
     },
     {
       "slug": "story-04",
       "kind": "pure-grid",
       "html": "compositions/2026-11-01/batch-01/story-04.html",
       "output": "renders/2026-11-01/batch-01/story-04",
-      "notes": "P7.5 Format 3 Pure-Visual 3-Photo Grid — DSC06488 wide elevation hero (shared with story-02 for batch continuity) / DSC06505 hardware pull macro / DSC06515 joinery corner macro (subject diversity: pull vs corner, no twin-drawer clone) — zero copy, zero scrim, brand mark only · SHIP-CERT 2026-11-01-batch-01 2026-11-01T13:16:35.759Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 0 els PASS (pure-visual zero-copy bypass)) · state: bar-top bar-top--ink · (copy?) · shipped frame poster-settled.png (1133273 bytes)"
+      "notes": "P7.5 Format 3 Pure-Visual 3-Photo Grid — DSC06488 wide elevation hero (shared with story-02 for batch continuity) / DSC06505 hardware pull macro / DSC06515 joinery corner macro (subject diversity: pull vs corner, no twin-drawer clone) — zero copy, zero scrim, brand mark only · · SHIP-CERT 2026-11-01-batch-01 2026-11-08T16:04:31.400Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 0 els PASS (pure-visual zero-copy bypass)) · state: bar-top bar-top--ink · (copy?) · shipped frame poster-settled.png (1133273 bytes)"
     }
   ]
 }

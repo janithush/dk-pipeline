@@ -924,7 +924,7 @@ if (photoArg) {
       const c = {
         theme, imgAbs: abs, variant, hasEyebrow: true, h1Lines: 2, hasCta: true,
         inkBar: false, inkCopy: false, topDeep: true, deepBottom: false, _htmlPath: null,
-        eyebrowText: 'Material & Light', ctaText: 'Book a design consultation at Blackburn Head Office · Call 1300 449 799',
+        eyebrowText: 'Material & Light', ctaText: 'Explore custom kitchens at directkitchens.com.au · Call 1300 449 799',
         brandText: 'DIRECT KITCHENS',
       };
       const base = evaluate(px, c);

@@ -1,6 +1,6 @@
 # Direct Kitchens — Living Story Motion & Audio Specification
 
-**Version:** P7.5 Production Standard (Cinematic Kinetics · Head-Office CTA suite · 4-Format Canon)
+**Version:** P7.6 Production Standard (Cinematic Kinetics · Generalized CTA suite · 4-Format Canon)
 **Baseline Anchor:** Certified P7.0 Pipeline Delivery · P7.2 audio-gain certification · P7.3 scrim-depth + teardown certification · P7.4 Solid Editorial Tile · P7.5 Pure-Visual Grid + 4-Post Suite Integration (2026-11-01)
 **Target Specs:** 20.0s (600 frames @ 30 FPS) | 1080×1920 (9:16) | H.264 High bt709
 
@@ -62,7 +62,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 
 [16.5s - 20.0s] Scene 5: Signature White End-Card (#ffffff)
 - t = 16.50s: Centered circular dk emblem snaps + tactile click (-6.5 dB)
-- t = 17.20s: CTA text rises into view + accent pop (-7.5 dB)
+- t = 17.20s: CTA text rises into view + accent pop (-7.5 dB) — the generalized cta-B lockup (P7.6), authored as the balanced 2-line stack `Book a design consultation<br>Call 1300 449 799`
 - 3.5s total hold time with natural acoustic decay
 
 ---
@@ -71,12 +71,12 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 
 1. **Stationary Scrim Law:** All scale and translate animations live strictly on child image elements inside overflow-clipped frames. Gradient scrims and branding bars remain fixed siblings to prevent optical pulsation.
 2. **Typography Doctrine:** Primary headlines are set in Archivo Bold. Cormorant Garamond is strictly restricted to single italic accent words inside headlines (e.g., *hardware*, *drawer*, *light*). Full Cormorant headlines are prohibited.
-3. **Approved CTA Suite (P7.3 — single source of truth: the active batch's `ctaLibrary`):** every lockup is drawn from the verified Head-Office 4-variant suite (rotate A → B → C → D by post index, cyclic; the "·" separator may be carried by an authored `<br>` in narrow columns so the phone lockup never splits mid-number):
+3. **Approved CTA Suite (P7.3 head-office routing · P7.6 generalization — single source of truth: the active batch's `ctaLibrary`):** every lockup is drawn from the verified generalized 4-variant suite (rotate A → B → C → D by post index, cyclic; the "·" separator may be carried by an authored `<br>` in narrow columns so the phone lockup never splits mid-number):
    - Variant A (Tri-Showroom Network): *"Visit our showrooms: Blackburn · Moonee Ponds · Bayswater"*
-   - Variant B (Head-Office Direct & Consultation; end-card default): *"Book a design consultation at Blackburn Head Office · Call 1300 449 799"*
+   - Variant B (Direct Consultation Booking; end-card default): *"Book a design consultation · Call 1300 449 799"*
    - Variant C (Digital URL & Clear Call Lockup): *"Explore custom kitchens at directkitchens.com.au · Call 1300 449 799"*
-   - Variant D (Melbourne Craftsmanship & Head-Office Authority): *"Melbourne custom kitchens designed & built · Call Blackburn 1300 449 799"*
-   Isolated factory-contact CTAs are REMOVED (P7.3): bookings route to HEAD OFFICE, never the plant.
+   - Variant D (Melbourne Craftsmanship Authority): *"Melbourne custom kitchens designed & built · Call 1300 449 799"*
+   Isolated factory-contact CTAs are REMOVED (P7.3): bookings route to HEAD OFFICE, never the plant. P7.6 (2026-11-08): branch/head-office locators ("Blackburn", "Head Office") are ELIMINATED from Variants B and D — prospects across Greater Melbourne must never read the CTA as geographically restricted; the locators survive ONLY in Variant A (tri-showroom geography) and provenance records. Do NOT re-insert "Head Office" into Variant D.
 4. **Reel End-Card Safe Zones (P7.2/P7.3 certified):** the Scene-5 white end-card keeps the engine copy contract — centered ink stack, 176px circular emblem, copy tops well inside the 220px bottom safe zone on the static lanes (the reel's end-card re-pins the block to the centered composition; platform UI adjacency is unchanged). Scene copy over photo panes rides the deepened **680px** bottom ramp (`--scrim-bottom: 680px`, P7.3) so the CTA envelope's worst rows sit near ramp progress 68% (deep-ramp alpha ≈ 0.50).
 5. **Banned Legacy Copy:** The phrases *"Built in Melbourne"* (unqualified) and *"Quality and Craft"* are permanently deprecated; unqualified "free"-economy phrasing stays off the verified suite (the end-card legacy string "Book your free design consultation" predates the suite and is NOT a ctaLibrary variant — new reels author Variant B verbatim).
 6. **P7.5 4-Format Production Canon — Format Harmony & Asset Discipline:**
@@ -85,7 +85,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
    |------|--------|---------------|-------------|
    | story-01 | `static` | `mono-full` | Full-bleed static hero — wide room architecture, deep 680px bottom scrim, copy platform at 220px. |
    | story-02 | `editorial-split` | `hero-split-editorial` | Format 2: Top hero + solid bone editorial tile (ink-on-bone native AAA, zero scrim/eyebrow) + pure detail macro (no copy). |
-   | story-03 | `reel` | (GSAP timeline) | Format 4: 20s Living Story Reel — 5-scene cinematic kinetics, P7.2 certified audio baseline, Variant B end-card. |
+   | story-03 | `reel` | (GSAP timeline) | Format 4: 20s Living Story Reel — 5-scene cinematic kinetics, P7.2 certified audio baseline, generalized cta-B end-card (P7.6 2-line lockup). |
    | story-04 | `pure-grid` | `hero-split-pure-grid` | Format 3: Top hero + 2 subject-diverse detail macros — ZERO text, ZERO scrims, brand bar only. |
    - **Asset Diversity Law (cross-format):** The two detail macros in `pure-grid` MUST be subject-diverse (e.g., hardware pull + joinery corner — NO twin pullouts/drawers). The wide hero may be shared with at most ONE other post in the batch (typically `editorial-split` for continuity). All three static-lane formats (`static`, `editorial-split`, `pure-grid`) share the same brand bar contract and render via `render:daily` png-sequence to the same leaf namespace (`renders/<date>/<batch>/<slug>/poster-settled.png`).
 
