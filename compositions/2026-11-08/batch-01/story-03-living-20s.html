@@ -80,9 +80,8 @@
        reuses the engine's .copy / .copy--ink descendant recolor contract
        (ink = --espresso-900 on #ffffff, WCAG AA ~14:1, halos stripped by
        the engine rule); the local override re-pins the bottom-220px copy
-       block to the end-card's centered composition and elevates the P7.3
-       verified CTA lockup to end-card scale. No plates, no shields —
-       bare ink on white. */
+       block to the end-card's centered composition at the P7.7 LOCKED
+       engine CTA metrics. No plates, no shields — bare ink on white. */
     #end-card {
       position: absolute;
       inset: 0;
@@ -108,13 +107,12 @@
       align-items: center !important;
       text-align: center !important;
     }
-    /* The P7.6 generalized CTA (cta-B) is the end card's single
-       conversion line — scaled 20 -> 30px for the 3.5s centered hold;
-       letter-spacing/weight/line-height stay the engine lockup's. */
-    #end-card .cta {
-      font-size: 30px;
-      line-height: 1.6;
-    }
+    /* The P7.6 generalized CTA (cta-B) is the end card's single conversion
+       line. P7.7 LOCKED METRICS: the end-card inherits the engine's
+       `.cta` token suite byte-identically (20px / 600 / 0.12em / 1.4) —
+       the former 30px end-card scale override is retired so the Story 2
+       tile and the Story 3 end-card render the same 2-line lockup with
+       identical metrics and kerning rhythm. */
   </style>
 </head>
 <body>
@@ -141,7 +139,7 @@
         <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
         <section class="copy copy--bottom-left">
           <p class="t-eyebrow">Shaker Profile Doors</p>
-          <h1 class="t-display">Full-height joinery,<br><span class="serif-accent">run</span> wall to wall</h1>
+          <h1 class="t-display">Full-height joinery,<br>run wall to wall</h1>
         </section>
       </figure>
 
@@ -155,7 +153,7 @@
         <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
         <section class="copy copy--bottom-left">
           <p class="t-eyebrow">Stone Benchtops</p>
-          <h1 class="t-display">Solid stone,<br><span class="serif-accent">squared</span> edge</h1>
+          <h1 class="t-display">Solid stone,<br>squared edge</h1>
         </section>
       </figure>
 
@@ -175,7 +173,7 @@
           <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
           <section class="copy copy--bottom-left">
             <p class="t-eyebrow">Quiet-Close Hardware</p>
-            <h1 class="t-display">Bar pulls,<br><span class="serif-accent">turned</span> true</h1>
+            <h1 class="t-display">Bar pulls,<br>turned true</h1>
           </section>
         </div>
       </figure>
@@ -192,7 +190,7 @@
         <span class="scrim scrim--bottom scrim--bottom--deep" aria-hidden="true"></span>
         <section class="copy copy--bottom-left">
           <p class="t-eyebrow">Architectural Benchtops</p>
-          <h1 class="t-display">Under-mount sink,<br><span class="serif-accent">set</span> in stone</h1>
+          <h1 class="t-display">Under-mount sink,<br>set in stone</h1>
         </section>
       </figure>
 
@@ -210,8 +208,8 @@
            Full-bleed white, z-index 100, activated at t=16.5 in sync with
            the tactile click; the badge reveal carries the click frame-
            exactly (16.50s). Circular dk knockout emblem + the P7.6
-           generalized CTA (cta-B) in ink on white
-           (WCAG AA ~14:1), scaled by the reel's own end-card styling. -->
+           generalized CTA (cta-B) in ink on white (WCAG AA ~14:1) at the
+           P7.7 locked engine metrics — byte-identical to story-02's tile. -->
       <div id="end-card" data-layout-allow-occlusion aria-label="Signature white end-card: Direct Kitchens circular dk emblem above the invitation to book a design consultation">
         <img class="end-card__emblem" src="../../../assets/logos/logo.png" alt="Direct Kitchens circular dk emblem">
         <section class="copy copy--ink end-card__copy">

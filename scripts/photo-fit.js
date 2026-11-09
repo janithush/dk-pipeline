@@ -98,7 +98,8 @@ const BONE25 = hex(tokenHex('bone-25'));     // white knockout wordmark #FDFAF4
 const BRASS = hex(tokenHex('brass'));        // --brass -> --brass-400 #CFA76B
 const INK   = hex(tokenHex('ink'));          // --ink -> espresso-900 #2A211A
 const ESP800 = hex(tokenHex('espresso-800'));// #3B3026
-const ESP700 = hex(tokenHex('espresso-700'));// serif-accent ink
+// P7.7: the serif-accent ink token (ESP700 / --espresso-700) is retired with
+// the accent — headlines render one colour per polarity (white / --ink).
 
 // Engine geometry (CSS custom properties — the single source of truth)
 const GEO = {
@@ -173,6 +174,13 @@ const BRAND_LS = num(/\.bar-top \.brand\s*{[^}]*letter-spacing:\s*(-?[\d.]+)em/,
 // a design-sprint font-size/line-height/gap edit propagates here by scrape).
 const DISPLAY_FS = num(/\.t-display\s*{[^}]*font-size:\s*([\d.]+)px/, 52);
 const DISPLAY_LH = num(/\.t-display\s*{[^}]*line-height:\s*([\d.]+)/, 1.08);
+// P7.7 SOLID BONE TILE HEADLINE (Format 2, `hero-split-editorial`): the tile
+// h1 runs its own optically balanced scale (48px / 1.12 — pure Archivo Bold,
+// serif-accent deprecated). Scraped from the scoped `.pane--solid-bone
+// .t-display` engine rule; falls back to the base display metrics when the
+// rule is absent (anti-drift: a design-sprint edit propagates here).
+const TILE_H1_FS = num(/\.pane--solid-bone \.t-display\s*{[^}]*font-size:\s*([\d.]+)px/, DISPLAY_FS);
+const TILE_H1_LH = num(/\.pane--solid-bone \.t-display\s*{[^}]*line-height:\s*([\d.]+)/, DISPLAY_LH);
 const COPY_GAP   = num(/\.copy\s*{[^}]*gap:\s*([\d.]+)px/, 12);
 
 // Generic layer parser: "radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.50) 0%, transparent 65%)"
@@ -473,10 +481,11 @@ function parseComposition(htmlPath) {
   // count from the REAL break structure (greedy wrap is still applied per
   // segment as the over-flow backstop).
   const ctaSegments = ctaMatch.split(/<br\s*\/?>/i).map(strip).filter(Boolean);
-  // Serif-accent span (2026-10-24): extracted verbatim (tags stripped) so the
-  // h1-accent sub-band can be modelled (§G.9). Non-ink posts render it white
-  // on white — no separate treatment; only .copy--ink recolors it (ESP700).
-  const accentText = strip(copy.match(/class="serif-accent"[^>]*>([\s\S]*?)<\/span>/)?.[1]);
+  // P7.7 TYPOGRAPHY CANON UNIFICATION: the `.serif-accent` span and its
+  // virtual `h1-accent` ESP700 evaluation pass are RETIRED — headlines are
+  // 100% uniform ink/white in pure Archivo Bold, so there is no second
+  // in-band colour to model. Legacy markup can no longer resurrect the
+  // pass either: the accentText extraction was removed with it.
   const brandText = strip(h.match(/<p class="brand"[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? 'Direct Kitchens');
   const hasEyebrow = /class="t-eyebrow"/.test(copy);
   // h1Lines counts <br> elements INSIDE the h1 only (scoped fix, P7.1): a
@@ -513,7 +522,7 @@ function parseComposition(htmlPath) {
   return {
     theme, family, photos, variant,
     get imgAbs() { return photos[0].abs; },   // backward-compat singular view (pre-P2.0 call sites)
-    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, deepBottom, accentText: accentText || null,
+    hasEyebrow, h1Lines, hasCta, inkBar, inkCopy, topDeep, deepBottom,
     grade: gradeLine,
     eyebrowText, ctaText, ctaSegments, brandText: brandText.toUpperCase(), copyClass, headerClass,
   };
@@ -529,7 +538,13 @@ function parseComposition(htmlPath) {
 // wordmark size); the circular logo is a logotype — WCAG exempt — so the
 // band spans the wordmark text only. All numbers fuel from CSS.
 function bands(c) {
-  const GAP = COPY_GAP, LH = DISPLAY_FS * DISPLAY_LH;
+  const GAP = COPY_GAP;
+  // P7.7: the h1 band metrics route by family — the solid bone editorial
+  // tile hosts its own commanding scale (TILE_H1_*); every other family
+  // rides the mono display metrics. Values are SCRAPED, never mirrored.
+  const H1_FS = c.family === 'hero-split-editorial' ? TILE_H1_FS : DISPLAY_FS;
+  const H1_LH = c.family === 'hero-split-editorial' ? TILE_H1_LH : DISPLAY_LH;
+  const LH = H1_FS * H1_LH;
   // P7.4 pure-visual grid (Format 3): STRICTLY ZERO TEXT — the only band is
   // the brand knockout on the top pane (the composition may legally carry
   // no <section class="copy"> at all). Every copy-part guard below honours
@@ -585,7 +600,7 @@ function wrapCount(text, fs, ls, maxW) {
 
   const parts = [];
   if (!PURE && c.hasEyebrow) parts.push({ role: 'eyebrow', boxH: 16, fs: EYEBROW_FS, ls: EYEBROW_LS, text: c.eyebrowText });
-  if (!PURE) parts.push({ role: 'h1', boxH: c.h1Lines * LH, fs: DISPLAY_FS, ls: -0.02, text: null });
+  if (!PURE) parts.push({ role: 'h1', boxH: c.h1Lines * LH, fs: H1_FS, ls: -0.02, text: null });
   if (!PURE && c.hasCta) {
     // P7.1 derived CTA geometry: long verified showroom/phone/URL lockups
     // wrap inside the copy column in the real render. The wrapped line count
@@ -621,6 +636,7 @@ function wrapCount(text, fs, ls, maxW) {
     const band = {
       role: p.role, y0: Math.round(y + inset), y1: Math.round(y + p.boxH - inset), xs, xe,
       blockTop, blockBottom, text: p.text, lines: p.lines ?? 1,
+      fs: p.fs,   // P7.7: family-routed band metrics (tile h1 = 48px) surface in the gate label
       // P7.4 Format 2: every copy band of the editorial family evaluates
       // against the INVARIANT solid bone tile fill (SOLID_BG.bone) — no
       // photo sampling, composited scrims ignored. Native AAA by token law.
@@ -634,17 +650,10 @@ function wrapCount(text, fs, ls, maxW) {
     role: 'brand', y0: GEO.barTop + brandInset, y1: GEO.barTop + GEO.barLogo - brandInset,
     xs: BRAND_GEOM.xs, xe: BRAND_GEOM.xe, blockTop: null, blockBottom: null, text: c.brandText,
   });
-  // Serif-accent sub-band (2026-10-24 model alignment — §G.9): under
-  // .copy--ink a `.serif-accent` span recolors to --espresso-700 while the
-  // rest of the h1 stays --ink. Per-glyph geometry is unknowable from HTML,
-  // so the model is CONSERVATIVE: the full h1 band is evaluated a second
-  // time at the accent colour (virtual 'h1-accent' band, same geometry, no
-  // block-flow impact) and the gate sees both verdicts — worst governs.
-  // Non-ink posts leave the accent white (no delta → no band).
-  if (c.inkCopy && c.accentText) {
-    const h1b = out.find((b) => b.role === 'h1');
-    if (h1b) out.splice(out.indexOf(h1b) + 1, 0, { ...h1b, role: 'h1-accent', text: c.accentText });
-  }
+  // P7.7: the virtual `h1-accent` serif-accent sub-band is RETIRED — the
+  // pure Archivo Bold canon carries a single h1 colour per polarity
+  // (white on scrims / --ink under .copy--ink), so there is no in-band
+  // colour delta to model worst-of.
   return out;
 }
 
@@ -702,13 +711,8 @@ function fgState(c, band) {
     case 'eyebrow':
       return { col: INK_family ? INK : BONE, tau: 0.9, s: INK_family ? 0 : 0.2, sc: [0, 0, 0] };
     case 'h1':
+      // P7.7: one colour per polarity — uniform ink/white Archivo Bold.
       return { col: INK_family ? INK : [255, 255, 255], tau: 1, s: INK_family ? 0 : 0.7, sc: [0, 0, 0] };
-    case 'h1-accent':
-      // Serif-accent sub-band — model fix (2026-10-24): under .copy--ink the
-      // accent span recolors to espresso-700 (#3E3027), NOT the band's --ink.
-      // Modelled conservatively (see §G.9): the whole sub-band is evaluated
-      // at the accent colour; worst-of wins in gate.
-      return { col: ESP700, tau: 1, s: 0, sc: [0, 0, 0] };
     case 'cta':
       // Signature warm brass/gold accent in EVERY state (2026-10-25: the
       // shield-era bone swap is retired with the shield device).
@@ -733,7 +737,7 @@ function fgState(c, band) {
 
 // Evaluate one band of one post config; returns { p98, worst, need, label }.
 function evaluateBand(px, c, band) {
-  const needMap = { eyebrow: 4.5, h1: 3.0, 'h1-accent': 3.0, cta: 4.5, brand: 4.5, 'chip-label': 4.5 };
+  const needMap = { eyebrow: 4.5, h1: 3.0, cta: 4.5, brand: 4.5, 'chip-label': 4.5 };
   const fg = fgState(c, band);
   // Layout-surface tiles (P2.0): a solid band bypasses the photo/scrim
   // compositing entirely — its backdrop is the INVARIANT tile fill. (The
@@ -758,7 +762,7 @@ function evaluateBand(px, c, band) {
   // / shadow-line pixels (<2% of area) can never block, uniform dimness can.
   const p98 = samples[Math.max(0, Math.ceil(samples.length * 0.02) - 1)];
   const need = needMap[band.role];
-  const label = `${band.role} ${band.role === 'h1' || band.role === 'h1-accent' ? DISPLAY_FS + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px' + ((band.lines ?? 1) > 1 ? ' x' + band.lines : '')))}`;
+  const label = `${band.role} ${band.role === 'h1' ? band.fs + 'px x' + c.h1Lines : (band.role === 'brand' ? BRAND_FS + 'px' : (band.role === 'eyebrow' ? EYEBROW_FS + 'px' : CTA_FS + 'px' + ((band.lines ?? 1) > 1 ? ' x' + band.lines : '')))}`;
   const pass = p98 >= need && worst >= HARD_FLOOR;
   const marginPass = p98 >= need + MARGIN && worst >= HARD_FLOOR;
   return { label, need, worst: +worst.toFixed(2), p98: +p98.toFixed(2), pass, marginPass, samples: samples.length };
@@ -996,7 +1000,6 @@ if (photoArg) {
       cf.topDeep ? 'scrim top pool: deep' : 'scrim top pool: airy',
       cf.variant ? `copy ${cf.variant}` : 'copy (none — pure visual grid)',
       cf.inkCopy ? 'copy--ink' : null,
-      cf.accentText ? 'serif-accent (ESP700 modelled)' : null,
       `scrim--${cf.theme}`,
     ].filter(Boolean).join(' · ');
     console.log(`${bad.length ? '✗' : '✓'} [${post.slug}] ${markers}`);

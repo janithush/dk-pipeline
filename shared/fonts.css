@@ -15,7 +15,9 @@
   font-display: swap;        /* headless-safe: visible text immediately */
 }
 
-/* Cormorant Garamond — italic only. Every serif accent in the system is italic. */
+/* Cormorant Garamond — legacy serif face. P7.7 (2026-11-09): the italic
+   accent device is DEPRECATED from headlines (pure Archivo Bold canon);
+   retained only for legacy consumers, never new headline accents. */
 @font-face {
   font-family: "Cormorant Garamond";
   src: url("../../assets/fonts/CormorantGaramond-Italic.woff2") format("woff2");

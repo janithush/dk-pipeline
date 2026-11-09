@@ -45,7 +45,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 
 [0.0s - 4.5s] Scene 1: Hero Architectural Wide (DSC00689)
 - P7.0 Motorized slider: x -110 -> +42 across the cabinetry line (right -> left), scale 1.15 -> 1.16 hold
-- Arrival punch 1.00 -> 1.12 expo.out at t=0.50s (bed full-arrival clap); Archivo Bold Headline + Cormorant Garamond Italic accent bloom
+- Arrival punch 1.00 -> 1.12 expo.out at t=0.50s (bed full-arrival clap); pure Archivo Bold headline bloom (P7.7 typography canon — zero serif accents)
 
 [4.5s - 8.5s] Scene 2: Full-Frame Portrait Macro (DSC00716)
 - 0.45s cross-dissolve + whoosh (-5.0 dB) under a -9.0 dB bed notch
@@ -70,7 +70,7 @@ The production pipeline mandates a 100% music-driven mix (zero voiceover) with a
 ## 4. Brand & Layout Doctrines
 
 1. **Stationary Scrim Law:** All scale and translate animations live strictly on child image elements inside overflow-clipped frames. Gradient scrims and branding bars remain fixed siblings to prevent optical pulsation.
-2. **Typography Doctrine:** Primary headlines are set in Archivo Bold. Cormorant Garamond is strictly restricted to single italic accent words inside headlines (e.g., *hardware*, *drawer*, *light*). Full Cormorant headlines are prohibited.
+2. **Typography Doctrine (P7.7 — Typography Canon Unification, 2026-11-09):** Primary headlines are set EXCLUSIVELY in pure Archivo Bold (`--sans`, weight 700): every glyph shares the identical modern geometric grotesque structure, with zero letter-to-letter style contrast. The `.serif-accent` span and the Cormorant Garamond italic accent device are DEPRECATED everywhere (static, tile, reel scenes, end-card) — the engine neutralizes the class (`font-style: normal; font-family: inherit; font-weight: inherit;`) and no composition may author it. Scale law: full-bleed/mono headlines 52px / 1.08 / −0.02em; the Format 2 solid bone tile runs its own commanding editorial scale `.pane--solid-bone .t-display` = 48px / 1.12 / −0.02em / `--ink`. The CTA metrics suite is LOCKED across all three active textual formats: `var(--sans)` / 20px / 600 / 0.12em / 1.4 / uppercase — the 2-line cta-B lockup renders byte-identically on story-02's tile and the reel end-card (the former 30px end-card scale override is retired).
 3. **Approved CTA Suite (P7.3 head-office routing · P7.6 generalization — single source of truth: the active batch's `ctaLibrary`):** every lockup is drawn from the verified generalized 4-variant suite (rotate A → B → C → D by post index, cyclic; the "·" separator may be carried by an authored `<br>` in narrow columns so the phone lockup never splits mid-number):
    - Variant A (Tri-Showroom Network): *"Visit our showrooms: Blackburn · Moonee Ponds · Bayswater"*
    - Variant B (Direct Consultation Booking; end-card default): *"Book a design consultation · Call 1300 449 799"*

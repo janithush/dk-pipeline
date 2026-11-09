@@ -3,11 +3,12 @@
 **Project:** `dk-pipeline` (`D:\Projects\dk-pipeline`)
 **Engine:** HyperFrames `v0.8.191` (devDependency, EXACT pin — never `^`)
 **Target:** 10–15 high-fidelity static marketing creatives per day, zero-friction, repeatable daily engine.
-**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01 · **P7.4 amendment (Solid Editorial Tile · Pure-Visual Grid · 4-Format Canon):** 2026-11-01 · **P7.5 amendment (4-Post Suite Integration · Asset Diversity Law · 3-Doc Sync):** 2026-11-01 · **P7.6 amendment (CTA Suite Generalization — Blackburn/Head-Office locators eliminated from Variants B & D):** 2026-11-08
+**Audited:** 2026-10-19 · **Hardened & re-verified:** 2026-10-21 · **Engine amendment (top-right brand bar · two copy variants · deepened bottom scrim):** 2026-10-22 · **P7.3 amendment (680px bottom scrim · teardown hardening · Head-Office CTA suite):** 2026-11-01 · **P7.4 amendment (Solid Editorial Tile · Pure-Visual Grid · 4-Format Canon):** 2026-11-01 · **P7.5 amendment (4-Post Suite Integration · Asset Diversity Law · 3-Doc Sync):** 2026-11-01 · **P7.6 amendment (CTA Suite Generalization — Blackburn/Head-Office locators eliminated from Variants B & D):** 2026-11-08 · **P7.7 amendment (Typography Canon Unification — pure Archivo Bold headlines, serif-accent deprecated, solid-tile scale, locked CTA metrics):** 2026-11-09
 **Daily operations:** start at the **OPERATOR QUICK-START RUNBOOK (ZERO-FRICTION FACTORY)** immediately below — copy-paste exact commands + authoring prompt. This document's §A/§F/§G/§H maintain the engineering contracts behind it.
 **Status (2026-10-21):** Pipeline is **HARDENED** — batch lifecycle is **automated** (`retire:batch` → `optimize:assets` → `preflight` → `render:daily`) and contrast validation is **deterministic** (`npm run photo-fit`, all-posts WCAG AA gate). **Intraday multi-batch (Model A)** is live: nested `batch-XX/` folders, CONTINUOUS slugs, `npm run batch:new` scaffolding, and the fail-closed `npm run check:paths` gate (§F.9). Lint gate: 0 errors / 0 warnings.
 **Status (2026-10-24 · PHASE 1 of the capability expansion, tag `phase1-green`):** six zero-risk engine amendments shipped — ① BRAND PLATE STANDARD (ink-on-bone by default; brand polarity retired, §F.2/§G.2) ② `scrim--greige` theme (§G.5) ③ serif-accent modelled as ESP700 under `copy--ink` (§G.6/§G.9) ④ DK Signature Grade constrained finishing profile + advisory (§F.2/§H.8) ⑤ `--strict --no-best-effort` renders + `check:zones` advisory sweep (§F.4) ⑥ dual-lens AI vision preflight (`npm run qa:vision`, fail-open, §H.10). Zero layout geometry changes.
 **Status (2026-11-01 · P7.4/P7.5 4-FORMAT PRODUCTION CANON):** The daily batch now delivers a complete 4-format suite (story-01..04): ① Full-Bleed Static Hero (`kind: "static"`) ② Editorial Split Tile (`kind: "editorial-split"`) — solid bone tile, ink-on-bone native AAA, zero scrim, zero eyebrow ③ Pure-Visual 3-Photo Grid (`kind: "pure-grid"`) — zero copy, zero scrim, subject-diversity-enforced detail macros ④ Living Story Reel (`kind: "reel"`, 20s) — P7.2 audio baseline certified. Asset Diversity Law: posts within a batch must not clone multiple photo pairings (at most one shared photo; detail macros must be subject-diverse).
+**Status (2026-11-09 · P7.7 TYPOGRAPHY CANON UNIFICATION):** All headlines across Story 1, 2 and 3 render exclusively in pure Archivo Bold (`--sans` / 700) — the `.serif-accent` span + Cormorant Garamond italic accent device is DEPRECATED (its CSS is neutralized to `font-family: inherit; font-style: normal; font-weight: inherit;` so no legacy markup can resurrect the mixed serif look), eliminating the letter-to-letter style contrast the client audit measured within headlines. photo-fit's virtual `h1-accent` ESP700 evaluation pass is REMOVED with it (uniform ink/white headlines carry no in-band colour delta). The solid bone editorial tile anchors its own headline scale (`.pane--solid-bone .t-display`: 48px / 1.12 / −0.02em / `--ink` — commanding editorial density at the 539px pane), scraped by photo-fit as `TILE_H1_FS`/`TILE_H1_LH` and routed by family. The CTA metrics suite is LOCKED at 20px / 600 / 0.12em / 1.4 / uppercase across all three active textual formats — the 2-line cta-B lockup renders byte-identically on Story 2's tile and Story 3's reel end-card (the 30px end-card scale override is retired).
 
 ---
 
@@ -450,7 +451,10 @@ dk-pipeline/
   font-display: swap;         /* headless-safe: visible text immediately */
 }
 
-/* Cormorant Garamond — italic accents only. */
+/* Cormorant Garamond — legacy serif face. P7.7 (2026-11-09): the italic
+   serif accent device is DEPRECATED from headlines (pure Archivo Bold canon);
+   the face is kept wired only for legacy/`.t-serif` consumers, never new
+   headline accents. */
 @font-face {
   font-family: "Cormorant Garamond";
   src: url("../../assets/fonts/CormorantGaramond-Italic.woff2") format("woff2");
@@ -479,7 +483,7 @@ dk-pipeline/
 - **Imports ONLY `../../shared/story-system.css`.** Token, brand, font and layout rules all resolve from that single engine file.
 - **FORBIDDEN: per-post CSS.** No `compositions/YYYY-MM-DD/<slug>.css` may be created. Layout, scrim and type behaviour come exclusively from the engine's variants (see §F).
 - Logo: `<img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo">` — sizing handled by the engine's brand bar (40px clamp, circular mask); no per-post logo CSS. Logo anchored inside the top safe zone.
-- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (+ `.serif-accent`), `.cta`, inside a `.copy` block.
+- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (pure Archivo Bold — P7.7 deprecates `.serif-accent`), `.cta`, inside a `.copy` block.
 - **Hairline budget: strictly 0.** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, `.tick` elements must not appear in any composition. (Full engine contract: §F.)
 
 **Daily batch flow:**
@@ -743,7 +747,7 @@ For each confirmed post, create compositions/YYYY-MM-DD/<slug>.html ONLY (per-po
 - Logo: <img src="../../assets/logos/logo.svg" alt="Direct Kitchens" class="dk-brand-logo"> inside <header class="bar-top">, always paired with <p class="brand">Direct Kitchens</p>. The engine clamps the logo to a 40×40px circle and anchors the bar STRICTLY TOP-RIGHT at top 140px / right 80px (flex row-reverse — logo on the far right, wordmark to its LEFT). Never top-left, where it collides with the native Instagram/Facebook Story header. **No per-post logo CSS.**
 - **Brand contrast rule:** if the photo's TOP-RIGHT region behind the bar is bright (white/cream ceilings, pale cabinetry), the header MUST be `<header class="bar-top bar-top--ink">` (dark ink wordmark — WCAG AA ≥4.5:1). White brand text is only for dark-topped photos. The logo + `<p class="brand">` pairing is unchanged (§F.2).
 - **Hairline Constraint — Strictly Zero:** `.rule-v`, `.rule-h`, `.plus`, `.diamond`, and `.tick` elements must not appear in any composition. Total hairline budget = 0.
-- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (with `.serif-accent` for the italic accent word), and `.cta`, inside a `.copy` block using one of EXACTLY TWO variants: `copy--bottom-left` or `copy--bottom-right`. ~~`copy--centered`~~ is permanently ELIMINATED from the engine — never emit it. The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
+- Copy roles: engine classes only — `.t-eyebrow`, `.t-display` (pure Archivo Bold — the `.serif-accent` span is DEPRECATED per P7.7, never emit it), and `.cta`, inside a `.copy` block using one of EXACTLY TWO variants: `copy--bottom-left` or `copy--bottom-right`. ~~`copy--centered`~~ is permanently ELIMINATED from the engine — never emit it. The `.copy` block is pinned at `bottom: 220px` by the engine and is never clipped.
 - Scrims: `<span class="scrim scrim--top">` + `<span class="scrim scrim--bottom">` inside `<figure class="photo photo--full scrim--{charcoal|warm|greige}">`. Pick the theme matching the photo's undertone (§F).
 - No inline styles beyond data-* timing attributes; keep each file under maintainable length.
 - Add the post to compositions/YYYY-MM-DD/batch-manifest.json. Exact schema (render-batch.js contract): `{"batch":"YYYY-MM-DD","posts":[{"slug":"story-01","html":"compositions/YYYY-MM-DD/story-01.html","output":"renders/YYYY-MM-DD/story-01"}]}`. INTRADAY: add it to the ACTIVE batch's own manifest at compositions/YYYY-MM-DD/batch-XX/batch-manifest.json — Schema v2 `{"date":"YYYY-MM-DD","batch":"batch-XX","posts":[{"slug":"story-04",...}]}` with output renders/YYYY-MM-DD/batch-XX/<slug> (§F.9).
@@ -884,7 +888,8 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   + `<p class="brand">Direct Kitchens</p>`; `.copy.copy--bottom-left|--bottom-right` — EXACTLY
   TWO variants (`.copy--centered` PERMANENTLY ELIMINATED), pinned bottom:220px, plus the
   ADDITIVE `.copy--ink` color variant for bright surfaces, halo text-shadows stripped (§G.9);
-  `.t-eyebrow`, `.t-display` (+`<span class="serif-accent">` italic),
+  `.t-eyebrow`, `.t-display` (pure Archivo Bold 700 — P7.7; the `.serif-accent`
+  span is DEPRECATED, never emit it),
   `.cta`.
 - EDITORIAL KNOCKOUT BRAND — polarity RESTORED (2026-10-25, supersedes the 2026-10-24
   PLATE STANDARD, which superseded the former BRAND-ON-PHOTO RULE): the wordmark is a
@@ -916,12 +921,16 @@ resolves here. Layout/geometry reference for the engine lives in §G.
   declared `.scrim--top--deep`/bare top-pool polarity partner, the copy variant choice,
   and (for bright surfaces) the declared `.copy--ink` recolor. The markers are stripped by
   FORCE_AUTHOR on every `--fix` pass; `classStrings` can never re-materialize them.
-- 🔒 LOCKED COLOR HIERARCHY (proven editorial canon, stories 18–21; do not re-tune):
-  display headlines `.t-display` = crisp pure WHITE with the `.serif-accent` span in
-  Cormorant Garamond italic (espresso recolor under `.copy--ink` only); eyebrows
+- 🔒 LOCKED COLOR HIERARCHY (P7.7 typography canon, 2026-11-09; do not re-tune):
+  display headlines `.t-display` = pure Archivo Bold (`var(--sans)` 700) in a
+  SINGLE colour per polarity — crisp pure WHITE on dark scrims, `var(--ink)`
+  under `.copy--ink` (the Cormorant Garamond italic `.serif-accent` device is
+  DEPRECATED: every glyph shares one geometric grotesque structure — zero
+  letter-to-letter style contrast); eyebrows
   `.t-eyebrow` = muted cream/bone (`var(--bone)`); CTAs `.cta` = strictly warm
   gold/brass `var(--brass)` (the shield-era bone CTA swap died with the shield — brass is
-  the CTA colour in EVERY state). Brand wordmark = `var(--bone-25)` white / `var(--ink)`
+  the CTA colour in EVERY state) at the P7.7 LOCKED metrics suite (20px / 600 /
+  0.12em / 1.4 / uppercase). Brand wordmark = `var(--bone-25)` white / `var(--ink)`
   ink by declared polarity.
   Applied AT RENDER by the shared engine grade path, never via per-post CSS.
 - Hairline budget = 0: `.rule-v/.rule-h/.plus/.diamond/.tick` never appear.
@@ -1001,8 +1010,8 @@ resolves here. Layout/geometry reference for the engine lives in §G.
 4. No CDN font references anywhere, ever.
 
 ### F.6 Copy contract
-- Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line,
-  ≤1 serif-accent italic word), 1 CTA from the P7.6 VERIFIED GENERALIZED 4-VARIANT SUITE (§G.7): the
+- Per post: 1 eyebrow (≤2 words, category-style), 1 display headline (≤2 lines, ≤18 chars/line — set
+  exclusively in pure Archivo Bold 700, P7.7: no serif/accent devices inside headlines), 1 CTA from the P7.6 VERIFIED GENERALIZED 4-VARIANT SUITE (§G.7): the
   tri-showroom network line, the direct consultation booking & call lockup, the URL + clear-call
   lockup, or the Melbourne craftsmanship authority line — rotate A → B → C → D
   by post index; never freelance a phrase. Isolated factory-contact CTAs are REMOVED (P7.3): customers
@@ -1279,11 +1288,20 @@ Applied on the photo figure: `<figure class="photo photo--full scrim--{charcoal|
 | Role | Class | Spec |
 |---|---|---|
 | Eyebrow | `.t-eyebrow` | 13px / 600 / `--track-eyebrow` / uppercase / `--bone` (token-declared) at 90% |
-| Headline | `.t-display` | 52px / 700 / 1.08 / `--track-tight` (−0.02em) / white |
-| Serif accent | `.serif-accent` (inside `.t-display`) | Cormorant Garamond italic 400 |
-| CTA | `.cta` | 20px / 600 / `.14em` / 1.5 / uppercase / `--brass` (token-declared) — P7.1 elevated conversion scale (was 12px / `.22em`); 1–3 line verified lockups wrap in-column, `photo-fit` scrapes fs/tracking/line-height and derives the wrapped band box |
+| Headline | `.t-display` | 52px / 700 / 1.08 / `--track-tight` (−0.02em) / white — **P7.7: pure Archivo Bold exclusively, zero serif accents** |
+| Solid-tile headline | `.pane--solid-bone .t-display` | 48px / 700 / 1.12 / `--track-tight` (−0.02em) / `--ink` — Format 2's optically balanced commanding scale (P7.7) |
+| CTA | `.cta` | **P7.7 LOCKED METRICS:** 20px / 600 / 0.12em / 1.4 / uppercase / `var(--sans)` / `--brass` (token-declared) — the same token governs letters and digits; 1–3 line verified lockups wrap in-column, `photo-fit` scrapes fs/tracking/line-height and derives the wrapped band box |
 
-**Serif-accent copy contract (2026-10-24, Phase-1 model alignment).** The accent is an **editorial garnish, not a size experiment**: a 1–3 word italic phrase inside `.t-display` at the UNCHANGED 52px display size (never its own line — it rides inside the headline's `<br>` line structure). Device-constraint lineage from the Mission-1 audit: the italic serif reads as refined, never decorative, and — critically — it is the ONLY text whose colour diverges within a band under `.copy--ink` (`--espresso-700` vs the band's `--ink`), which photo-fit now models explicitly (§G.9): the full h1 band is evaluated a second time at ESP700 and the worst verdict governs. Keep accents SHORT (1–3 words, never numbers) so the conservative model never over-escalates the whole headline.
+**P7.7 TYPOGRAPHY DOCTRINE (2026-11-09, supersedes the 2026-10-24 serif-accent copy contract).**
+The former italic serif accent inside `.t-display` is DEPRECATED everywhere — Story 1 (full-bleed),
+Story 2 (solid bone tile), Story 3 (reel scenes + end-card). Every headline glyph now shares the
+identical modern geometric grotesque structure (Archivo Bold), eliminating the letter-to-letter
+style drift the operator audit measured between the thin classical serif garnish and the heavy
+sans display. The engine's `.t-display .serif-accent` rule is neutralized to
+`font-family: inherit; font-style: normal; font-weight: inherit;` (no legacy markup can
+re-materialize the mixed look), photo-fit no longer models the virtual `h1-accent` band, and the
+`.copy--ink .serif-accent` espresso recolor rung is retired. Never author
+`<span class="serif-accent">` in a new composition.
 
 ### G.7 Verified CTA suite (brand copy policy, P7.3 head-office routing · P7.6 generalization)
 
@@ -1298,8 +1316,8 @@ Blackburn Head Office 184 Whitehorse Rd · Moonee Ponds 42 Maribyrnong Rd · Bay
 with HEAD OFFICE, not the manufacturing plant. Isolated factory-contact CTAs are REMOVED —
 the Bayswater factory survives only as proof-of-manufacture evidence behind the network.
 Variant C's phone entry is pinned to `Call 1300 449 799` — the explicit "Call" prefix eliminates
-the visual ambiguity between the `.com.au` TLD and the bare 1300 number in a 0.14em-tracked
-caps run. **P7.6 generalization (2026-11-08, authoritative):** "Blackburn" and "Head Office"
+the visual ambiguity between the `.com.au` TLD and the bare 1300 number in a 0.12em-tracked
+caps run (P7.7 locked tracking). **P7.6 generalization (2026-11-08, authoritative):** "Blackburn" and "Head Office"
 locators are ELIMINATED from Variants B and D — Greater-Melbourne prospects (Moonee Ponds,
 Western/Northern suburbs) were reading the locators as a service-area restriction. Variants B
 and D render the bare `Call 1300 449 799` lockup with NO branch/head-office qualifier; do NOT
@@ -1322,7 +1340,7 @@ edge-to-edge scrims carry contrast.
 **Variant C parity check (P7.3, gate-verified):** C is the suite's longest lockup
 (62 chars / 7 words + phone). Across the two certified layout kinds it fits cleanly
 inside the `--copy-bottom: 220px` pin on the deepened 680px ramp — the engine model
-(Chromium-calibrated caps factor `0.64×fs + 0.14em` tracking at 20px):
+(Chromium-calibrated caps factor `0.64×fs + 0.12em` tracking at 20px, P7.7 locked metrics):
 Full-Bleed Static (`kind: "static"`, 880px copy column) → balanced 2-line stack,
 CTA box 60px, block top y1487.7 — pin clear. Compound 1+2 Grid
 (`kind: "compound-static"`, 435px bottom-left pane column) → 3-line staircase, CTA
@@ -1360,7 +1378,7 @@ exactly as the P7.1/P7.3 story-02 lockup does).
 
       <section class="copy copy--{bottom-left|bottom-right}">
         <p class="t-eyebrow">…</p>
-        <h1 class="t-display">…<span class="serif-accent">…</span></h1>
+        <h1 class="t-display">…</h1>
         <p class="cta">Visit our showrooms: Blackburn · Moonee Ponds · Bayswater</p>
       </section>
     </article>
@@ -1407,8 +1425,8 @@ every pre-Phase-2 composition parses byte-identically).
     WCAG-exempt decoration.
   - Two `<figure class="photo photo--pane scrim--{theme}">` containers in document
     order (top then bottom), each carrying its own scrim spans; NO floating shields, NO
-    logo plates; the locked color hierarchy (white display + Cormorant italic accent /
-    bone eyebrow / brass CTA) is strictly maintained, with `.copy--ink` and the
+    logo plates; the locked color hierarchy (pure Archivo Bold display — P7.7, zero
+    serif accents / bone eyebrow / brass CTA) is strictly maintained, with `.copy--ink` and the
     brand-polarity ladder as the only declared contrast rungs.
   - photo-fit routes every band pixel by pane rect (`pixelMapFor`); brand bands sample
     pane 1, copy bands pane 2; both panes fail-closed (count ≠ 2 → unparseable).
@@ -1502,14 +1520,15 @@ For high-key photography (white stone, beadboard, pale cabinetry) where the whit
 .copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: none !important; }
 .copy--ink .t-display { color: var(--ink); text-shadow: none !important; }
 .copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: none !important; }
-.copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
+/* P7.7: the `.serif-accent` espresso-700 recolor rung is retired with the
+   deprecated accent — the h1 renders at a single --ink colour. */
 ```
 
 - **What it changes:** recolors the copy stack to dark ink (`var(--ink)` / espresso) and strips all text-shadows: the former white light-halos are gone (they produced muddy glows over highlights), and `text-shadow: none !important` also overrides the base classes' dark cinematic stacks (same-specificity `!important` cascade, higher selector specificity), so dark ink renders dead-clean with no glow of either polarity. The deepened bottom scrim (§G.5) is now the legibility floor. Eyebrow uses `--bone`→ink inversion; CTA stays warm-dark espresso rather than brass for legibility.
-- **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`, `serif-accent`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
+- **What it does NOT change:** geometry, positioning, sizing, tracking — `.copy--ink` only recolors; every existing class (`copy--*`, `t-eyebrow`, `t-display`, `cta`) remains byte-functional without it. The variant is combinatorial: add it alongside either layout variant (`copy--bottom-left|bottom-right`).
 - **When to use it:** whenever the Step-3 **Contrast pre-check** (`npm run photo-fit -- <file>`, §F.8) reports the default white/bone stack infeasible over a bright surface and a scrim/variant change isn't enough. It is one of the four sanctioned remediations (variant/theme, shorten copy, `.copy--ink`, swap photo) — never a substitute for re-running the gate.
 - **Usage:** `<section class="copy copy--bottom-right copy--ink">` - no per-post CSS, no inline styles.
-- ⚠ **Gate-model notes (aligned 2026-10-25):** photo-fit's ink-mode model is exact to the CSS — ink bands carry ZERO shadow credit (the halos are stripped, so `s=0` for every ink role: h1, eyebrow, cta, accent). The brand band models the knockout polarity (white bone-25 with the glow's `s=0.2` credit / ink with `s=0`), composited over the DECLARED top-pool intensity (bare = 0.50 deep-pool peak 0.68) — the 2026-10-24 unconditional plate composite is RETIRED with the plate. The one cross-band delta — the `.serif-accent` span rendering `--espresso-700` under `copy--ink` — is modelled as a virtual `h1-accent` band merged worst-of (conservative by design). Band sampling is Chromium-calibrated (2026-10-25): run-widths use the measured Inter advance `0.60×fs + tracking` (the former `0.70×fs + 20px` over-widened bands ~24% and manufactured brand-row failures the real sampler did not show). Scrim ramps `!important` suffixes do not defeat the layer parser (the pre-2026-10-25 parser silently dropped every engine scrim and composited over raw pixels). When the declaration ladder exhausts, the model DEFERS to the browser authority (§H.6) instead of pre-emptively failing the chain.
+- ⚠ **Gate-model notes (aligned 2026-10-25 · amended P7.7 2026-11-09):** photo-fit's ink-mode model is exact to the CSS — ink bands carry ZERO shadow credit (the halos are stripped, so `s=0` for every ink role: h1, eyebrow, cta). The brand band models the knockout polarity (white bone-25 with the glow's `s=0.2` credit / ink with `s=0`), composited over the DECLARED top-pool intensity (bare = 0.50 deep-pool peak 0.68) — the 2026-10-24 unconditional plate composite is RETIRED with the plate. The former cross-band delta — the `.serif-accent` span rendering `--espresso-700` under `copy--ink`, modelled as a virtual `h1-accent` band merged worst-of — is RETIRED with the accent itself (P7.7: headlines render one uniform Archivo Bold colour per polarity, so no worst-of merge is needed). Band sampling is Chromium-calibrated (2026-10-25): run-widths use the measured Inter advance `0.60×fs + tracking` (the former `0.70×fs + 20px` over-widened bands ~24% and manufactured brand-row failures the real sampler did not show). The solid bone tile's h1 band is modelled at the family-routed TILE_H1 metrics (48px/1.12, scraped from `.pane--solid-bone .t-display`). Scrim ramps `!important` suffixes do not defeat the layer parser (the pre-2026-10-25 parser silently dropped every engine scrim and composited over raw pixels). When the declaration ladder exhausts, the model DEFERS to the browser authority (§H.6) instead of pre-emptively failing the chain.
 
 ---
 
@@ -1669,9 +1688,12 @@ because it exits 0 in every state, wiring it into automation can never stall the
    template, heal rung, or Phase 2+ layout family that re-introduces a background box
    behind the brand wordmark or copy column is a regression against the luxury standard
    (§F.2 ban clause / §G.2 knockout polarity standard).
-7. The proven color hierarchy is LOCKED: `.t-display` crisp white + Cormorant Garamond
-   italic `.serif-accent`; `.t-eyebrow` muted cream/bone (`var(--bone)`); `.cta` strictly
-   warm gold/brass `var(--brass)` in EVERY state. Re-tuning these four colours outside a
+7. The proven color hierarchy is LOCKED (P7.7 typography canon): `.t-display` pure Archivo
+   Bold 700 in a single colour per polarity — crisp white on scrims / `var(--ink)` under
+   `.copy--ink` (the Cormorant Garamond italic `.serif-accent` device is DEPRECATED, 2026-11-09);
+   `.t-eyebrow` muted cream/bone (`var(--bone)`); `.cta` strictly
+   warm gold/brass `var(--brass)` at the P7.7 locked metrics (20px / 600 / 0.12em / 1.4) in
+   EVERY state. Re-tuning these colours or releasing a CTA tracking/leading metric outside a
    documented engine amendment + preflight re-run is a regression.
 
 ### H.11 Standalone shoot curation engine — `curate-shoot.js` + `vision-manifest.json` (established 2026-10-26, P3.0)

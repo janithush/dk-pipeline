@@ -32,7 +32,7 @@
       "kind": "static",
       "html": "compositions/2026-11-08/batch-01/story-01.html",
       "output": "renders/2026-11-08/batch-01/story-01",
-      "notes": "Full-bleed static hero (Format 1) · SHIP-CERT 2026-11-08-batch-01 2026-11-08T17:51:40.387Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left · shipped frame poster-settled.png (842274 bytes)",
+      "notes": "Full-bleed static hero (Format 1) · · SHIP-CERT 2026-11-08-batch-01 2026-11-09T11:51:42.353Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left · shipped frame poster-settled.png (840897 bytes)",
       "cta": "cta-A"
     },
     {
@@ -40,7 +40,7 @@
       "kind": "editorial-split",
       "html": "compositions/2026-11-08/batch-01/story-02.html",
       "output": "renders/2026-11-08/batch-01/story-02",
-      "notes": "Editorial Split Tile — solid bone editorial tile + pure detail macro (Format 2) · SHIP-CERT 2026-11-08-batch-01 2026-11-08T17:51:40.388Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 20 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left copy--ink · shipped frame poster-settled.png (675330 bytes)",
+      "notes": "Editorial Split Tile — solid bone editorial tile + pure detail macro (Format 2) · · SHIP-CERT 2026-11-08-batch-01 2026-11-09T11:51:42.355Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 15 els PASS) · state: bar-top bar-top--white · copy copy--bottom-left copy--ink · shipped frame poster-settled.png (674196 bytes)",
       "cta": "cta-B"
     },
     {
@@ -49,14 +49,14 @@
       "variant": "20s",
       "html": "compositions/2026-11-08/batch-01/story-03-living-20s.html",
       "output": "renders/2026-11-08/batch-01/story-03/living-20s",
-      "notes": "20s Living Story Reel (P7.0 certified, P7.2 audio baseline) — end-card carries cta-B · SHIP-CERT 2026-11-08-batch-01 2026-11-08T17:51:40.389Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 5 els PASS) · reel lane delivery strict (mp4 delivery quality) · audio cert: I -14.3 LUFS · TP -3.3 dBTP · 0 clipped · 600 frames · digest .hyperframes/artifacts/loudness/2026-11-08-batch-01.digest.json · delivered living-20s.mp4 (9582985 bytes)"
+      "notes": "20s Living Story Reel (P7.0 certified, P7.2 audio baseline) — end-card carries cta-B · · SHIP-CERT 2026-11-08-batch-01 2026-11-09T11:51:42.356Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 5 els PASS) · reel lane delivery strict (mp4 delivery quality) · audio cert: I -14.3 LUFS · TP -3.3 dBTP · 0 clipped · 600 frames · digest .hyperframes/artifacts/loudness/2026-11-08-batch-01.digest.json · delivered living-20s.mp4 (9558342 bytes)"
     },
     {
       "slug": "story-04",
       "kind": "pure-grid",
       "html": "compositions/2026-11-08/batch-01/story-04.html",
       "output": "renders/2026-11-08/batch-01/story-04",
-      "notes": "Pure-Visual 3-Photo Grid — wide hero + 2 subject-diverse detail macros (Format 3) · SHIP-CERT 2026-11-08-batch-01 2026-11-08T17:51:40.389Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 0 els PASS (pure-visual zero-copy bypass)) · state: bar-top bar-top--white · (copy?) · shipped frame poster-settled.png (990390 bytes)"
+      "notes": "Pure-Visual 3-Photo Grid — wide hero + 2 subject-diverse detail macros (Format 3) · · SHIP-CERT 2026-11-08-batch-01 2026-11-09T11:51:42.357Z: zero-waiver auto-ship — preflight GREEN (lint · check-paths 1:1 parity · photo-fit p98 gate · browser AA verify 0 els PASS (pure-visual zero-copy bypass)) · state: bar-top bar-top--white · (copy?) · shipped frame poster-settled.png (990390 bytes)"
     }
   ]
 }

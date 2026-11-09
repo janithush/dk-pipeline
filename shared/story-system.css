@@ -322,33 +322,46 @@ body {
   letter-spacing: var(--track-tight, -0.02em);   /* token = −0.02em (single source of truth) */
 }
 
+/* P7.7 TYPOGRAPHY CANON UNIFICATION (2026-11-09): the serif accent is
+   DEPRECATED from the headline canon. Every `.t-display` headline renders
+   exclusively in pure Archivo Bold — one geometric grotesque, one weight,
+   one tracking rhythm — eliminating the letter-to-letter style drift the
+   operator audit measured between the thin classical serif glyphs and the
+   heavy sans-serif body of the headline. The class stays harmless
+   (inherited, upright) so legacy markup can never resurrect the mixed
+   serif look; new compositions must not emit the span at all. */
 .t-display .serif-accent {
-  font-family: var(--serif);
-  font-style: italic;
-  font-weight: 400;
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
 }
 
 /* REFINED QUIET CTA — ELEVATED CONVERSION LOCKUP (P7.1, 2026-11-01).
    Scale elevated 12px → 20px: a commanding editorial conversion line, no
-   longer microscopic fine-print on the 1080x1920 canvas. Long verified
-   showroom/phone/URL lockups wrap to a balanced 1–2 line stack
-   (line-height 1.5), tracked down to 0.14em so the wider body never
-   balloons. scripts/photo-fit.js scrapes font-size + tracking + line-height
-   here and DERIVES the band's wrapped line count + box height from the
-   parsed CTA run (anti-drift: change a value here, re-run preflight).
-   Vertical fit: the block grows UP from the unchanged 220px bottom pin —
-   worst case (3-line lockup in the hero-split pane) tops out ≈ y1460,
-   clear of the h1 and both platform bounds. Luxury colour discipline is
-   untouched: warm brass on dark scrims / --espresso-800 under .copy--ink.
-   Permanent plate ban intact: no pill, no box — legibility stays on the
-   full-bleed scrim gradients + cinematic shadow stack below. */
+   longer microscopic fine-print on the 1080x1920 canvas. P7.7 (2026-11-09)
+   LOCKED METRICS SUITE: letter-spacing locks 0.14em → 0.12em and line-height
+   1.5 → 1.4 so the full-bleed static, the solid bone tile, and the reel
+   end-card all render the verified lockups with BYTE-IDENTICAL metrics and
+   kerning rhythm — one tracked caps voice across Story 1, 2 and 3 (the same
+   token governs letters and digits: the phone number kerns identically to
+   the words). Long verified showroom/phone/URL lockups wrap to a balanced
+   1–2 line stack. scripts/photo-fit.js scrapes font-size + tracking +
+   line-height here and DERIVES the band's wrapped line count + box height
+   from the parsed CTA run (anti-drift: change a value here, re-run
+   preflight). Vertical fit: the block grows UP from the unchanged 220px
+   bottom pin — worst case (3-line lockup in the hero-split pane) tops out
+   ≈ y1460, clear of the h1 and both platform bounds. Luxury colour
+   discipline is untouched: warm brass on dark scrims / --espresso-800
+   under .copy--ink. Permanent plate ban intact: no pill, no box —
+   legibility stays on the full-bleed scrim gradients + cinematic shadow
+   stack below. */
 .cta {
   margin-top: 10px;
   font-family: var(--sans);
   font-size: 20px;
-  line-height: 1.5;
+  line-height: 1.4;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--brass, #c6a77d);
 }
@@ -368,7 +381,8 @@ body {
 .copy--ink .t-eyebrow { color: var(--ink); opacity: 0.9; text-shadow: none !important; }
 .copy--ink .t-display { color: var(--ink); text-shadow: none !important; }
 .copy--ink .cta       { color: var(--espresso-800, #2A211A); text-shadow: none !important; }
-.copy--ink .t-display .serif-accent { color: var(--espresso-700, #3E3027); }
+/* P7.7: the `.serif-accent` recolor rung (`--espresso-700`) is retired with
+   the accent itself — the h1 renders at a single --ink colour under .copy--ink. */
 
 /* ───────────────────────────────────────────────────────────────────────
    COPY SHIELD — RETIRED (2026-10-25, operator directive). The isolated
@@ -553,4 +567,22 @@ body {
 .layout--hero-split-editorial .t-eyebrow,
 .layout--hero-split-editorial .cta {
   text-shadow: none !important;
+}
+
+/* P7.7 SOLID BONE TILE HEADLINE OPTICAL BALANCE (Format 2). The 539px tile
+   gives the h1 a DIFFERENT optical home from the full-bleed 52px display:
+   short verified copy ("Drawer joinery, set true") left excessive empty
+   space at the mono scale. The tile headline is anchored at its own
+   commanding editorial scale — 48px / 1.12 / −0.02em — so the two staged
+   lines fill the tile's width with the reference editorial density, in the
+   SAME pure Archivo Bold canon (colour follows the authored .copy--ink
+   recolor: --ink, #2A211A). This rule is intentionally declared AFTER the
+   base `.t-display` rule so photo-fit's base display scrape stays anchored
+   at the mono metrics; the engine scrapes these tile metrics separately
+   (`TILE_H1_FS` / `TILE_H1_LH`) and routes the h1 band by family. */
+.pane--solid-bone .t-display {
+  font-size: 48px;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: var(--ink, #2A211A);
 }
